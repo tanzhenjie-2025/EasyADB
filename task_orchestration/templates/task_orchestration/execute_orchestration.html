@@ -1,0 +1,426 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <style>
+        /* 复用脚本执行页面的样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            padding: 20px;
+            background-color: #f5f7fa;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #303133;
+            font-size: 24px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 4px;
+            transition: background-color 0.2s;
+        }
+        .btn-primary {
+            background-color: #409eff;
+            color: #fff;
+        }
+        .btn-default {
+            background-color: #f5f7fa;
+            color: #606266;
+        }
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .form-col {
+            flex: 1;
+            min-width: 300px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #303133;
+        }
+        .select-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e6eb;
+        }
+        .device-list, .orch-list {
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #fff;
+        }
+        .device-item, .orch-item {
+            padding: 12px 10px;
+            border-bottom: 1px solid #f5f7fa;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 4px;
+            transition: background-color 0.2s;
+        }
+        .device-item:hover:not(.disabled), .orch-item:hover {
+            background-color: #f0f7ff;
+        }
+        .device-item.selected, .orch-item.selected {
+            background-color: #e6f7ff;
+            border-color: #91d5ff;
+        }
+        .device-item input[type="checkbox"],
+        .orch-item input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+        .device-item.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .alert {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .alert-success {
+            background-color: #f0f9ff;
+            color: #67c23a;
+        }
+        .alert-error {
+            background-color: #fef0f0;
+            color: #f56c6c;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ebeef5;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .status-running { color: #409eff; }
+        .status-success { color: #67c23a; }
+        .status-failed { color: #f56c6c; }
+        .status-stopped { color: #909399; }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ page_title }}</h1>
+        <div>
+            <a href="{% url 'task_orchestration:list' %}" class="btn btn-default">🔙 编排任务管理</a>
+        </div>
+    </div>
+
+    <!-- 提示信息 -->
+    {% if request.GET.msg %}
+        <div class="alert {% if '成功' in request.GET.msg|urlencode %}alert-success{% else %}alert-error{% endif %}">
+            {{ request.GET.msg|urlencode }}
+        </div>
+    {% endif %}
+
+    <!-- 执行编排任务表单 -->
+    <div class="card">
+        <h3 style="margin-bottom: 20px;">选择设备和编排任务</h3>
+        <form method="POST" id="executeForm">
+            {% csrf_token %}
+            <div class="form-row">
+                <!-- 设备选择 -->
+                <div class="form-col">
+                    <div class="form-group">
+                        <label>选择执行设备（可多选）</label>
+                        <div class="select-actions">
+                            <div class="left-actions">
+                                <label for="selectAll" style="cursor: pointer;">
+                                    <input type="checkbox" id="selectAll"> 全选/取消全选
+                                </label>
+                                <button type="button" class="btn btn-sm btn-default" id="selectOnlineOnly">
+                                    只选在线设备
+                                </button>
+                            </div>
+                            <span id="selectedCount" style="color: #606266; font-size: 12px;">已选：0 台</span>
+                        </div>
+                        <div class="device-list">
+                            {% for device in devices %}
+                                <div class="device-item {% if device.status != 'online' %}disabled{% endif %}" data-device-id="{{ device.id }}">
+                                    <input
+                                        type="checkbox"
+                                        name="device_ids"
+                                        id="device_{{ device.id }}"
+                                        value="{{ device.id }}"
+                                        {% if device.status != 'online' %}disabled{% endif %}
+                                        data-online="{{ device.status }}"
+                                        class="device-checkbox"
+                                    >
+                                    <label for="device_{{ device.id }}">
+                                        {{ device.device_name }} ({{ device.adb_connect_str }})
+                                        {% if device.status == 'online' %}
+                                            <span style="color: #67c23a;">✅ 在线</span>
+                                        {% else %}
+                                            <span style="color: #f56c6c;">❌ 离线（不可选）</span>
+                                        {% endif %}
+                                    </label>
+                                </div>
+                            {% empty %}
+                                <div style="text-align: center; color: #909399; padding: 20px;">暂无可用设备</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 编排任务选择 -->
+                <div class="form-col">
+                    <div class="form-group">
+                        <label>选择编排任务（单选）</label>
+                        <div class="orch-list">
+                            {% for orch in orchestrations %}
+                                <div class="orch-item" data-orch-id="{{ orch.id }}">
+                                    <input type="radio" name="orch_id" id="orch_{{ orch.id }}" value="{{ orch.id }}" {% if forloop.first %}checked{% endif %} class="orch-radio">
+                                    <label for="orch_{{ orch.id }}">
+                                        {{ orch.name }} ({{ orch.steps.count }} 个步骤)
+                                    </label>
+                                </div>
+                            {% empty %}
+                                <div style="text-align: center; color: #909399; padding: 20px;">暂无可用编排任务（请先创建并激活）</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" {% if not devices or not orchestrations %}disabled{% endif %}>
+                ▶️ 开始执行编排任务
+            </button>
+        </form>
+    </div>
+
+    <!-- 最近执行日志 -->
+    <div class="mt-4">
+        <h4>最近执行日志</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>编排任务名称</th>
+                    <th>执行设备</th>
+                    <th>执行状态</th>
+                    <th>进度</th>
+                    <th>开始时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in recent_logs %}
+                <tr>
+                    <td>{{ log.orchestration.name }}</td>
+                    <td>{{ log.device.device_name }} ({{ log.device.adb_connect_str }})</td>
+                    <td>
+                        {% if log.status == 'running' %}
+                        <span class="badge status-running">运行中</span>
+                        {% elif log.status == 'completed' %}
+                        <span class="badge status-success">已完成</span>
+                        {% elif log.status == 'failed' %}
+                        <span class="badge status-failed">执行失败</span>
+                        {% elif log.status == 'stopped' %}
+                        <span class="badge status-stopped">已停止</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ log.completed_steps }}/{{ log.total_steps }}</td>
+                    <td>{{ log.start_time|date:"Y-m-d H:i:s" }}</td>
+                    <td>
+                        <a href="{% url 'task_orchestration:log_detail' log.id %}" class="btn btn-sm btn-default">查看详情</a>
+                        {% if log.is_running %}
+                        <a href="{% url 'task_orchestration:stop_orchestration' log.id %}" class="btn btn-sm btn-default" onclick="return confirm('确定要停止该任务吗？')">停止任务</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">暂无执行日志</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 选择逻辑JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const selectOnlineBtn = document.getElementById('selectOnlineOnly');
+            const deviceCheckboxes = document.querySelectorAll('.device-checkbox');
+            const deviceItems = document.querySelectorAll('.device-item');
+            const orchRadios = document.querySelectorAll('.orch-radio');
+            const orchItems = document.querySelectorAll('.orch-item');
+            const selectedCountEl = document.getElementById('selectedCount');
+
+            // 初始化
+            initSelectedStates();
+            updateSelectedCount();
+
+            // 全选逻辑
+            selectAllCheckbox.addEventListener('change', function() {
+                let isChecked = this.checked;
+                deviceCheckboxes.forEach(checkbox => {
+                    if (!checkbox.disabled) {
+                        checkbox.checked = isChecked;
+                        const item = document.querySelector(`.device-item[data-device-id="${checkbox.value}"]`);
+                        item.classList.toggle('selected', isChecked);
+                    }
+                });
+                updateSelectedCount();
+            });
+
+            // 只选在线设备
+            selectOnlineBtn.addEventListener('click', function() {
+                selectAllCheckbox.checked = false;
+                deviceCheckboxes.forEach(checkbox => {
+                    const shouldCheck = checkbox.dataset.online === 'online';
+                    if (!checkbox.disabled) {
+                        checkbox.checked = shouldCheck;
+                        const item = document.querySelector(`.device-item[data-device-id="${checkbox.value}"]`);
+                        item.classList.toggle('selected', shouldCheck);
+                    }
+                });
+                updateSelectedCount();
+            });
+
+            // 设备项点击事件
+            deviceItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    if (this.classList.contains('disabled')) return;
+                    const checkbox = this.querySelector('.device-checkbox');
+                    if (e.target !== checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        this.classList.toggle('selected', checkbox.checked);
+                        updateSelectedCount();
+                        syncSelectAllState();
+                    }
+                });
+            });
+
+            // 编排任务项点击事件
+            orchItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    const radio = this.querySelector('.orch-radio');
+                    if (e.target !== radio) {
+                        orchRadios.forEach(r => r.checked = false);
+                        orchItems.forEach(i => i.classList.remove('selected'));
+                        radio.checked = true;
+                        this.classList.add('selected');
+                    }
+                });
+            });
+
+            // 单选框变化事件
+            orchRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    orchItems.forEach(item => item.classList.remove('selected'));
+                    const item = document.querySelector(`.orch-item[data-orch-id="${this.value}"]`);
+                    item.classList.add('selected');
+                });
+            });
+
+            // 更新选中数量
+            function updateSelectedCount() {
+                let count = 0;
+                deviceCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked && !checkbox.disabled) count++;
+                });
+                selectedCountEl.textContent = `已选：${count} 台`;
+            }
+
+            // 同步全选状态
+            function syncSelectAllState() {
+                let allChecked = true;
+                let hasOnline = false;
+                deviceCheckboxes.forEach(checkbox => {
+                    if (checkbox.dataset.online === 'online') {
+                        hasOnline = true;
+                        if (!checkbox.checked) allChecked = false;
+                    }
+                });
+                selectAllCheckbox.checked = hasOnline && allChecked;
+            }
+
+            // 初始化选中状态
+            function initSelectedStates() {
+                deviceCheckboxes.forEach(checkbox => {
+                    const item = document.querySelector(`.device-item[data-device-id="${checkbox.value}"]`);
+                    item.classList.toggle('selected', checkbox.checked);
+                });
+                orchRadios.forEach(radio => {
+                    const item = document.querySelector(`.orch-item[data-orch-id="${radio.value}"]`);
+                    if (radio.checked) item.classList.add('selected');
+                });
+                syncSelectAllState();
+            }
+
+            // 表单提交验证
+            document.getElementById('executeForm').addEventListener('submit', function(e) {
+                let hasSelected = false;
+                deviceCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked) hasSelected = true;
+                });
+                if (!hasSelected) {
+                    e.preventDefault();
+                    alert('请至少选择一个在线设备！');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

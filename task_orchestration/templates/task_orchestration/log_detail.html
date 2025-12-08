@@ -1,0 +1,362 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            padding: 20px;
+            background-color: #f5f7fa;
+            font-family: "Microsoft YaHei", monospace;
+            font-size: 14px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .header h1 {
+            color: #303133;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 4px;
+            transition: background-color 0.2s;
+        }
+        .btn-primary {
+            background-color: #409eff;
+            color: #fff;
+        }
+        .btn-default {
+            background-color: #f5f7fa;
+            color: #606266;
+            border: 1px solid #e4e7ed;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #303133;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e4e7ed;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .info-item label {
+            color: #909399;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        .info-item span {
+            color: #303133;
+            font-size: 14px;
+            font-weight: 500;
+            word-break: break-all;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-running { background-color: #e8f4fd; color: #409eff; }
+        .status-completed { background-color: #f0f9eb; color: #67c23a; }
+        .status-part_failed { background-color: #fef0f0; color: #e6a23c; }
+        .status-failed { background-color: #fef0f0; color: #f56c6c; }
+        .status-stopped { background-color: #f5f5f5; color: #909399; }
+        .status-timeout { background-color: #fdf6ec; color: #e6a23c; }
+        .status-error { background-color: #fef0f0; color: #f56c6c; }
+
+        .log-content {
+            margin-top: 16px;
+            border: 1px solid #e4e7ed;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .log-tab {
+            display: flex;
+            background-color: #f5f7fa;
+            border-bottom: 1px solid #e4e7ed;
+        }
+        .log-tab-item {
+            padding: 8px 16px;
+            cursor: pointer;
+            border-right: 1px solid #e4e7ed;
+            font-weight: 500;
+            color: #606266;
+        }
+        .log-tab-item.active {
+            background-color: #fff;
+            color: #409eff;
+        }
+        .log-tab-content {
+            padding: 16px;
+            height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #303133;
+        }
+        .log-tab-content.error {
+            color: #f56c6c;
+        }
+
+        .step-card {
+            border: 1px solid #e4e7ed;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .step-header {
+            background-color: #f8f9fa;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e4e7ed;
+        }
+        .step-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .step-order {
+            font-size: 16px;
+            font-weight: 600;
+            color: #409eff;
+        }
+        .step-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #303133;
+        }
+        .step-body {
+            padding: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ page_title }}</h1>
+        <div>
+            <a href="{% url 'task_orchestration:execute_orchestration' %}" class="btn btn-default">🔙 返回执行页面</a>
+            <a href="{% url 'task_orchestration:list' %}" class="btn btn-primary">📋 编排任务列表</a>
+        </div>
+    </div>
+
+    <!-- 编排日志基本信息 -->
+    <div class="card">
+        <div class="card-title">基本信息</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>编排任务名称</label>
+                <span>{{ orch_log.orchestration.name }}</span>
+            </div>
+            <div class="info-item">
+                <label>执行设备</label>
+                <span>{{ orch_log.device.device_name }} ({{ orch_log.device.adb_connect_str }})</span>
+            </div>
+            <div class="info-item">
+                <label>执行状态</label>
+                <span class="status-badge status-{{ orch_log.exec_status }}">
+                    {{ orch_log.get_exec_status_display }}
+                </span>
+            </div>
+            <div class="info-item">
+                <label>开始时间</label>
+                <span>{{ orch_log.start_time|date:"Y-m-d H:i:s" }}</span>
+            </div>
+            <div class="info-item">
+                <label>结束时间</label>
+                <span>{{ orch_log.end_time|date:"Y-m-d H:i:s"|default:"执行中" }}</span>
+            </div>
+            <div class="info-item">
+                <label>总耗时</label>
+                <span>{{ orch_log.exec_duration_str }}</span>
+            </div>
+            <div class="info-item">
+                <label>执行进度</label>
+                <span>{{ orch_log.completed_steps }}/{{ orch_log.total_steps }} 步骤</span>
+            </div>
+        </div>
+
+        <!-- 全局执行命令 -->
+        <div class="info-item" style="margin-top: 16px;">
+            <label>执行命令（全局）</label>
+            <div class="log-content" style="height: auto; max-height: 100px;">
+                <div class="log-tab-content">{{ orch_log.exec_command|default:"无" }}</div>
+            </div>
+        </div>
+
+        <!-- 全局输出 -->
+        <div class="log-content" style="margin-top: 16px;">
+            <div class="log-tab">
+                <div class="log-tab-item active" onclick="switchTab('stdout')">标准输出</div>
+                <div class="log-tab-item" onclick="switchTab('stderr')">错误输出</div>
+            </div>
+            <div id="stdout" class="log-tab-content">{{ orch_log.stdout|default:"无" }}</div>
+            <div id="stderr" class="log-tab-content error" style="display: none;">{{ orch_log.stderr|default:"无" }}</div>
+        </div>
+
+        {% if orch_log.error_msg %}
+        <div class="info-item" style="margin-top: 16px;">
+            <label>全局错误信息</label>
+            <span style="color: #f56c6c; font-weight: normal;">{{ orch_log.error_msg }}</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- 步骤执行详情 -->
+    <div class="card">
+        <div class="card-title">步骤执行详情</div>
+        {% for step_log in step_logs %}
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-header-left">
+                    <div class="step-order">步骤 {{ step_log.step.execution_order }}</div>
+                    <div class="step-name">{{ step_log.step.script_task.task_name }}</div>
+                </div>
+                <span class="status-badge status-{{ step_log.exec_status }}">
+                    {{ step_log.get_exec_status_display }}
+                </span>
+            </div>
+            <div class="step-body">
+                <div class="info-grid" style="margin-bottom: 12px;">
+                    <div class="info-item">
+                        <label>开始时间</label>
+                        <span>{{ step_log.start_time|date:"Y-m-d H:i:s" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>结束时间</label>
+                        <span>{{ step_log.end_time|date:"Y-m-d H:i:s"|default:"执行中" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>耗时</label>
+                        <span>{{ step_log.exec_duration|default:0|floatformat:2 }} 秒</span>
+                    </div>
+                    <div class="info-item">
+                        <label>返回码</label>
+                        <span>{{ step_log.return_code|default:"无" }}</span>
+                    </div>
+                </div>
+
+                <!-- 步骤执行命令 -->
+                <div class="info-item" style="margin-bottom: 12px;">
+                    <label>执行命令</label>
+                    <div class="log-content" style="height: auto; max-height: 80px;">
+                        <div class="log-tab-content">{{ step_log.exec_command|default:"无" }}</div>
+                    </div>
+                </div>
+
+                <!-- 步骤输出 -->
+                <div class="log-content">
+                    <div class="log-tab">
+                        <div class="log-tab-item active" onclick="switchStepTab('step{{ step_log.id }}-stdout', this)">标准输出</div>
+                        <div class="log-tab-item" onclick="switchStepTab('step{{ step_log.id }}-stderr', this)">错误输出</div>
+                    </div>
+                    <div id="step{{ step_log.id }}-stdout" class="log-tab-content">{{ step_log.stdout|default:"无" }}</div>
+                    <div id="step{{ step_log.id }}-stderr" class="log-tab-content error" style="display: none;">{{ step_log.stderr|default:"无" }}</div>
+                </div>
+
+                {% if step_log.error_msg %}
+                <div class="info-item" style="margin-top: 12px;">
+                    <label>步骤错误信息</label>
+                    <span style="color: #f56c6c; font-weight: normal;">{{ step_log.error_msg }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align: center; padding: 20px; color: #909399;">
+            暂无步骤执行日志
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // 全局标签切换
+        function switchTab(tabId) {
+            document.querySelectorAll('.log-tab-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelectorAll('.log-tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            event.target.classList.add('active');
+            document.getElementById(tabId).style.display = 'block';
+        }
+
+        // 步骤标签切换
+        function switchStepTab(tabId, el) {
+            const parent = el.closest('.log-tab');
+            parent.querySelectorAll('.log-tab-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            parent.nextElementSibling.querySelectorAll('.log-tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            el.classList.add('active');
+            document.getElementById(tabId).style.display = 'block';
+        }
+
+        // 实时刷新日志（可选）
+        {% if orch_log.exec_status == 'running' %}
+        setInterval(() => {
+            fetch("{% url 'task_orchestration:log_status' orch_log.id %}")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.code === 200) {
+                        // 更新全局日志
+                        document.getElementById('stdout').textContent = data.stdout || '无';
+                        document.getElementById('stderr').textContent = data.stderr || '无';
+
+                        // 更新步骤日志（简化版，完整版可循环更新）
+                        data.step_data.forEach(step => {
+                            const stdoutEl = document.getElementById(`step${step.order}-stdout`);
+                            const stderrEl = document.getElementById(`step${step.order}-stderr`);
+                            if (stdoutEl) stdoutEl.textContent = step.stdout || '无';
+                            if (stderrEl) stderrEl.textContent = step.stderr || '无';
+                        });
+                    }
+                });
+        }, 2000);
+        {% endif %}
+    </script>
+</body>
+</html>

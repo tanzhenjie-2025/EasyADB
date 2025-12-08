@@ -1,0 +1,146 @@
+<div class="header">
+    <h1>{{ page_title }}</h1>
+    <a href="{% url 'task_orchestration:list' %}" class="btn btn-default">返回列表</a>
+</div>
+
+<!-- 提示信息 -->
+{% if request.GET.msg %}
+<div class="alert alert-success" style="padding: 10px; margin: 10px 0; border-radius: 4px; background: #f0f9ff; color: #67c23a;">
+    {{ request.GET.msg }}
+</div>
+{% endif %}
+
+{% if error_msg %}
+<div class="alert alert-error" style="padding: 10px; margin: 10px 0; border-radius: 4px; background: #fef0f0; color: #f56c6c;">
+    {{ error_msg }}
+</div>
+{% endif %}
+
+<!-- 新增：编排任务基础信息编辑（含状态修改） -->
+<div class="card" style="margin-bottom: 20px;">
+    <h3>编排任务基础信息</h3>
+    <form method="post">
+        {% csrf_token %}
+        <!-- 隐藏字段：标记为修改任务信息 -->
+        <input type="hidden" name="action" value="update_task">
+        
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">任务名称：</label>
+            {{ task_form.name }}
+            {% if task_form.name.errors %}
+            <span style="color: #f56c6c; font-size: 12px;">{{ task_form.name.errors.0 }}</span>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">任务描述：</label>
+            {{ task_form.description }}
+            {% if task_form.description.errors %}
+            <span style="color: #f56c6c; font-size: 12px;">{{ task_form.description.errors.0 }}</span>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">任务状态：</label>
+            {{ task_form.status }}
+            {% if task_form.status.errors %}
+            <span style="color: #f56c6c; font-size: 12px;">{{ task_form.status.errors.0 }}</span>
+            {% endif %}
+            <div style="font-size: 12px; color: #909399; margin-top: 5px;">
+                仅"已激活"状态的任务可执行，请确保步骤配置完成后再激活
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">保存基础信息</button>
+    </form>
+</div>
+
+<!-- 原有：子任务步骤管理 -->
+<div class="card">
+    <h3>子任务步骤（按顺序执行）</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ step_form.as_p }}
+        <button type="submit" class="btn btn-primary">添加步骤</button>
+    </form>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th>执行顺序</th>
+                <th>关联脚本任务</th>
+                <th>运行时长(秒)</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for step in steps %}
+            <tr>
+                <td>{{ step.execution_order }}</td>
+                <td>{{ step.script_task.task_name }}</td>
+                <td>{{ step.run_duration }}</td>
+                <td>
+                    <a href="{% url 'task_orchestration:delete_step' step.id %}" class="btn btn-sm btn-danger">删除</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" class="text-center">暂无步骤，请添加</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- 样式补充（保持和原有风格一致） -->
+<style>
+    .card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .form-control {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #dcdfe6;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+    .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    .btn-primary {
+        background: #409eff;
+        color: #fff;
+    }
+    .btn-default {
+        background: #f5f7fa;
+        color: #606266;
+    }
+    .btn-danger {
+        background: #f56c6c;
+        color: #fff;
+    }
+    .btn-sm {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table th, .table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ebeef5;
+    }
+    .table th {
+        background: #f8f9fa;
+        font-weight: 500;
+    }
+</style>
