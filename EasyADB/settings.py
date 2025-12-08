@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     "user_auth.apps.UserAuthConfig",
     "task_scheduler.apps.TaskSchedulerConfig",
     "frontend.apps.FrontendConfig",
-    "common.apps.CommonConfig"
+    "common.apps.CommonConfig",
+    "task_orchestration.apps.TaskOrchestrationConfig"
 ]
 
 MIDDLEWARE = [

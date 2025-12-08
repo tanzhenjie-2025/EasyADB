@@ -25,4 +25,6 @@ urlpatterns = [
     path('adb/', include(('adb_manager.urls', 'adb_manager'), namespace='adb_manager')),
 # 新增脚本中心路由
     path('script/', include('script_center.urls')),
+
+path('task_orchestration/', include('task_orchestration.urls')),
 ]
