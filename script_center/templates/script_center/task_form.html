@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            padding: 20px;
+            background-color: #f5f7fa;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 800px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #303133;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        textarea {
+            resize: vertical;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 4px;
+        }
+        .btn-primary {
+            background-color: #409eff;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background-color: #66b1ff;
+        }
+        .btn-default {
+            background-color: #f5f7fa;
+            color: #606266;
+        }
+        .btn-default:hover {
+            background-color: #e5e6eb;
+        }
+        .alert-error {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            background-color: #fef0f0;
+            color: #f56c6c;
+        }
+        .help-text {
+            font-size: 12px;
+            color: #909399;
+            margin-top: 4px;
+        }
+        .errorlist {
+            color: #f56c6c;
+            list-style: none;
+            margin-top: 4px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 style="margin-bottom: 20px; color: #303133;">{{ page_title }}</h2>
+
+        {% if error_msg %}
+            <div class="alert-error">{{ error_msg }}</div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>{{ form.task_name.label }}</label>
+                {{ form.task_name }}
+                {% if form.task_name.help_text %}
+                    <div class="help-text">{{ form.task_name.help_text }}</div>
+                {% endif %}
+                {{ form.task_name.errors }}
+            </div>
+
+            <div class="form-group">
+                <label>{{ form.task_desc.label }}</label>
+                {{ form.task_desc }}
+                {% if form.task_desc.help_text %}
+                    <div class="help-text">{{ form.task_desc.help_text }}</div>
+                {% endif %}
+                {{ form.task_desc.errors }}
+            </div>
+
+            <div class="form-group">
+                <label>{{ form.python_path.label }}</label>
+                {{ form.python_path }}
+                {% if form.python_path.help_text %}
+                    <div class="help-text">{{ form.python_path.help_text }}</div>
+                {% endif %}
+                {{ form.python_path.errors }}
+            </div>
+
+            <div class="form-group">
+                <label>{{ form.script_path.label }}</label>
+                {{ form.script_path }}
+                {% if form.script_path.help_text %}
+                    <div class="help-text">{{ form.script_path.help_text }}</div>
+                {% endif %}
+                {{ form.script_path.errors }}
+            </div>
+
+            <div class="form-group">
+                <label>{{ form.airtest_mode.label }}</label>
+                {{ form.airtest_mode }}
+                {% if form.airtest_mode.help_text %}
+                    <div class="help-text">{{ form.airtest_mode.help_text }}</div>
+                {% endif %}
+                {{ form.airtest_mode.errors }}
+            </div>
+
+            <div class="form-group">
+                <label>{{ form.log_path.label }}</label>
+                {{ form.log_path }}
+                {% if form.log_path.help_text %}
+                    <div class="help-text">{{ form.log_path.help_text }}</div>
+                {% endif %}
+                {{ form.log_path.errors }}
+            </div>
+
+            <div class="form-group">
+                <label>{{ form.status.label }}</label>
+                {{ form.status }}
+                {% if form.status.help_text %}
+                    <div class="help-text">{{ form.status.help_text }}</div>
+                {% endif %}
+                {{ form.status.errors }}
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn btn-primary">保存</button>
+                <a href="{% url 'script_center:task_list' %}" class="btn btn-default">取消</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

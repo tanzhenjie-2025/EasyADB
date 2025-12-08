@@ -1,0 +1,178 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            padding: 20px;
+            background-color: #f5f7fa;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #303133;
+            font-size: 24px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 4px;
+        }
+        .btn-primary {
+            background-color: #409eff;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background-color: #66b1ff;
+        }
+        .btn-danger {
+            background-color: #f56c6c;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background-color: #f78989;
+        }
+        .btn-warning {
+            background-color: #e6a23c;
+            color: #fff;
+        }
+        .btn-warning:hover {
+            background-color: #ebb563;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ebeef5;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 500;
+        }
+        .status-active {
+            color: #67c23a;
+        }
+        .status-disabled {
+            color: #909399;
+        }
+        .status-draft {
+            color: #e6a23c;
+        }
+        .alert {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .alert-success {
+            background-color: #f0f9ff;
+            color: #67c23a;
+        }
+        .alert-error {
+            background-color: #fef0f0;
+            color: #f56c6c;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ page_title }}</h1>
+        <div>
+            <a href="{% url 'adb_manager:index' %}" class="btn btn-primary">设备管理</a>
+            <a href="{% url 'script_center:task_add' %}" class="btn btn-primary">➕ 新增任务</a>
+            <a href="{% url 'script_center:execute_task' %}" class="btn btn-warning">▶️ 执行任务</a>
+        </div>
+    </div>
+
+    <!-- 提示信息 -->
+    {% if request.GET.msg %}
+        <div class="alert {% if '成功' in request.GET.msg|urlencode %}alert-success{% else %}alert-error{% endif %}">
+            {{ request.GET.msg|urlencode }}
+        </div>
+    {% endif %}
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>任务名称</th>
+                    <th>脚本路径</th>
+                    <th>Python路径</th>
+                    <th>状态</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.task_name }}</td>
+                    <td title="{{ task.script_path }}">
+                        {{ task.script_path|truncatechars:50 }}
+                        {% if not task.is_script_exists %}
+                            <span style="color: red;">❌ 文件不存在</span>
+                        {% endif %}
+                    </td>
+                    <td title="{{ task.python_path }}">
+                        {{ task.python_path|truncatechars:50 }}
+                        {% if not task.is_python_exists %}
+                            <span style="color: red;">❌ 文件不存在</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if task.status == 'active' %}
+                            <span class="status-active">✅ 已激活</span>
+                        {% elif task.status == 'disabled' %}
+                            <span class="status-disabled">❌ 已禁用</span>
+                        {% else %}
+                            <span class="status-draft">📝 草稿</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ task.create_time|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        <a href="{% url 'script_center:task_edit' task.id %}" class="btn btn-warning btn-small">✏️ 编辑</a>
+                        <form method="POST" action="{% url 'script_center:task_delete' task.id %}" style="display: inline;"
+                              onsubmit="return confirm('确定删除任务【{{ task.task_name }}】吗？');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-small">🗑️ 删除</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: #909399;">暂无任务数据，请点击"新增任务"创建</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
