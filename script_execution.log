@@ -5154,3 +5154,1122 @@ Traceback (most recent call last):
   File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\query.py", line 1768, in names_to_path
     raise FieldError(
 django.core.exceptions.FieldError: Cannot resolve keyword 'device_status' into field. Choices are: created_at, device_ip, device_name, device_port, device_serial, id, is_active, orchestrationlog, taskexecutionlog, updated_at, user, user_id
+2025-12-09 17:01:36,968 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 17:01:36,969 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 17:01:36,969 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 17:01:36,969 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 17:01:36,969 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 17:01:36,969 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 17:01:36,969 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 17:01:36,969 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-09 17:01:36,970 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-09 17:01:36,970 - script_center.views - INFO - 日志ID：32，状态：running，是否运行中：False
+2025-12-09 17:01:36,970 - script_center.views - INFO - 日志ID：31，状态：failed，是否运行中：False
+2025-12-09 17:01:40,828 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：4
+2025-12-09 17:01:40,831 - script_center.views - INFO - 获取到任务：快手看广告机，脚本路径：E:\Airtest_Scripts\Advertisement_kuaishou.air\Advertisement_kuaishou.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 17:01:40,834 - script_center.views - WARNING - 未找到真实Python路径，使用原路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 17:01:40,836 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-09 17:01:40,851 - script_center.views - INFO - 创建执行日志 - ID：41，设备：10AF5E1AKU003NR
+2025-12-09 17:01:40,852 - script_center.views - INFO - 线程开始执行 - 任务ID：4，设备ID：3，日志ID：41
+2025-12-09 17:01:40,852 - script_center.views - INFO - 启动执行线程 - 日志ID：41，线程ID：40276
+2025-12-09 17:01:40,856 - script_center.views - INFO - 线程初始化完成 - 任务：快手看广告机，设备：10AF5E1AKU003NR
+2025-12-09 17:01:40,859 - script_center.views - INFO - 最终Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe，是否存在：True
+2025-12-09 17:01:40,859 - script_center.views - INFO - 执行命令："C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe" -X utf8 "E:\Airtest_Scripts\Advertisement_kuaishou.air\Advertisement_kuaishou.py" "10AF5E1AKU003NR"，工作目录：E:\Airtest_Scripts\Advertisement_kuaishou.air
+2025-12-09 17:01:40,883 - script_center.views - INFO - 进程已启动 - PID：7052，日志ID：41，设备：10AF5E1AKU003NR
+2025-12-09 17:01:41,353 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E5%BF%AB%E6%89%8B%E7%9C%8B%E5%B9%BF%E5%91%8A%E6%9C%BA%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%8F%AF%E8%83%BD%E6%89%A7%E8%A1%8C%E5%A4%B1%E8%B4%A5%EF%BC%8C%E8%AF%B7%E6%89%8B%E5%8A%A8%E9%85%8D%E7%BD%AE%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-09 17:01:41,353 - script_center.views - ERROR - 执行任务失败：Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+Traceback (most recent call last):
+  File "E:\django_projects\EasyADB\script_center\views.py", line 280, in post
+    return redirect(f"{reverse('script_center:task_execute')}?msg={success_msg}")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+2025-12-09 17:01:41,369 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 17:01:41,370 - script_center.views - INFO - 日志ID：41，状态：running，是否运行中：True
+2025-12-09 17:01:41,370 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 17:01:41,371 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 17:01:41,371 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 17:01:41,371 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 17:01:41,371 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 17:01:41,371 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 17:01:41,371 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-09 17:01:41,371 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-09 17:01:41,371 - script_center.views - INFO - 日志ID：32，状态：running，是否运行中：False
+2025-12-09 17:06:06,939 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 17:06:06,941 - script_center.views - INFO - 日志ID：41，状态：running，是否运行中：True
+2025-12-09 17:06:06,941 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 17:06:06,941 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 17:06:06,941 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 17:06:06,941 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 17:06:06,941 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 17:06:06,941 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 17:06:06,941 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-09 17:06:06,943 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-09 17:06:06,943 - script_center.views - INFO - 日志ID：32，状态：running，是否运行中：False
+2025-12-09 17:06:17,539 - script_center.views - INFO - 接收到停止任务请求 - 日志ID：41
+2025-12-09 17:06:17,544 - script_center.views - INFO - 已向Redis发送停止信号 - 设备：10AF5E1AKU003NR，Key：airtest_stop_flag_10AF5E1AKU003NR
+2025-12-09 17:06:17,555 - script_center.views - INFO - 找到进程7052的子进程：[39996, 29120, 34768, 40432, 13808, 12176, 38656]
+2025-12-09 17:06:17,560 - script_center.views - INFO - 已终止子进程39996
+2025-12-09 17:06:17,560 - script_center.views - INFO - 已终止子进程29120
+2025-12-09 17:06:17,561 - script_center.views - INFO - 已终止子进程34768
+2025-12-09 17:06:17,561 - script_center.views - INFO - 已终止子进程40432
+2025-12-09 17:06:17,561 - script_center.views - INFO - 已终止子进程13808
+2025-12-09 17:06:17,561 - script_center.views - INFO - 已终止子进程12176
+2025-12-09 17:06:17,562 - script_center.views - INFO - 已终止子进程38656
+2025-12-09 17:06:17,618 - script_center.views - ERROR - 设备10AF5E1AKU003NR执行失败，返回码：15，错误：[17:01:42][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR wait-for-device
+[17:01:42][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.build.version.sdk
+[17:01:43][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell ls -l /data/local/tmp/rotationwatcher.jar
+[17:01:43][DEBUG]<airtest.core.android.rotation> install_rotationwatcher skipped
+[17:01:43][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell app_process -Djava.class.path=/data/local/tmp/rotationwatcher.jar /data/local/tmp com.example.rotationwatcher.Main
+[17:01:43][DEBUG]<airtest.utils.nbsp> [rotation_server]b'0'
+[17:01:44][INFO]<airtest.core.android.rotation> update orientation None->0
+[17:01:44][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell wm size
+[17:01:44][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.sf.lcd_density
+[17:01:44][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys SurfaceFlinger
+[17:01:44][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys input
+[17:01:44][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys window displays
+[17:01:45][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getevent -p
+[17:01:45][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR wait-for-device
+[17:01:45][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.build.version.sdk
+[17:01:45][WARNING]<airtest.core.api> Device:10AF5E1AKU003NR updated <airtest.core.android.android.Android object at 0x000001F1FF69A250> -> <airtest.core.android.android.Android object at 0x000001F202570A10>
+[17:01:45][INFO]<airtest.core.api> Try finding: Template(E:\Airtest_Scripts\Advertisement_kuaishou.air\tpl1765178713601.png)
+[17:01:45][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell ls "/data/local/tmp/minicap"
+[17:01:45][DEBUG]<airtest.core.android.cap_methods.minicap> install minicap
+[17:01:45][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.product.cpu.abi
+[17:01:45][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.build.version.preview_sdk
+[17:01:45][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.build.version.release
+[17:01:46][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell rm -r /data/local/tmp/minicap
+[17:01:46][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell mkdir -p /data/local/tmp/minicap
+[17:01:46][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR push C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\airtest\core\android\static\stf_libs\arm64-v8a\minicap /data/local/tmp/minicap
+[17:01:46][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell cp -frp "/data/local/tmp/minicap/*" "/data/local/tmp/minicap"
+[17:01:46][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell mv "/data/local/tmp/minicap" "/data/local/tmp/minicap"
+[17:01:46][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell rm -r "/data/local/tmp/minicap"
+[17:01:46][ERROR]<airtest.core.android.cap_methods.screen_proxy> b''
+[17:01:46][ERROR]<airtest.core.android.cap_methods.screen_proxy> b"mv: bad '/data/local/tmp/minicap': Invalid argument\r\n"
+[17:01:46][ERROR]<airtest.core.android.cap_methods.screen_proxy> Minicap setup up failed!
+[17:01:46][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys package com.netease.nie.yosemite
+[17:01:47][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR forward --no-rebind tcp:35788 localabstract:javacap_35788
+[17:01:47][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell pm path com.netease.nie.yosemite
+[17:01:47][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell CLASSPATH=/data/app/~~BZnblI5c4wOSIkwdLBqpcQ==/com.netease.nie.yosemite-d6LLsbnpjlwsVosejtmKtw==/base.apk exec app_process /system/bin com.netease.nie.yosemite.Capture --scale 100 --socket javacap_35788 -lazy 2>&1
+[17:01:48][DEBUG]<airtest.utils.nbsp> [javacap_sever]b'Capture server listening on @javacap_35788'
+[17:01:50][ERROR]<airtest.core.android.cap_methods.screen_proxy> OSError('socket connection broken')
+[17:01:50][ERROR]<airtest.core.android.cap_methods.screen_proxy> Javacap setup up failed!
+C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\airtest\core\android\cap_methods\adbcap.py:10: UserWarning: Currently using ADB screenshots, the efficiency may be very low.
+  warnings.warn("Currently using ADB screenshots, the efficiency may be very low.")
+[17:01:50][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:01:50][DEBUG]<airtest.utils.nbsp> [javacap_sever]b''
+[17:01:51][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:01:51][DEBUG]<airtest.core.api> try match with MultiScaleTemplateMatchingPre
+[17:01:51][DEBUG]<airtest.aircv.multiscale_template_matching> [MSTemplatePre] threshold=0.7, result={'result': (64, 308), 'rectangle': ((18, 260.84), (18, 356.84), (111, 356.84), (111, 260.84)), 'confidence': 0.24193046987056732}
+[17:01:51][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.05 s.
+[17:01:51][DEBUG]<airtest.core.api> try match with TemplateMatching
+[17:01:52][DEBUG]<airtest.aircv.template_matching> [Template] threshold=0.7, result={'result': (420, 263), 'rectangle': ((368, 209), (368, 318), (473, 318), (473, 209)), 'confidence': 0.2755439281463623}
+[17:01:52][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.04 s.
+[17:01:52][DEBUG]<airtest.core.api> try match with SIFTMatching
+[17:01:52][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.24 s.
+[17:01:52][DEBUG]<airtest.core.api> try match with BRISKMatching
+[17:01:52][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.14 s.
+[17:01:52][DEBUG]<airtest.core.api> match result: None
+[17:01:52][INFO]<airtest.core.api> Try finding: Template(E:\Airtest_Scripts\Advertisement_kuaishou.air\tpl1765178762224.png)
+[17:01:52][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:01:52][DEBUG]<airtest.core.api> try match with MultiScaleTemplateMatchingPre
+[17:01:53][DEBUG]<airtest.aircv.multiscale_template_matching> [MSTemplatePre] threshold=0.7, result={'result': (589, 1569), 'rectangle': ((553.16, 1552.1599999999999), (553.16, 1586.1599999999999), (625.16, 1586.1599999999999), (625.16, 1552.1599999999999)), 'confidence': 0.3840806186199188}
+[17:01:53][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.09 s.
+[17:01:53][DEBUG]<airtest.core.api> try match with TemplateMatching
+[17:01:53][DEBUG]<airtest.aircv.template_matching> [Template] threshold=0.7, result={'result': (654, 365), 'rectangle': ((599, 339), (599, 392), (709, 392), (709, 339)), 'confidence': 0.36653628945350647}
+[17:01:53][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.02 s.
+[17:01:53][DEBUG]<airtest.core.api> try match with SIFTMatching
+[17:01:53][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.24 s.
+[17:01:53][DEBUG]<airtest.core.api> try match with BRISKMatching
+[17:01:53][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.15 s.
+[17:01:53][DEBUG]<airtest.core.api> match result: None
+[17:01:53][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:01:54][DEBUG]<airtest.core.api> try match with MultiScaleTemplateMatchingPre
+[17:01:54][DEBUG]<airtest.aircv.multiscale_template_matching> [MSTemplatePre] threshold=0.7, result={'result': (589, 1569), 'rectangle': ((553.16, 1552.1599999999999), (553.16, 1586.1599999999999), (625.16, 1586.1599999999999), (625.16, 1552.1599999999999)), 'confidence': 0.3840806186199188}
+[17:01:54][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.05 s.
+[17:01:54][DEBUG]<airtest.core.api> try match with TemplateMatching
+[17:01:54][DEBUG]<airtest.aircv.template_matching> [Template] threshold=0.7, result={'result': (654, 365), 'rectangle': ((599, 339), (599, 392), (709, 392), (709, 339)), 'confidence': 0.36653628945350647}
+[17:01:54][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.02 s.
+[17:01:54][DEBUG]<airtest.core.api> try match with SIFTMatching
+[17:01:54][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.23 s.
+[17:01:54][DEBUG]<airtest.core.api> try match with BRISKMatching
+[17:01:54][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.16 s.
+[17:01:54][DEBUG]<airtest.core.api> match result: None
+[17:01:55][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:01:56][DEBUG]<airtest.core.api> try match with MultiScaleTemplateMatchingPre
+[17:01:56][DEBUG]<airtest.aircv.multiscale_template_matching> [MSTemplatePre] threshold=0.7, result={'result': (589, 1569), 'rectangle': ((553.16, 1552.1599999999999), (553.16, 1586.1599999999999), (625.16, 1586.1599999999999), (625.16, 1552.1599999999999)), 'confidence': 0.3840806186199188}
+[17:01:56][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.10 s.
+[17:01:56][DEBUG]<airtest.core.api> try match with TemplateMatching
+[17:01:56][DEBUG]<airtest.aircv.template_matching> [Template] threshold=0.7, result={'result': (654, 365), 'rectangle': ((599, 339), (599, 392), (709, 392), (709, 339)), 'confidence': 0.36653628945350647}
+[17:01:56][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.03 s.
+[17:01:56][DEBUG]<airtest.core.api> try match with SIFTMatching
+[17:01:56][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.24 s.
+[17:01:56][DEBUG]<airtest.core.api> try match with BRISKMatching
+[17:01:56][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.15 s.
+[17:01:56][DEBUG]<airtest.core.api> match result: None
+[17:01:56][INFO]<airtest.core.api> Try finding: Template(E:\Airtest_Scripts\Advertisement_kuaishou.air\tpl1765178876073.png)
+[17:01:56][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:01:57][DEBUG]<airtest.core.api> try match with MultiScaleTemplateMatchingPre
+[17:01:57][DEBUG]<airtest.aircv.multiscale_template_matching> [MSTemplatePre] threshold=0.7, result={'result': (628, 946), 'rectangle': ((589.8399999999999, 924.96), (589.8399999999999, 967.96), (667.8399999999999, 967.96), (667.8399999999999, 924.96)), 'confidence': 1.0}
+[17:01:57][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.05 s.
+[17:01:57][DEBUG]<airtest.core.api> match result: {'result': (628, 946), 'rectangle': ((589.8399999999999, 924.96), (589.8399999999999, 967.96), (667.8399999999999, 967.96), (667.8399999999999, 924.96)), 'confidence': 1.0, 'time': 0.04941892623901367}
+[17:01:57][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:01:57][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell ls -l /data/local/tmp/rotationwatcher.jar
+[17:01:57][DEBUG]<airtest.core.android.rotation> install_rotationwatcher skipped
+[17:01:57][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell app_process -Djava.class.path=/data/local/tmp/rotationwatcher.jar /data/local/tmp com.example.rotationwatcher.Main
+[17:01:58][DEBUG]<airtest.utils.nbsp> [rotation_server]b'0'
+[17:01:58][INFO]<airtest.core.android.rotation> update orientation None->0
+[17:01:58][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell wm size
+[17:01:58][DEBUG]<airtest.core.android.cap_methods.minicap> update_rotation: 0
+[17:01:59][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.sf.lcd_density
+[17:01:59][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys SurfaceFlinger
+[17:01:59][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys input
+[17:01:59][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys window displays
+[17:01:59][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getevent -p
+[17:02:00][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell ls -l /data/local/tmp/maxpresent.jar
+[17:02:00][DEBUG]<airtest.core.android.touch_methods.maxtouch> install_maxtouch skipped
+[17:02:00][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR forward --no-rebind tcp:32113 localabstract:maxpresent_32113
+[17:02:00][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell app_process -Djava.class.path=/data/local/tmp/maxpresent.jar /data/local/tmp com.netease.maxpresent.MaxPresent socket maxpresent_32113
+[17:02:00][DEBUG]<airtest.utils.nbsp> [airtouch_server]b'Metrics Message : 1612.0=====720.0'
+[17:02:00][DEBUG]<airtest.utils.nbsp> [airtouch_server]b'Start local socket (maxpresent_32113) server...'
+[17:02:38][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell input keyevent BACK
+[17:02:43][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell input keyevent BACK
+[17:02:44][INFO]<airtest.core.api> Try finding: Template(E:\Airtest_Scripts\Advertisement_kuaishou.air\tpl1765162183051.png)
+[17:02:44][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:02:45][DEBUG]<airtest.core.api> try match with MultiScaleTemplateMatchingPre
+[17:02:45][DEBUG]<airtest.aircv.multiscale_template_matching> [MSTemplatePre] threshold=0.7, result={'result': (568, 621), 'rectangle': ((550.64, 600.96), (550.64, 642.96), (585.64, 642.96), (585.64, 600.96)), 'confidence': 1.0}
+[17:02:45][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.00 s.
+[17:02:45][DEBUG]<airtest.core.api> match result: {'result': (568, 621), 'rectangle': ((550.64, 600.96), (550.64, 642.96), (585.64, 642.96), (585.64, 600.96)), 'confidence': 1.0, 'time': 0.0019981861114501953}
+[17:02:45][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:02:46][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:03:24][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell input keyevent BACK
+[17:03:27][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell input keyevent BACK
+[17:03:28][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:03:30][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:04:08][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell input keyevent BACK
+[17:04:11][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell input keyevent BACK
+[17:04:13][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:04:15][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:04:52][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell input keyevent BACK
+[17:04:56][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell input keyevent BACK
+[17:04:57][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:04:59][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:05:37][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell input keyevent BACK
+[17:05:40][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell input keyevent BACK
+[17:05:41][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[17:05:43][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+
+2025-12-09 17:06:20,563 - script_center.views - INFO - 已从运行列表移除日志ID：41
+2025-12-09 17:06:20,569 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E5%BF%AB%E6%89%8B%E7%9C%8B%E5%B9%BF%E5%91%8A%E6%9C%BA%E3%80%91%E5%B7%B2%E6%88%90%E5%8A%9F%E5%81%9C%E6%AD%A2%EF%BC%81%E8%AE%BE%E5%A4%87%EF%BC%9A10AF5E1AKU003NR
+2025-12-09 17:06:20,580 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 17:06:20,581 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 17:06:20,581 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 17:06:20,581 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 17:06:20,581 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 17:06:20,581 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 17:06:20,581 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 17:06:20,583 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 17:06:20,583 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-09 17:06:20,583 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-09 17:06:20,583 - script_center.views - INFO - 日志ID：32，状态：running，是否运行中：False
+2025-12-09 17:08:29,690 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 17:08:29,691 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 17:08:29,691 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 17:08:29,691 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 17:08:29,692 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 17:08:29,692 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 17:08:29,692 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 17:08:29,692 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 17:08:29,692 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-09 17:08:29,692 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-09 17:08:29,692 - script_center.views - INFO - 日志ID：32，状态：running，是否运行中：False
+2025-12-09 17:08:43,567 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-09 17:08:43,568 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-09 17:08:43,569 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-09 17:08:43,570 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-09 17:08:43,572 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-09 17:08:43,573 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-09 17:08:43,573 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-09 17:08:43,574 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-09 17:08:43,574 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-09 17:08:43,575 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-09 17:17:55,068 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 17:17:55,070 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 17:17:55,070 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 17:17:55,070 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 17:17:55,070 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 17:17:55,070 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 17:17:55,070 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 17:17:55,070 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 17:17:55,070 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-09 17:17:55,070 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-09 17:17:55,070 - script_center.views - INFO - 日志ID：32，状态：running，是否运行中：False
+2025-12-09 17:17:58,346 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：7
+2025-12-09 17:17:58,349 - script_center.views - INFO - 获取到任务：打开抖音，脚本路径：E:\Airtest_Scripts\Open_Tiktok.air\Open_Tiktok.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 17:17:58,351 - script_center.views - WARNING - 未找到真实Python路径，使用原路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 17:17:58,353 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-09 17:17:58,368 - script_center.views - INFO - 创建执行日志 - ID：42，设备：10AF5E1AKU003NR
+2025-12-09 17:17:58,368 - script_center.views - INFO - 线程开始执行 - 任务ID：7，设备ID：3，日志ID：42
+2025-12-09 17:17:58,368 - script_center.views - INFO - 启动执行线程 - 日志ID：42，线程ID：40096
+2025-12-09 17:17:58,373 - script_center.views - INFO - 线程初始化完成 - 任务：打开抖音，设备：10AF5E1AKU003NR
+2025-12-09 17:17:58,375 - script_center.views - INFO - 最终Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe，是否存在：True
+2025-12-09 17:17:58,375 - script_center.views - INFO - 执行命令："C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe" -X utf8 "E:\Airtest_Scripts\Open_Tiktok.air\Open_Tiktok.py" "10AF5E1AKU003NR"，工作目录：E:\Airtest_Scripts\Open_Tiktok.air
+2025-12-09 17:17:58,397 - script_center.views - INFO - 进程已启动 - PID：41504，日志ID：42，设备：10AF5E1AKU003NR
+2025-12-09 17:17:58,870 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E6%89%93%E5%BC%80%E6%8A%96%E9%9F%B3%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%8F%AF%E8%83%BD%E6%89%A7%E8%A1%8C%E5%A4%B1%E8%B4%A5%EF%BC%8C%E8%AF%B7%E6%89%8B%E5%8A%A8%E9%85%8D%E7%BD%AE%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-09 17:17:58,870 - script_center.views - ERROR - 执行任务失败：Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+Traceback (most recent call last):
+  File "E:\django_projects\EasyADB\script_center\views.py", line 280, in post
+    return redirect(f"{reverse('script_center:task_execute')}?msg={success_msg}")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+2025-12-09 17:17:58,884 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 17:17:58,885 - script_center.views - INFO - 日志ID：42，状态：running，是否运行中：True
+2025-12-09 17:17:58,885 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 17:17:58,885 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 17:17:58,885 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 17:17:58,886 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 17:17:58,886 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 17:17:58,886 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 17:17:58,886 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 17:17:58,886 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-09 17:17:58,886 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-09 17:18:14,509 - script_center.views - INFO - 设备10AF5E1AKU003NR执行任务打开抖音成功，返回码：0
+2025-12-09 17:18:31,006 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 17:18:31,007 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 17:18:31,007 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 17:18:31,008 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 17:18:31,008 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 17:18:31,008 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 17:18:31,008 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 17:18:31,008 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 17:18:31,008 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 17:18:31,008 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-09 17:18:31,008 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-09 17:20:17,583 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：3
+2025-12-09 17:20:17,586 - script_center.views - INFO - 获取到任务：刷长视频，脚本路径：C:\Users\TanZhenJie\AppData\Local\Temp\AirtestIDE\scripts\Long_Vidio_Watch.air\Long_Vidio_Watch.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 17:20:17,588 - script_center.views - WARNING - 未找到真实Python路径，使用原路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 17:20:17,590 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-09 17:20:17,604 - script_center.views - INFO - 创建执行日志 - ID：43，设备：10AF5E1AKU003NR
+2025-12-09 17:20:17,604 - script_center.views - INFO - 线程开始执行 - 任务ID：3，设备ID：3，日志ID：43
+2025-12-09 17:20:17,604 - script_center.views - INFO - 启动执行线程 - 日志ID：43，线程ID：6636
+2025-12-09 17:20:17,608 - script_center.views - INFO - 线程初始化完成 - 任务：刷长视频，设备：10AF5E1AKU003NR
+2025-12-09 17:20:17,609 - script_center.views - INFO - 最终Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe，是否存在：True
+2025-12-09 17:20:17,609 - script_center.views - INFO - 执行命令："C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe" -X utf8 "C:\Users\TanZhenJie\AppData\Local\Temp\AirtestIDE\scripts\Long_Vidio_Watch.air\Long_Vidio_Watch.py" "10AF5E1AKU003NR"，工作目录：C:\Users\TanZhenJie\AppData\Local\Temp\AirtestIDE\scripts\Long_Vidio_Watch.air
+2025-12-09 17:20:17,631 - script_center.views - INFO - 进程已启动 - PID：22256，日志ID：43，设备：10AF5E1AKU003NR
+2025-12-09 17:20:18,106 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E5%88%B7%E9%95%BF%E8%A7%86%E9%A2%91%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%8F%AF%E8%83%BD%E6%89%A7%E8%A1%8C%E5%A4%B1%E8%B4%A5%EF%BC%8C%E8%AF%B7%E6%89%8B%E5%8A%A8%E9%85%8D%E7%BD%AE%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-09 17:20:18,106 - script_center.views - ERROR - 执行任务失败：Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+Traceback (most recent call last):
+  File "E:\django_projects\EasyADB\script_center\views.py", line 280, in post
+    return redirect(f"{reverse('script_center:task_execute')}?msg={success_msg}")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+2025-12-09 17:20:18,116 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 17:20:18,117 - script_center.views - INFO - 日志ID：43，状态：running，是否运行中：True
+2025-12-09 17:20:18,117 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 17:20:18,117 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 17:20:18,118 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 17:20:18,118 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 17:20:18,118 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 17:20:18,118 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 17:20:18,118 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 17:20:18,118 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 17:20:18,118 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-09 17:20:41,905 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 17:20:41,906 - script_center.views - INFO - 日志ID：43，状态：running，是否运行中：True
+2025-12-09 17:20:41,907 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 17:20:41,907 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 17:20:41,907 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 17:20:41,907 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 17:20:41,907 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 17:20:41,907 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 17:20:41,907 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 17:20:41,907 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 17:20:41,907 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-09 17:25:17,666 - script_center.views - ERROR - 设备10AF5E1AKU003NR执行任务超时
+2025-12-09 17:38:15,708 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 17:38:15,710 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 17:38:15,710 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 17:38:15,710 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 17:38:15,710 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 17:38:15,710 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 17:38:15,710 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 17:38:15,710 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 17:38:15,710 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 17:38:15,710 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 17:38:15,710 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-09 17:38:46,711 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 17:38:46,712 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 17:38:46,712 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 17:38:46,712 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 17:38:46,712 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 17:38:46,712 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 17:38:46,712 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 17:38:46,712 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 17:38:46,712 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 17:38:46,712 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 17:38:46,713 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-09 17:44:46,281 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-09 17:44:46,282 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-09 17:44:46,283 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-09 17:44:46,285 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-09 17:44:46,285 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-09 17:44:46,287 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-09 17:44:46,287 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-09 17:44:46,288 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-09 17:44:46,288 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-09 17:44:46,289 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-09 17:44:49,079 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-09 17:44:49,080 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-09 17:44:49,081 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-09 17:44:49,082 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-09 17:44:49,082 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-09 17:44:49,083 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-09 17:44:49,083 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-09 17:44:49,085 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-09 17:44:49,085 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-09 17:44:49,086 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-09 21:36:03,654 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 21:36:03,656 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 21:36:03,656 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 21:36:03,656 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 21:36:03,656 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 21:36:03,656 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 21:36:03,656 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 21:36:03,656 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 21:36:03,656 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 21:36:03,657 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 21:36:03,657 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-09 21:36:11,165 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-09 21:36:11,166 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-09 21:36:11,167 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-09 21:36:11,169 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-09 21:36:11,169 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-09 21:36:11,170 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-09 21:36:11,170 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-09 21:36:11,171 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-09 21:36:11,171 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-09 21:36:11,173 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-09 21:36:12,880 - adb_manager.views - INFO - 执行ADB连接命令：adb -s 10AF5E1AKU003NR wait-for-device shell echo connected
+2025-12-09 21:36:13,025 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-09 21:36:13,026 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-09 21:36:13,026 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-09 21:36:13,027 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-09 21:36:13,027 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-09 21:36:13,028 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-09 21:36:13,028 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-09 21:36:13,029 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-09 21:36:13,029 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-09 21:36:13,030 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-09 21:36:17,612 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 21:36:17,614 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 21:36:17,614 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 21:36:17,615 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 21:36:17,615 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 21:36:17,615 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 21:36:17,615 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 21:36:17,615 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 21:36:17,615 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 21:36:17,615 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 21:36:17,615 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-09 21:36:21,670 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：9
+2025-12-09 21:36:21,674 - script_center.views - INFO - 获取到任务：返回主页并清理后台，脚本路径：E:\Airtest_Scripts\Home.air\Home.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 21:36:21,676 - script_center.views - WARNING - 未找到真实Python路径，使用原路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 21:36:21,678 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-09 21:36:21,694 - script_center.views - INFO - 创建执行日志 - ID：44，设备：10AF5E1AKU003NR
+2025-12-09 21:36:21,694 - script_center.views - INFO - 线程开始执行 - 任务ID：9，设备ID：3，日志ID：44
+2025-12-09 21:36:21,694 - script_center.views - INFO - 启动执行线程 - 日志ID：44，线程ID：38444
+2025-12-09 21:36:21,700 - script_center.views - INFO - 线程初始化完成 - 任务：返回主页并清理后台，设备：10AF5E1AKU003NR
+2025-12-09 21:36:21,702 - script_center.views - INFO - 最终Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe，是否存在：True
+2025-12-09 21:36:21,702 - script_center.views - INFO - 执行命令："C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe" -X utf8 "E:\Airtest_Scripts\Home.air\Home.py" "10AF5E1AKU003NR"，工作目录：E:\Airtest_Scripts\Home.air
+2025-12-09 21:36:21,731 - script_center.views - INFO - 进程已启动 - PID：532，日志ID：44，设备：10AF5E1AKU003NR
+2025-12-09 21:36:22,196 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E8%BF%94%E5%9B%9E%E4%B8%BB%E9%A1%B5%E5%B9%B6%E6%B8%85%E7%90%86%E5%90%8E%E5%8F%B0%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%8F%AF%E8%83%BD%E6%89%A7%E8%A1%8C%E5%A4%B1%E8%B4%A5%EF%BC%8C%E8%AF%B7%E6%89%8B%E5%8A%A8%E9%85%8D%E7%BD%AE%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-09 21:36:22,196 - script_center.views - ERROR - 执行任务失败：Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+Traceback (most recent call last):
+  File "E:\django_projects\EasyADB\script_center\views.py", line 280, in post
+    return redirect(f"{reverse('script_center:task_execute')}?msg={success_msg}")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+2025-12-09 21:36:22,207 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 21:36:22,209 - script_center.views - INFO - 日志ID：44，状态：running，是否运行中：True
+2025-12-09 21:36:22,209 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 21:36:22,209 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 21:36:22,209 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 21:36:22,209 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 21:36:22,209 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 21:36:22,209 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 21:36:22,209 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 21:36:22,210 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 21:36:22,210 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-09 21:36:24,571 - script_center.views - INFO - 设备10AF5E1AKU003NR任务返回主页并清理后台被手动停止，返回码：1
+2025-12-09 21:39:15,193 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：9
+2025-12-09 21:39:15,196 - script_center.views - INFO - 获取到任务：返回主页并清理后台，脚本路径：E:\Airtest_Scripts\Home.air\Home.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 21:39:15,198 - script_center.views - WARNING - 未找到真实Python路径，使用原路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 21:39:15,200 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-09 21:39:15,223 - script_center.views - INFO - 创建执行日志 - ID：45，设备：10AF5E1AKU003NR
+2025-12-09 21:39:15,223 - script_center.views - INFO - 线程开始执行 - 任务ID：9，设备ID：3，日志ID：45
+2025-12-09 21:39:15,223 - script_center.views - INFO - 启动执行线程 - 日志ID：45，线程ID：36284
+2025-12-09 21:39:15,229 - script_center.views - INFO - 线程初始化完成 - 任务：返回主页并清理后台，设备：10AF5E1AKU003NR
+2025-12-09 21:39:15,231 - script_center.views - INFO - 最终Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe，是否存在：True
+2025-12-09 21:39:15,231 - script_center.views - INFO - 执行命令："C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe" -X utf8 "E:\Airtest_Scripts\Home.air\Home.py" "10AF5E1AKU003NR"，工作目录：E:\Airtest_Scripts\Home.air
+2025-12-09 21:39:15,251 - script_center.views - INFO - 进程已启动 - PID：4224，日志ID：45，设备：10AF5E1AKU003NR
+2025-12-09 21:39:15,724 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E8%BF%94%E5%9B%9E%E4%B8%BB%E9%A1%B5%E5%B9%B6%E6%B8%85%E7%90%86%E5%90%8E%E5%8F%B0%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%8F%AF%E8%83%BD%E6%89%A7%E8%A1%8C%E5%A4%B1%E8%B4%A5%EF%BC%8C%E8%AF%B7%E6%89%8B%E5%8A%A8%E9%85%8D%E7%BD%AE%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-09 21:39:15,724 - script_center.views - ERROR - 执行任务失败：Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+Traceback (most recent call last):
+  File "E:\django_projects\EasyADB\script_center\views.py", line 280, in post
+    return redirect(f"{reverse('script_center:task_execute')}?msg={success_msg}")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+2025-12-09 21:39:15,736 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 21:39:15,737 - script_center.views - INFO - 日志ID：45，状态：running，是否运行中：True
+2025-12-09 21:39:15,737 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 21:39:15,737 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 21:39:15,737 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 21:39:15,737 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 21:39:15,738 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 21:39:15,738 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 21:39:15,738 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 21:39:15,738 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 21:39:15,738 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 21:39:22,652 - script_center.views - INFO - 设备10AF5E1AKU003NR执行任务返回主页并清理后台成功，返回码：0
+2025-12-09 21:55:06,364 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 21:55:06,366 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-09 21:55:06,366 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 21:55:06,366 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 21:55:06,366 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 21:55:06,366 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 21:55:06,366 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 21:55:06,366 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 21:55:06,366 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 21:55:06,366 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 21:55:06,366 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-09 21:55:12,230 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：9
+2025-12-09 21:55:12,234 - script_center.views - INFO - 获取到任务：返回主页并清理后台，脚本路径：E:\Airtest_Scripts\Home.air\Home.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 21:55:12,236 - script_center.views - WARNING - 未找到真实Python路径，使用原路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 21:55:12,238 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-09 21:55:12,257 - script_center.views - INFO - 创建执行日志 - ID：46，设备：10AF5E1AKU003NR
+2025-12-09 21:55:12,257 - script_center.views - INFO - 线程开始执行 - 任务ID：9，设备ID：3，日志ID：46
+2025-12-09 21:55:12,258 - script_center.views - INFO - 启动执行线程 - 日志ID：46，线程ID：5080
+2025-12-09 21:55:12,263 - script_center.views - INFO - 线程初始化完成 - 任务：返回主页并清理后台，设备：10AF5E1AKU003NR
+2025-12-09 21:55:12,264 - script_center.views - INFO - 最终Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe，是否存在：True
+2025-12-09 21:55:12,265 - script_center.views - INFO - 执行命令："C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe" -X utf8 "E:\Airtest_Scripts\Home.air\Home.py" "10AF5E1AKU003NR"，工作目录：E:\Airtest_Scripts\Home.air
+2025-12-09 21:55:12,287 - script_center.views - INFO - 进程已启动 - PID：508，日志ID：46，设备：10AF5E1AKU003NR
+2025-12-09 21:55:12,759 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E8%BF%94%E5%9B%9E%E4%B8%BB%E9%A1%B5%E5%B9%B6%E6%B8%85%E7%90%86%E5%90%8E%E5%8F%B0%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%8F%AF%E8%83%BD%E6%89%A7%E8%A1%8C%E5%A4%B1%E8%B4%A5%EF%BC%8C%E8%AF%B7%E6%89%8B%E5%8A%A8%E9%85%8D%E7%BD%AE%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-09 21:55:12,759 - script_center.views - ERROR - 执行任务失败：Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+Traceback (most recent call last):
+  File "E:\django_projects\EasyADB\script_center\views.py", line 280, in post
+    return redirect(f"{reverse('script_center:task_execute')}?msg={success_msg}")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+2025-12-09 21:55:12,768 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 21:55:12,769 - script_center.views - INFO - 日志ID：46，状态：running，是否运行中：True
+2025-12-09 21:55:12,769 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-09 21:55:12,769 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 21:55:12,769 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 21:55:12,769 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 21:55:12,769 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 21:55:12,769 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 21:55:12,769 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 21:55:12,769 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 21:55:12,769 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-09 21:55:31,958 - script_center.views - INFO - 设备10AF5E1AKU003NR任务返回主页并清理后台被手动停止，返回码：1
+2025-12-09 21:57:45,762 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：4
+2025-12-09 21:57:45,765 - script_center.views - INFO - 获取到任务：快手看广告机，脚本路径：E:\Airtest_Scripts\Advertisement_kuaishou.air\Advertisement_kuaishou.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 21:57:45,767 - script_center.views - WARNING - 未找到真实Python路径，使用原路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 21:57:45,769 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-09 21:57:45,791 - script_center.views - INFO - 创建执行日志 - ID：47，设备：10AF5E1AKU003NR
+2025-12-09 21:57:45,792 - script_center.views - INFO - 线程开始执行 - 任务ID：4，设备ID：3，日志ID：47
+2025-12-09 21:57:45,792 - script_center.views - INFO - 启动执行线程 - 日志ID：47，线程ID：35720
+2025-12-09 21:57:45,795 - script_center.views - INFO - 线程初始化完成 - 任务：快手看广告机，设备：10AF5E1AKU003NR
+2025-12-09 21:57:45,796 - script_center.views - INFO - 最终Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe，是否存在：True
+2025-12-09 21:57:45,796 - script_center.views - INFO - 执行命令："C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe" -X utf8 "E:\Airtest_Scripts\Advertisement_kuaishou.air\Advertisement_kuaishou.py" "10AF5E1AKU003NR"，工作目录：E:\Airtest_Scripts\Advertisement_kuaishou.air
+2025-12-09 21:57:45,820 - script_center.views - INFO - 进程已启动 - PID：38564，日志ID：47，设备：10AF5E1AKU003NR
+2025-12-09 21:57:46,293 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E5%BF%AB%E6%89%8B%E7%9C%8B%E5%B9%BF%E5%91%8A%E6%9C%BA%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%8F%AF%E8%83%BD%E6%89%A7%E8%A1%8C%E5%A4%B1%E8%B4%A5%EF%BC%8C%E8%AF%B7%E6%89%8B%E5%8A%A8%E9%85%8D%E7%BD%AE%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-09 21:57:46,293 - script_center.views - ERROR - 执行任务失败：Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+Traceback (most recent call last):
+  File "E:\django_projects\EasyADB\script_center\views.py", line 280, in post
+    return redirect(f"{reverse('script_center:task_execute')}?msg={success_msg}")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+2025-12-09 21:57:46,303 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 21:57:46,305 - script_center.views - INFO - 日志ID：47，状态：running，是否运行中：True
+2025-12-09 21:57:46,305 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-09 21:57:46,305 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-09 21:57:46,305 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 21:57:46,305 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 21:57:46,305 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 21:57:46,305 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 21:57:46,305 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 21:57:46,305 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 21:57:46,306 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 21:58:23,522 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 21:58:23,523 - script_center.views - INFO - 日志ID：47，状态：running，是否运行中：True
+2025-12-09 21:58:23,523 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-09 21:58:23,523 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-09 21:58:23,523 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 21:58:23,523 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 21:58:23,523 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 21:58:23,523 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 21:58:23,523 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 21:58:23,523 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 21:58:23,523 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 21:58:26,048 - script_center.views - INFO - 接收到停止任务请求 - 日志ID：47
+2025-12-09 21:58:26,054 - script_center.views - INFO - 已向Redis发送停止信号 - 设备：10AF5E1AKU003NR，Key：airtest_stop_flag_10AF5E1AKU003NR
+2025-12-09 21:58:26,069 - script_center.views - INFO - 找到进程38564的子进程：[33252, 32812, 38424, 44404, 19336, 39692, 5956]
+2025-12-09 21:58:26,072 - script_center.views - INFO - 已终止子进程33252
+2025-12-09 21:58:26,072 - script_center.views - INFO - 已终止子进程32812
+2025-12-09 21:58:26,073 - script_center.views - INFO - 已终止子进程38424
+2025-12-09 21:58:26,073 - script_center.views - INFO - 已终止子进程44404
+2025-12-09 21:58:26,074 - script_center.views - INFO - 已终止子进程19336
+2025-12-09 21:58:26,074 - script_center.views - INFO - 已终止子进程39692
+2025-12-09 21:58:26,074 - script_center.views - INFO - 已终止子进程5956
+2025-12-09 21:58:26,150 - script_center.views - ERROR - 设备10AF5E1AKU003NR执行失败，返回码：15，错误：[21:57:47][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR wait-for-device
+[21:57:47][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.build.version.sdk
+[21:57:48][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell ls -l /data/local/tmp/rotationwatcher.jar
+[21:57:48][DEBUG]<airtest.core.android.rotation> install_rotationwatcher skipped
+[21:57:48][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell app_process -Djava.class.path=/data/local/tmp/rotationwatcher.jar /data/local/tmp com.example.rotationwatcher.Main
+[21:57:48][DEBUG]<airtest.utils.nbsp> [rotation_server]b'0'
+[21:57:49][INFO]<airtest.core.android.rotation> update orientation None->0
+[21:57:49][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell wm size
+[21:57:49][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.sf.lcd_density
+[21:57:49][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys SurfaceFlinger
+[21:57:49][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys input
+[21:57:49][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys window displays
+[21:57:50][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getevent -p
+[21:57:50][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR wait-for-device
+[21:57:50][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.build.version.sdk
+[21:57:50][WARNING]<airtest.core.api> Device:10AF5E1AKU003NR updated <airtest.core.android.android.Android object at 0x000001A8012EC290> -> <airtest.core.android.android.Android object at 0x000001A8031B0D90>
+[21:57:50][INFO]<airtest.core.api> Try finding: Template(E:\Airtest_Scripts\Advertisement_kuaishou.air\tpl1765178713601.png)
+[21:57:50][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell ls "/data/local/tmp/minicap"
+[21:57:50][DEBUG]<airtest.core.android.cap_methods.minicap> install minicap
+[21:57:50][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.product.cpu.abi
+[21:57:50][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.build.version.preview_sdk
+[21:57:50][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.build.version.release
+[21:57:51][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell rm -r /data/local/tmp/minicap
+[21:57:51][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell mkdir -p /data/local/tmp/minicap
+[21:57:51][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR push C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\airtest\core\android\static\stf_libs\arm64-v8a\minicap /data/local/tmp/minicap
+[21:57:51][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell cp -frp "/data/local/tmp/minicap/*" "/data/local/tmp/minicap"
+[21:57:51][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell mv "/data/local/tmp/minicap" "/data/local/tmp/minicap"
+[21:57:51][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell rm -r "/data/local/tmp/minicap"
+[21:57:51][ERROR]<airtest.core.android.cap_methods.screen_proxy> b''
+[21:57:51][ERROR]<airtest.core.android.cap_methods.screen_proxy> b"mv: bad '/data/local/tmp/minicap': Invalid argument\r\n"
+[21:57:51][ERROR]<airtest.core.android.cap_methods.screen_proxy> Minicap setup up failed!
+[21:57:51][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys package com.netease.nie.yosemite
+[21:57:52][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR forward --no-rebind tcp:31339 localabstract:javacap_31339
+[21:57:52][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell pm path com.netease.nie.yosemite
+[21:57:52][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell CLASSPATH=/data/app/~~BZnblI5c4wOSIkwdLBqpcQ==/com.netease.nie.yosemite-d6LLsbnpjlwsVosejtmKtw==/base.apk exec app_process /system/bin com.netease.nie.yosemite.Capture --scale 100 --socket javacap_31339 -lazy 2>&1
+[21:57:53][DEBUG]<airtest.utils.nbsp> [javacap_sever]b'Capture server listening on @javacap_31339'
+[21:57:55][ERROR]<airtest.core.android.cap_methods.screen_proxy> OSError('socket connection broken')
+[21:57:55][ERROR]<airtest.core.android.cap_methods.screen_proxy> Javacap setup up failed!
+C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\airtest\core\android\cap_methods\adbcap.py:10: UserWarning: Currently using ADB screenshots, the efficiency may be very low.
+  warnings.warn("Currently using ADB screenshots, the efficiency may be very low.")
+[21:57:55][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[21:57:55][DEBUG]<airtest.utils.nbsp> [javacap_sever]b''
+[21:57:56][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[21:57:58][DEBUG]<airtest.core.api> try match with MultiScaleTemplateMatchingPre
+[21:57:58][DEBUG]<airtest.aircv.multiscale_template_matching> [MSTemplatePre] threshold=0.7, result={'result': (59, 324), 'rectangle': ((11, 274.84), (11, 374.84), (107, 374.84), (107, 274.84)), 'confidence': 0.2254513055086136}
+[21:57:58][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.05 s.
+[21:57:58][DEBUG]<airtest.core.api> try match with TemplateMatching
+[21:57:58][DEBUG]<airtest.aircv.template_matching> [Template] threshold=0.7, result={'result': (142, 582), 'rectangle': ((90, 528), (90, 637), (195, 637), (195, 528)), 'confidence': 0.25661909580230713}
+[21:57:58][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.03 s.
+[21:57:58][DEBUG]<airtest.core.api> try match with SIFTMatching
+[21:57:58][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.24 s.
+[21:57:58][DEBUG]<airtest.core.api> try match with BRISKMatching
+[21:57:58][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.15 s.
+[21:57:58][DEBUG]<airtest.core.api> match result: None
+[21:57:58][INFO]<airtest.core.api> Try finding: Template(E:\Airtest_Scripts\Advertisement_kuaishou.air\tpl1765178762224.png)
+[21:57:58][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[21:57:59][DEBUG]<airtest.core.api> try match with MultiScaleTemplateMatchingPre
+[21:57:59][DEBUG]<airtest.aircv.multiscale_template_matching> [MSTemplatePre] threshold=0.7, result={'result': (505, 1564), 'rectangle': ((450.15999999999997, 1538.1599999999999), (450.15999999999997, 1591.1599999999999), (561.16, 1591.1599999999999), (561.16, 1538.1599999999999)), 'confidence': 0.9612714648246765}
+[21:57:59][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.07 s.
+[21:57:59][DEBUG]<airtest.core.api> match result: {'result': (505, 1564), 'rectangle': ((450.15999999999997, 1538.1599999999999), (450.15999999999997, 1591.1599999999999), (561.16, 1591.1599999999999), (561.16, 1538.1599999999999)), 'confidence': 0.9612714648246765, 'time': 0.06926941871643066}
+[21:57:59][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[21:58:01][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell ls -l /data/local/tmp/rotationwatcher.jar
+[21:58:01][DEBUG]<airtest.core.android.rotation> install_rotationwatcher skipped
+[21:58:01][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell app_process -Djava.class.path=/data/local/tmp/rotationwatcher.jar /data/local/tmp com.example.rotationwatcher.Main
+[21:58:01][DEBUG]<airtest.utils.nbsp> [rotation_server]b'0'
+[21:58:02][INFO]<airtest.core.android.rotation> update orientation None->0
+[21:58:02][DEBUG]<airtest.core.android.cap_methods.minicap> update_rotation: 0
+[21:58:02][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell wm size
+[21:58:02][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.sf.lcd_density
+[21:58:02][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys SurfaceFlinger
+[21:58:02][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys input
+[21:58:02][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys window displays
+[21:58:03][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getevent -p
+[21:58:03][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell ls -l /data/local/tmp/maxpresent.jar
+[21:58:03][DEBUG]<airtest.core.android.touch_methods.maxtouch> install_maxtouch skipped
+[21:58:03][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR forward --no-rebind tcp:42539 localabstract:maxpresent_42539
+[21:58:03][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell app_process -Djava.class.path=/data/local/tmp/maxpresent.jar /data/local/tmp com.netease.maxpresent.MaxPresent socket maxpresent_42539
+[21:58:04][DEBUG]<airtest.utils.nbsp> [airtouch_server]b'Metrics Message : 1612.0=====720.0'
+[21:58:04][DEBUG]<airtest.utils.nbsp> [airtouch_server]b'Start local socket (maxpresent_42539) server...'
+[21:58:04][INFO]<airtest.core.api> Try finding: Template(E:\Airtest_Scripts\Advertisement_kuaishou.air\tpl1765178876073.png)
+[21:58:04][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[21:58:05][DEBUG]<airtest.core.api> try match with MultiScaleTemplateMatchingPre
+[21:58:05][DEBUG]<airtest.aircv.multiscale_template_matching> [MSTemplatePre] threshold=0.7, result={'result': (647, 1070), 'rectangle': ((604.8399999999999, 1046.96), (604.8399999999999, 1093.96), (689.8399999999999, 1093.96), (689.8399999999999, 1046.96)), 'confidence': 0.37096571922302246}
+[21:58:05][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.03 s.
+[21:58:05][DEBUG]<airtest.core.api> try match with TemplateMatching
+[21:58:05][DEBUG]<airtest.aircv.template_matching> [Template] threshold=0.7, result={'result': (69, 24), 'rectangle': ((30, 3), (30, 46), (108, 46), (108, 3)), 'confidence': 0.4195435345172882}
+[21:58:05][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.02 s.
+[21:58:05][DEBUG]<airtest.core.api> try match with SIFTMatching
+[21:58:06][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.22 s.
+[21:58:06][DEBUG]<airtest.core.api> try match with BRISKMatching
+[21:58:06][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.13 s.
+[21:58:06][DEBUG]<airtest.core.api> match result: None
+[21:58:06][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[21:58:07][DEBUG]<airtest.core.api> try match with MultiScaleTemplateMatchingPre
+[21:58:07][DEBUG]<airtest.aircv.multiscale_template_matching> [MSTemplatePre] threshold=0.7, result={'result': (508, 811), 'rectangle': ((477.8399999999999, 794.96), (477.8399999999999, 828.96), (539.8399999999999, 828.96), (539.8399999999999, 794.96)), 'confidence': 0.009302763268351555}
+[21:58:07][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.04 s.
+[21:58:07][DEBUG]<airtest.core.api> try match with TemplateMatching
+[21:58:07][DEBUG]<airtest.aircv.template_matching> [Template] threshold=0.7, result={'result': (408, 188), 'rectangle': ((369, 167), (369, 210), (447, 210), (447, 167)), 'confidence': 0.394454687833786}
+[21:58:07][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.03 s.
+[21:58:07][DEBUG]<airtest.core.api> try match with SIFTMatching
+[21:58:07][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.19 s.
+[21:58:07][DEBUG]<airtest.core.api> try match with BRISKMatching
+[21:58:07][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.06 s.
+[21:58:07][DEBUG]<airtest.core.api> match result: None
+[21:58:08][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[21:58:08][DEBUG]<airtest.core.api> try match with MultiScaleTemplateMatchingPre
+[21:58:08][DEBUG]<airtest.aircv.multiscale_template_matching> [MSTemplatePre] threshold=0.7, result={'result': (508, 811), 'rectangle': ((477.8399999999999, 794.96), (477.8399999999999, 828.96), (539.8399999999999, 828.96), (539.8399999999999, 794.96)), 'confidence': 0.009302763268351555}
+[21:58:08][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.03 s.
+[21:58:08][DEBUG]<airtest.core.api> try match with TemplateMatching
+[21:58:08][DEBUG]<airtest.aircv.template_matching> [Template] threshold=0.7, result={'result': (420, 188), 'rectangle': ((381, 167), (381, 210), (459, 210), (459, 167)), 'confidence': 0.39428436756134033}
+[21:58:08][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.02 s.
+[21:58:08][DEBUG]<airtest.core.api> try match with SIFTMatching
+[21:58:08][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.18 s.
+[21:58:08][DEBUG]<airtest.core.api> try match with BRISKMatching
+[21:58:09][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.06 s.
+[21:58:09][DEBUG]<airtest.core.api> match result: None
+[21:58:09][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+[21:58:10][DEBUG]<airtest.core.api> try match with MultiScaleTemplateMatchingPre
+[21:58:10][DEBUG]<airtest.aircv.multiscale_template_matching> [MSTemplatePre] threshold=0.7, result={'result': (628, 946), 'rectangle': ((589.8399999999999, 924.96), (589.8399999999999, 967.96), (667.8399999999999, 967.96), (667.8399999999999, 924.96)), 'confidence': 0.9698784947395325}
+[21:58:10][DEBUG]<airtest.aircv.utils> find_best_result() run time is 0.03 s.
+[21:58:10][DEBUG]<airtest.core.api> match result: {'result': (628, 946), 'rectangle': ((589.8399999999999, 924.96), (589.8399999999999, 967.96), (667.8399999999999, 967.96), (667.8399999999999, 924.96)), 'confidence': 0.9698784947395325, 'time': 0.028130292892456055}
+[21:58:10][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell screencap -p
+
+2025-12-09 21:58:29,076 - script_center.views - INFO - 已从运行列表移除日志ID：47
+2025-12-09 21:58:29,098 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E5%BF%AB%E6%89%8B%E7%9C%8B%E5%B9%BF%E5%91%8A%E6%9C%BA%E3%80%91%E5%B7%B2%E6%88%90%E5%8A%9F%E5%81%9C%E6%AD%A2%EF%BC%81%E8%AE%BE%E5%A4%87%EF%BC%9A10AF5E1AKU003NR
+2025-12-09 21:58:29,843 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 21:58:29,845 - script_center.views - INFO - 日志ID：47，状态：failed，是否运行中：False
+2025-12-09 21:58:29,845 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-09 21:58:29,845 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-09 21:58:29,845 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 21:58:29,845 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 21:58:29,845 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 21:58:29,845 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 21:58:29,845 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 21:58:29,847 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 21:58:29,847 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 21:58:48,819 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 21:58:48,820 - script_center.views - INFO - 日志ID：47，状态：failed，是否运行中：False
+2025-12-09 21:58:48,820 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-09 21:58:48,821 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-09 21:58:48,821 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 21:58:48,821 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 21:58:48,821 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 21:58:48,821 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 21:58:48,821 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 21:58:48,821 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 21:58:48,821 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 21:59:11,536 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 21:59:11,537 - script_center.views - INFO - 日志ID：47，状态：failed，是否运行中：False
+2025-12-09 21:59:11,537 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-09 21:59:11,537 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-09 21:59:11,537 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 21:59:11,537 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 21:59:11,538 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 21:59:11,538 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 21:59:11,538 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 21:59:11,538 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 21:59:11,538 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-09 22:00:47,339 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：1
+2025-12-09 22:00:47,343 - script_center.views - INFO - 获取到任务：自动刷视频，脚本路径：C:\Users\TanZhenJie\AppData\Local\Temp\AirtestIDE\scripts\Vidio_Watch.air\Vidio_Watch.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 22:00:47,347 - script_center.views - WARNING - 未找到真实Python路径，使用原路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 22:00:47,349 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-09 22:00:47,369 - script_center.views - INFO - 创建执行日志 - ID：48，设备：10AF5E1AKU003NR
+2025-12-09 22:00:47,369 - script_center.views - INFO - 线程开始执行 - 任务ID：1，设备ID：3，日志ID：48
+2025-12-09 22:00:47,369 - script_center.views - INFO - 启动执行线程 - 日志ID：48，线程ID：36140
+2025-12-09 22:00:47,374 - script_center.views - INFO - 线程初始化完成 - 任务：自动刷视频，设备：10AF5E1AKU003NR
+2025-12-09 22:00:47,375 - script_center.views - INFO - 最终Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe，是否存在：True
+2025-12-09 22:00:47,375 - script_center.views - INFO - 执行命令："C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe" -X utf8 "C:\Users\TanZhenJie\AppData\Local\Temp\AirtestIDE\scripts\Vidio_Watch.air\Vidio_Watch.py" "10AF5E1AKU003NR"，工作目录：C:\Users\TanZhenJie\AppData\Local\Temp\AirtestIDE\scripts\Vidio_Watch.air
+2025-12-09 22:00:47,396 - script_center.views - INFO - 进程已启动 - PID：45080，日志ID：48，设备：10AF5E1AKU003NR
+2025-12-09 22:00:47,871 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E8%87%AA%E5%8A%A8%E5%88%B7%E8%A7%86%E9%A2%91%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%8F%AF%E8%83%BD%E6%89%A7%E8%A1%8C%E5%A4%B1%E8%B4%A5%EF%BC%8C%E8%AF%B7%E6%89%8B%E5%8A%A8%E9%85%8D%E7%BD%AE%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-09 22:00:47,871 - script_center.views - ERROR - 执行任务失败：Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+Traceback (most recent call last):
+  File "E:\django_projects\EasyADB\script_center\views.py", line 280, in post
+    return redirect(f"{reverse('script_center:task_execute')}?msg={success_msg}")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+2025-12-09 22:00:47,885 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 22:00:47,887 - script_center.views - INFO - 日志ID：48，状态：running，是否运行中：True
+2025-12-09 22:00:47,887 - script_center.views - INFO - 日志ID：47，状态：failed，是否运行中：False
+2025-12-09 22:00:47,887 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-09 22:00:47,887 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-09 22:00:47,887 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 22:00:47,887 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 22:00:47,887 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 22:00:47,887 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 22:00:47,887 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 22:00:47,888 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 22:00:56,055 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 22:00:56,056 - script_center.views - INFO - 日志ID：48，状态：running，是否运行中：True
+2025-12-09 22:00:56,056 - script_center.views - INFO - 日志ID：47，状态：failed，是否运行中：False
+2025-12-09 22:00:56,056 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-09 22:00:56,056 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-09 22:00:56,056 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 22:00:56,056 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 22:00:56,056 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 22:00:56,056 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 22:00:56,056 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 22:00:56,056 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 22:00:59,020 - script_center.views - INFO - 接收到停止任务请求 - 日志ID：48
+2025-12-09 22:00:59,026 - script_center.views - INFO - 已向Redis发送停止信号 - 设备：10AF5E1AKU003NR，Key：airtest_stop_flag_10AF5E1AKU003NR
+2025-12-09 22:00:59,039 - script_center.views - INFO - 找到进程45080的子进程：[23768, 35560, 25936, 45868, 42228]
+2025-12-09 22:00:59,042 - script_center.views - INFO - 已终止子进程23768
+2025-12-09 22:00:59,043 - script_center.views - INFO - 已终止子进程35560
+2025-12-09 22:00:59,043 - script_center.views - INFO - 已终止子进程25936
+2025-12-09 22:00:59,043 - script_center.views - INFO - 已终止子进程45868
+2025-12-09 22:00:59,043 - script_center.views - INFO - 已终止子进程42228
+2025-12-09 22:00:59,099 - script_center.views - ERROR - 设备10AF5E1AKU003NR执行失败，返回码：15，错误：[22:00:49][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR wait-for-device
+[22:00:49][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.build.version.sdk
+[22:00:49][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell ls -l /data/local/tmp/rotationwatcher.jar
+[22:00:50][DEBUG]<airtest.core.android.rotation> install_rotationwatcher skipped
+[22:00:50][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell app_process -Djava.class.path=/data/local/tmp/rotationwatcher.jar /data/local/tmp com.example.rotationwatcher.Main
+[22:00:50][DEBUG]<airtest.utils.nbsp> [rotation_server]b'0'
+[22:00:51][INFO]<airtest.core.android.rotation> update orientation None->0
+[22:00:51][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell wm size
+[22:00:51][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.sf.lcd_density
+[22:00:51][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys SurfaceFlinger
+[22:00:51][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys input
+[22:00:51][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys window displays
+[22:00:51][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getevent -p
+[22:00:54][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell ls -l /data/local/tmp/maxpresent.jar
+[22:00:54][DEBUG]<airtest.core.android.touch_methods.maxtouch> install_maxtouch skipped
+[22:00:54][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR forward --no-rebind tcp:46966 localabstract:maxpresent_46966
+[22:00:54][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell app_process -Djava.class.path=/data/local/tmp/maxpresent.jar /data/local/tmp com.netease.maxpresent.MaxPresent socket maxpresent_46966
+[22:00:54][DEBUG]<airtest.utils.nbsp> [airtouch_server]b'Metrics Message : 1612.0=====720.0'
+[22:00:54][DEBUG]<airtest.utils.nbsp> [airtouch_server]b'Start local socket (maxpresent_46966) server...'
+
+2025-12-09 22:01:02,044 - script_center.views - INFO - 已从运行列表移除日志ID：48
+2025-12-09 22:01:02,060 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E8%87%AA%E5%8A%A8%E5%88%B7%E8%A7%86%E9%A2%91%E3%80%91%E5%B7%B2%E6%88%90%E5%8A%9F%E5%81%9C%E6%AD%A2%EF%BC%81%E8%AE%BE%E5%A4%87%EF%BC%9A10AF5E1AKU003NR
+2025-12-09 22:01:04,259 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 22:01:04,261 - script_center.views - INFO - 日志ID：48，状态：failed，是否运行中：False
+2025-12-09 22:01:04,261 - script_center.views - INFO - 日志ID：47，状态：failed，是否运行中：False
+2025-12-09 22:01:04,261 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-09 22:01:04,261 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-09 22:01:04,261 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 22:01:04,261 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 22:01:04,261 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 22:01:04,261 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 22:01:04,261 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 22:01:04,261 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 22:01:22,163 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 22:01:22,164 - script_center.views - INFO - 日志ID：48，状态：failed，是否运行中：False
+2025-12-09 22:01:22,164 - script_center.views - INFO - 日志ID：47，状态：failed，是否运行中：False
+2025-12-09 22:01:22,165 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-09 22:01:22,165 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-09 22:01:22,165 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 22:01:22,165 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 22:01:22,165 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 22:01:22,165 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 22:01:22,165 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 22:01:22,165 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-09 22:01:32,585 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：3
+2025-12-09 22:01:32,588 - script_center.views - INFO - 获取到任务：刷长视频，脚本路径：C:\Users\TanZhenJie\AppData\Local\Temp\AirtestIDE\scripts\Long_Vidio_Watch.air\Long_Vidio_Watch.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 22:01:32,591 - script_center.views - WARNING - 未找到真实Python路径，使用原路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-09 22:01:32,593 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-09 22:01:32,612 - script_center.views - INFO - 创建执行日志 - ID：49，设备：10AF5E1AKU003NR
+2025-12-09 22:01:32,612 - script_center.views - INFO - 线程开始执行 - 任务ID：3，设备ID：3，日志ID：49
+2025-12-09 22:01:32,612 - script_center.views - INFO - 启动执行线程 - 日志ID：49，线程ID：42688
+2025-12-09 22:01:32,617 - script_center.views - INFO - 线程初始化完成 - 任务：刷长视频，设备：10AF5E1AKU003NR
+2025-12-09 22:01:32,618 - script_center.views - INFO - 最终Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe，是否存在：True
+2025-12-09 22:01:32,618 - script_center.views - INFO - 执行命令："C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe" -X utf8 "C:\Users\TanZhenJie\AppData\Local\Temp\AirtestIDE\scripts\Long_Vidio_Watch.air\Long_Vidio_Watch.py" "10AF5E1AKU003NR"，工作目录：C:\Users\TanZhenJie\AppData\Local\Temp\AirtestIDE\scripts\Long_Vidio_Watch.air
+2025-12-09 22:01:32,643 - script_center.views - INFO - 进程已启动 - PID：25080，日志ID：49，设备：10AF5E1AKU003NR
+2025-12-09 22:01:33,114 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E5%88%B7%E9%95%BF%E8%A7%86%E9%A2%91%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%8F%AF%E8%83%BD%E6%89%A7%E8%A1%8C%E5%A4%B1%E8%B4%A5%EF%BC%8C%E8%AF%B7%E6%89%8B%E5%8A%A8%E9%85%8D%E7%BD%AE%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-09 22:01:33,114 - script_center.views - ERROR - 执行任务失败：Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+Traceback (most recent call last):
+  File "E:\django_projects\EasyADB\script_center\views.py", line 280, in post
+    return redirect(f"{reverse('script_center:task_execute')}?msg={success_msg}")
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'task_execute' not found. 'task_execute' is not a valid view function or pattern name.
+2025-12-09 22:01:33,122 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 22:01:33,123 - script_center.views - INFO - 日志ID：49，状态：running，是否运行中：True
+2025-12-09 22:01:33,123 - script_center.views - INFO - 日志ID：48，状态：failed，是否运行中：False
+2025-12-09 22:01:33,124 - script_center.views - INFO - 日志ID：47，状态：failed，是否运行中：False
+2025-12-09 22:01:33,124 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-09 22:01:33,124 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-09 22:01:33,124 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 22:01:33,124 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 22:01:33,124 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 22:01:33,124 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 22:01:33,124 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 22:02:00,372 - script_center.views - INFO - 接收到停止任务请求 - 日志ID：49
+2025-12-09 22:02:00,378 - script_center.views - INFO - 已向Redis发送停止信号 - 设备：10AF5E1AKU003NR，Key：airtest_stop_flag_10AF5E1AKU003NR
+2025-12-09 22:02:00,390 - script_center.views - INFO - 找到进程25080的子进程：[39864, 37280, 45868, 41364, 42828]
+2025-12-09 22:02:00,393 - script_center.views - INFO - 已终止子进程39864
+2025-12-09 22:02:00,393 - script_center.views - INFO - 已终止子进程37280
+2025-12-09 22:02:00,394 - script_center.views - INFO - 已终止子进程45868
+2025-12-09 22:02:00,394 - script_center.views - INFO - 已终止子进程41364
+2025-12-09 22:02:00,395 - script_center.views - INFO - 已终止子进程42828
+2025-12-09 22:02:00,453 - script_center.views - ERROR - 设备10AF5E1AKU003NR执行失败，返回码：15，错误：[22:01:34][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR wait-for-device
+[22:01:34][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.build.version.sdk
+[22:01:34][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell ls -l /data/local/tmp/rotationwatcher.jar
+[22:01:34][DEBUG]<airtest.core.android.rotation> install_rotationwatcher skipped
+[22:01:34][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell app_process -Djava.class.path=/data/local/tmp/rotationwatcher.jar /data/local/tmp com.example.rotationwatcher.Main
+[22:01:35][DEBUG]<airtest.utils.nbsp> [rotation_server]b'0'
+[22:01:36][INFO]<airtest.core.android.rotation> update orientation None->0
+[22:01:36][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell wm size
+[22:01:36][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getprop ro.sf.lcd_density
+[22:01:36][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys SurfaceFlinger
+[22:01:36][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys input
+[22:01:36][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell dumpsys window displays
+[22:01:36][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell getevent -p
+[22:01:38][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell ls -l /data/local/tmp/maxpresent.jar
+[22:01:38][DEBUG]<airtest.core.android.touch_methods.maxtouch> install_maxtouch skipped
+[22:01:38][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR forward --no-rebind tcp:15019 localabstract:maxpresent_15019
+[22:01:38][DEBUG]<airtest.core.android.adb> D:\ItApp\Auto\platform-tools-latest-windows\platform-tools\adb.exe -s 10AF5E1AKU003NR shell app_process -Djava.class.path=/data/local/tmp/maxpresent.jar /data/local/tmp com.netease.maxpresent.MaxPresent socket maxpresent_15019
+[22:01:39][DEBUG]<airtest.utils.nbsp> [airtouch_server]b'Metrics Message : 1612.0=====720.0'
+[22:01:39][DEBUG]<airtest.utils.nbsp> [airtouch_server]b'Start local socket (maxpresent_15019) server...'
+
+2025-12-09 22:02:03,397 - script_center.views - INFO - 已从运行列表移除日志ID：49
+2025-12-09 22:02:03,415 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E5%88%B7%E9%95%BF%E8%A7%86%E9%A2%91%E3%80%91%E5%B7%B2%E6%88%90%E5%8A%9F%E5%81%9C%E6%AD%A2%EF%BC%81%E8%AE%BE%E5%A4%87%EF%BC%9A10AF5E1AKU003NR
+2025-12-09 22:02:04,436 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 22:02:04,438 - script_center.views - INFO - 日志ID：49，状态：failed，是否运行中：False
+2025-12-09 22:02:04,438 - script_center.views - INFO - 日志ID：48，状态：failed，是否运行中：False
+2025-12-09 22:02:04,438 - script_center.views - INFO - 日志ID：47，状态：failed，是否运行中：False
+2025-12-09 22:02:04,438 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-09 22:02:04,438 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-09 22:02:04,438 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 22:02:04,438 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 22:02:04,439 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 22:02:04,439 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 22:02:04,439 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 22:02:18,914 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-09 22:02:18,917 - script_center.views - INFO - 日志ID：49，状态：failed，是否运行中：False
+2025-12-09 22:02:18,917 - script_center.views - INFO - 日志ID：48，状态：failed，是否运行中：False
+2025-12-09 22:02:18,917 - script_center.views - INFO - 日志ID：47，状态：failed，是否运行中：False
+2025-12-09 22:02:18,917 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-09 22:02:18,917 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-09 22:02:18,917 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
+2025-12-09 22:02:18,918 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
+2025-12-09 22:02:18,918 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-09 22:02:18,918 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-09 22:02:18,918 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-09 22:13:10,726 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-09 22:15:12,898 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-09 22:18:41,834 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-09 22:19:25,744 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\tasks.py changed, reloading.
+2025-12-09 22:20:28,789 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-09 22:20:28,790 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-09 22:20:28,790 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-09 22:20:28,790 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-09 22:20:28,791 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-09 22:20:28,791 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-09 22:20:28,792 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-09 22:20:28,792 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-09 22:20:28,793 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-09 22:20:28,793 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-09 22:20:28,793 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-09 22:20:28,794 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-09 22:20:28,794 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-09 22:22:22,844 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-09 22:22:22,847 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-09 22:22:22,847 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-09 22:22:22,848 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-09 22:22:22,849 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-09 22:22:22,850 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-09 22:22:22,850 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-09 22:22:22,851 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-09 22:22:22,851 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-09 22:22:22,852 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-09 22:22:22,853 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-09 22:22:22,853 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-09 22:22:22,854 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-09 22:23:11,964 - task_orchestration.views - INFO - 已终止Celery任务3abe728d-3189-466f-bf7d-1b2624c38b76（编排日志12，步骤1）
+2025-12-09 22:23:11,965 - task_orchestration.views - INFO - 已终止Celery任务2df5d9e9-2c03-4106-9ad3-dde4a1983548（编排日志12，步骤2）
+2025-12-09 22:23:11,965 - task_orchestration.views - INFO - 已终止Celery任务cb79fad6-f16b-4ec5-b3ba-63eec7a6a23f（编排日志12，步骤3）
+2025-12-09 22:23:13,014 - task_orchestration.views - INFO - 已终止Redis中记录的进程44172（KEY：12_3）
+2025-12-09 22:23:13,033 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=12_3
+2025-12-09 22:23:13,036 - task_orchestration.views - ERROR - 终止Redis进程失败（KEY：12_2）：process PID not found (pid=36180)
+2025-12-09 22:23:13,049 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=12_2
+2025-12-09 22:23:13,051 - task_orchestration.views - ERROR - 终止Redis进程失败（KEY：12_1）：process PID not found (pid=43268)
+2025-12-09 22:23:13,052 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=12_1
+2025-12-09 22:24:51,504 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-09 22:24:51,506 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-09 22:24:51,506 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-09 22:24:51,507 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-09 22:24:51,507 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-09 22:24:51,508 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-09 22:24:51,508 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-09 22:24:51,509 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-09 22:24:51,510 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-09 22:24:51,510 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-09 22:25:03,501 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-09 22:25:03,502 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-09 22:25:03,502 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-09 22:25:03,504 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-09 22:25:03,504 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-09 22:25:03,506 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-09 22:25:03,506 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-09 22:25:03,507 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-09 22:25:03,507 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-09 22:25:03,508 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-09 22:25:53,076 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-09 22:25:53,077 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-09 22:25:53,077 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-09 22:25:53,078 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-09 22:25:53,078 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-09 22:25:53,080 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-09 22:25:53,080 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-09 22:25:53,081 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-09 22:25:53,081 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-09 22:25:53,082 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-09 22:28:22,335 - task_orchestration.views - INFO - 已终止Celery任务3973ad39-8b10-4d0b-8d29-1a633030539e（编排日志13，步骤0）
+2025-12-09 22:28:22,336 - task_orchestration.views - INFO - 已终止Celery任务c3546cd6-e2c1-4939-9f08-39480c455a1b（编排日志13，步骤1）
+2025-12-09 22:28:22,337 - task_orchestration.views - INFO - 已终止Celery任务8c2b1943-bc9a-408d-a86c-6b0c47cfeaed（编排日志13，步骤2）
+2025-12-09 22:28:22,354 - task_orchestration.views - ERROR - 终止Redis进程失败（KEY：13_1）：process PID not found (pid=39632)
+2025-12-09 22:28:22,356 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=13_1
+2025-12-09 22:28:23,373 - task_orchestration.views - INFO - 已终止Redis中记录的进程39704（KEY：13_2）
+2025-12-09 22:28:23,375 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=13_2
+2025-12-09 22:28:23,397 - task_orchestration.views - ERROR - 终止Redis进程失败（KEY：13_0）：process PID not found (pid=23908)
+2025-12-09 22:28:23,412 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=13_0
+2025-12-09 22:29:33,562 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-09 22:29:33,563 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-09 22:29:33,564 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-09 22:29:33,565 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-09 22:29:33,565 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-09 22:29:33,566 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-09 22:29:33,567 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-09 22:29:33,568 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-09 22:29:33,568 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-09 22:29:33,569 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-09 22:29:37,031 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-09 22:29:37,032 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-09 22:29:37,033 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-09 22:29:37,034 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-09 22:29:37,034 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-09 22:29:37,036 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-09 22:29:37,036 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-09 22:29:37,037 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-09 22:29:37,037 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-09 22:29:37,039 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}

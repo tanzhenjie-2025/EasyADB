@@ -3,6 +3,7 @@ import sys
 import time
 import psutil
 import os
+import json
 from celery import shared_task
 from django.utils import timezone
 from .models import OrchestrationLog, StepExecutionLog, TaskStep
@@ -13,9 +14,36 @@ import redis  # 新增Redis导入
 
 logger = logging.getLogger(__name__)
 
+# ===================== 新增：Redis进程存储函数（避免循环导入） =====================
+def get_redis_conn():
+    try:
+        r = redis.Redis(
+            host="127.0.0.1",
+            port=6379,
+            db=0,
+            decode_responses=True,
+            socket_timeout=5
+        )
+        r.ping()
+        return r
+    except Exception as e:
+        logger.error(f"Redis连接失败：{str(e)}")
+        return None
+
+def save_running_process(process_key, process_info):
+    """保存进程信息到Redis"""
+    r = get_redis_conn()
+    if r:
+        try:
+            r.hset("orch_running_processes", process_key, json.dumps(process_info))
+            logger.info(f"Redis已存储进程信息：KEY={process_key}, PID={process_info.get('pid')}")
+        except Exception as e:
+            logger.error(f"Redis保存进程信息失败：{str(e)}")
+# ===================== Redis进程存储函数结束 =====================
+
 @shared_task(bind=True, max_retries=0, time_limit=3600)  # 最大执行时间1小时
 def execute_step_task(self, step_id, orch_log_id, device_data):
-    """Celery异步执行单个步骤，支持超时自动停止+Redis连接检查"""
+    """Celery异步执行单个步骤，支持超时自动停止+Redis连接检查+进程信息存入Redis"""
     try:
         # 第一步：检查Redis连接（辅助排查连接问题）
         try:
@@ -83,11 +111,26 @@ def execute_step_task(self, step_id, orch_log_id, device_data):
             errors="replace"
         )
 
-        # 记录进程ID（用于后续终止）
+        # ===================== 核心新增：将进程信息存入Redis =====================
+        process_key = f"{orch_log_id}_{step.execution_order}"
+        process_info = {
+            "pid": process.pid,
+            "step_order": step.execution_order,
+            "log_id": orch_log_id,
+            "device_serial": device.adb_connect_str,
+            "task_id": self.request.id,  # Celery任务ID
+            "command": command
+        }
+        save_running_process(process_key, process_info)
+        logger.info(f"Celery任务{self.request.id}：进程{process.pid}已存入Redis，KEY={process_key}")
+        # ===================== Redis存储结束 =====================
+
+        # 记录进程ID（用于后续终止，保留原有逻辑）
         self.update_state(state='RUNNING', meta={
             'pid': process.pid,
             'step_id': step_id,
-            'log_id': orch_log_id
+            'log_id': orch_log_id,
+            'process_key': process_key  # 新增：传递Redis的KEY
         })
 
         # 等待执行（设置超时，超时自动终止）
@@ -110,7 +153,7 @@ def execute_step_task(self, step_id, orch_log_id, device_data):
                 step_log.error_msg = f"执行失败，返回码：{return_code}"
 
         except subprocess.TimeoutExpired:
-            # 超时处理：彻底终止进程及子进程
+            # 超时处理：彻底终止进程及子进程（保留原有逻辑）
             _terminate_process(process.pid)
             step_log.exec_status = "timeout"
             step_log.error_msg = f"执行超时（{step.run_duration}秒）"
@@ -118,7 +161,7 @@ def execute_step_task(self, step_id, orch_log_id, device_data):
             stderr = f"进程超时被终止（{step.run_duration}秒）"
             step_log.stderr = stderr
 
-        # 通用异常处理
+        # 通用异常处理（保留原有逻辑）
         except Exception as e:
             if process:
                 process.terminate()
@@ -131,13 +174,13 @@ def execute_step_task(self, step_id, orch_log_id, device_data):
             step_log.stderr = error_detail
             step_log.exec_duration = time.time() - step_start_time
 
-        # 最终保存步骤日志
+        # 最终保存步骤日志（保留原有逻辑）
         step_log.end_time = timezone.now()
         step_log.save()
         return {"status": step_log.exec_status, "step_id": step_id}
 
     except Exception as e:
-        # 任务级异常处理
+        # 任务级异常处理（保留原有逻辑）
         if 'step_log' in locals():
             step_log.exec_status = "error"
             step_log.error_msg = f"任务执行异常：{str(e)}"
@@ -162,7 +205,7 @@ def _get_real_python_path(script_task: ScriptTask) -> str:
     return script_task.python_path
 
 def _terminate_process(pid: int):
-    """彻底终止进程及所有子进程"""
+    """彻底终止进程及所有子进程（保留原有逻辑）"""
     try:
         parent = psutil.Process(pid)
         # 终止所有子进程
@@ -177,5 +220,6 @@ def _terminate_process(pid: int):
         time.sleep(1)
         if parent.is_running():
             parent.kill()
+        logger.info(f"进程{pid}及其子进程已彻底终止")
     except Exception as e:
         logger.error(f"终止进程{pid}失败：{str(e)}")

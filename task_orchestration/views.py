@@ -12,7 +12,8 @@ import psutil
 import os
 import sys
 import redis
-from celery.result import AsyncResult  # 新增Celery相关导入
+import json
+from celery.result import AsyncResult
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -35,8 +36,7 @@ process_lock = threading.Lock()
 running_tasks = {}  # 新增：记录Celery任务ID
 task_lock = threading.Lock()
 
-
-# Redis连接（和脚本保持一致）
+# ===================== Redis进程存储函数（和tasks保持一致，避免循环导入） =====================
 def get_redis_conn():
     try:
         r = redis.Redis(
@@ -52,6 +52,36 @@ def get_redis_conn():
         logger.error(f"Redis连接失败：{str(e)}")
         return None
 
+def save_running_process(process_key, process_info):
+    """保存进程信息到Redis"""
+    r = get_redis_conn()
+    if r:
+        try:
+            r.hset("orch_running_processes", process_key, json.dumps(process_info))
+        except Exception as e:
+            logger.error(f"Redis保存进程信息失败：{str(e)}")
+
+def get_running_process(process_key):
+    """从Redis获取进程信息"""
+    r = get_redis_conn()
+    if r:
+        try:
+            data = r.hget("orch_running_processes", process_key)
+            return json.loads(data) if data else None
+        except Exception as e:
+            logger.error(f"Redis获取进程信息失败：{str(e)}")
+    return None
+
+def remove_running_process(process_key):
+    """从Redis删除进程信息"""
+    r = get_redis_conn()
+    if r:
+        try:
+            r.hdel("orch_running_processes", process_key)
+            logger.info(f"Redis中进程信息已删除，KEY={process_key}")
+        except Exception as e:
+            logger.error(f"Redis删除进程信息失败：{str(e)}")
+# ===================== Redis进程存储函数结束 =====================
 
 # 模型和表单导入
 from adb_manager.models import ADBDevice
@@ -61,7 +91,6 @@ from script_center.models import ScriptTask, TaskExecutionLog
 from script_center.views import running_processes as script_running_processes, process_lock as script_process_lock
 from .tasks import execute_step_task  # 导入Celery任务
 
-
 # 编排任务列表（完全保留原有代码）
 class OrchestrationListView(View):
     def get(self, request):
@@ -70,7 +99,6 @@ class OrchestrationListView(View):
             "tasks": tasks,
             "page_title": "编排任务管理"
         })
-
 
 # 创建编排任务（完全保留原有代码）
 class OrchestrationCreateView(View):
@@ -87,7 +115,6 @@ class OrchestrationCreateView(View):
             task = form.save()
             return redirect(reverse("task_orchestration:edit_steps", args=[task.id]))
         return render(request, "task_orchestration/form.html", {"form": form})
-
 
 # 编辑子任务步骤（完全保留原有代码）
 class StepEditView(View):
@@ -132,7 +159,6 @@ class StepEditView(View):
             "page_title": f"编辑步骤 - {orchestration.name}",
             "error_msg": "表单填写有误，请检查"
         })
-
 
 # 旧版执行接口（修改为Celery异步执行，保留原有入参和返回格式）
 class ExecuteOrchestrationAPIView(View):
@@ -230,6 +256,9 @@ class ExecuteOrchestrationAPIView(View):
                     running_tasks[f"{orch_log.id}_{step.execution_order}"] = task_id
                 task_ids.append((step.execution_order, task_id))
 
+                # 生成进程KEY（和tasks保持一致）
+                process_key = f"{orch_log.id}_{step.execution_order}"
+
                 # 更新日志（保留原有输出格式）
                 orch_log_stdout.append(f"\n=== 步骤{step.execution_order}开始执行 ===")
                 orch_log_stdout.append(
@@ -238,6 +267,7 @@ class ExecuteOrchestrationAPIView(View):
                 orch_log_stdout.append(f"开始时间：{timezone.now()}")
                 orch_log_stdout.append(f"Celery任务ID：{task_id}")
                 orch_log_stdout.append(f"超时设置：{step.run_duration}秒")
+                orch_log_stdout.append(f"Redis进程KEY：{process_key}")  # 新增：便于调试
 
                 # 实时更新编排日志
                 orch_log.stdout = "\n".join(orch_log_stdout)
@@ -308,13 +338,16 @@ class ExecuteOrchestrationAPIView(View):
 
                     # 终止超时的Celery任务
                     with task_lock:
-                        if f"{orch_log.id}_{step.execution_order}" in running_tasks:
+                        process_key = f"{orch_log.id}_{step.execution_order}"
+                        if process_key in running_tasks:
                             try:
-                                AsyncResult(running_tasks[f"{orch_log.id}_{step.execution_order}"]).revoke(
-                                    terminate=True)
+                                AsyncResult(running_tasks[process_key]).revoke(terminate=True)
+                                # 从Redis终止进程并删除记录
+                                self._kill_redis_process(process_key)
+                                remove_running_process(process_key)
                             except Exception as revoke_e:
                                 logger.error(f"终止Celery任务失败：{str(revoke_e)}")
-                            del running_tasks[f"{orch_log.id}_{step.execution_order}"]
+                            del running_tasks[process_key]
 
                 # 实时更新编排日志
                 orch_log.stdout = "\n".join(orch_log_stdout)
@@ -353,6 +386,24 @@ class ExecuteOrchestrationAPIView(View):
             orch_log.stderr = "\n".join(orch_log_stderr)
             orch_log.save()
 
+    def _kill_redis_process(self, process_key):
+        """从Redis获取进程并终止"""
+        process_info = get_running_process(process_key)
+        if not process_info or not process_info.get("pid"):
+            logger.warning(f"Redis中无进程信息，KEY={process_key}")
+            return
+        try:
+            pid = process_info["pid"]
+            parent = psutil.Process(pid)
+            for child in parent.children(recursive=True):
+                child.terminate()
+            parent.terminate()
+            time.sleep(1)
+            if parent.is_running():
+                parent.kill()
+            logger.info(f"已终止Redis中记录的进程{pid}（KEY：{process_key}）")
+        except Exception as e:
+            logger.error(f"终止Redis进程失败（KEY：{process_key}）：{str(e)}")
 
 # 新版执行页面（完全保留原有代码，仅修改_run_orchestration调用）
 class OrchestrationExecuteView(View):
@@ -437,8 +488,7 @@ class OrchestrationExecuteView(View):
         """复用修改后的执行逻辑（Celery异步+异常捕获）"""
         ExecuteOrchestrationAPIView()._run_orchestration(orch_log, steps, device)
 
-
-# 停止编排任务（修改为支持停止Celery任务，保留原有进程清理逻辑）
+# 停止编排任务（增强版：支持Celery+Redis进程双终止）
 class StopOrchestrationView(View):
     def get(self, request, log_id):
         try:
@@ -447,7 +497,7 @@ class StopOrchestrationView(View):
                 error_msg = quote(f"编排任务未在运行中！当前状态：{orch_log.exec_status}")
                 return redirect(f"{reverse('task_orchestration:execute_orchestration')}?msg={error_msg}")
 
-            # 1. 停止所有相关Celery任务（新增）
+            # 1. 停止所有相关Celery任务
             with task_lock:
                 for key in list(running_tasks.keys()):
                     if key.startswith(f"{log_id}_"):
@@ -459,7 +509,15 @@ class StopOrchestrationView(View):
                             logger.error(f"终止Celery任务{task_id}失败：{str(e)}")
                         del running_tasks[key]
 
-            # 2. 清理原有进程（保留原有逻辑，兼容历史）
+            # 2. 终止Redis中记录的进程（核心：解决异步进程无法终止问题）
+            r = get_redis_conn()
+            if r:
+                for key in r.hkeys("orch_running_processes"):
+                    if key.startswith(f"{log_id}_"):
+                        self._kill_redis_process(key)
+                        remove_running_process(key)
+
+            # 3. 清理原有本地进程（兼容历史逻辑）
             with process_lock:
                 for key in list(running_processes.keys()):
                     if key.startswith(f"{log_id}_"):
@@ -467,7 +525,7 @@ class StopOrchestrationView(View):
                         pid = process_info["pid"]
                         process = process_info["process"]
 
-                        # 终止进程（保留原有逻辑）
+                        # 终止进程
                         try:
                             parent = psutil.Process(pid)
                             for child in parent.children(recursive=True):
@@ -476,21 +534,21 @@ class StopOrchestrationView(View):
                             time.sleep(1)
                             if parent.is_running():
                                 parent.kill()
-                            logger.info(f"已终止进程{pid}（编排日志{log_id}，步骤{key.split('_')[1]}）")
+                            logger.info(f"已终止本地进程{pid}（编排日志{log_id}，步骤{key.split('_')[1]}）")
                         except Exception as e:
-                            logger.error(f"终止进程{pid}失败：{str(e)}")
+                            logger.error(f"终止本地进程{pid}失败：{str(e)}")
 
                         if process and process.poll() is None:
                             process.kill()
                         del running_processes[key]
 
-            # 更新日志状态（保留原有逻辑）
+            # 更新日志状态
             orch_log.exec_status = "stopped"
             orch_log.stderr = f"{orch_log.stderr}\n\n任务已手动停止 - 时间：{timezone.now()}"
             orch_log.end_time = timezone.now()
             orch_log.save()
 
-            # 更新步骤日志（保留原有逻辑）
+            # 更新步骤日志
             StepExecutionLog.objects.filter(
                 orchestration_log=orch_log,
                 exec_status__in=["running", "pending"]
@@ -507,6 +565,24 @@ class StopOrchestrationView(View):
             error_msg = quote(f"停止失败：{str(e)}")
             return redirect(f"{reverse('task_orchestration:execute_orchestration')}?msg={error_msg}")
 
+    def _kill_redis_process(self, process_key):
+        """从Redis获取进程并终止"""
+        process_info = get_running_process(process_key)
+        if not process_info or not process_info.get("pid"):
+            logger.warning(f"Redis中无进程信息，KEY={process_key}")
+            return
+        try:
+            pid = process_info["pid"]
+            parent = psutil.Process(pid)
+            for child in parent.children(recursive=True):
+                child.terminate()
+            parent.terminate()
+            time.sleep(1)
+            if parent.is_running():
+                parent.kill()
+            logger.info(f"已终止Redis中记录的进程{pid}（KEY：{process_key}）")
+        except Exception as e:
+            logger.error(f"终止Redis进程失败（KEY：{process_key}）：{str(e)}")
 
 # 删除步骤（完全保留原有代码）
 class StepDeleteView(View):
@@ -515,7 +591,6 @@ class StepDeleteView(View):
         task_id = step.orchestration.id
         step.delete()
         return redirect(reverse("task_orchestration:edit_steps", args=[task_id]))
-
 
 # 编排日志详情（完全保留原有代码）
 class OrchestrationLogDetailView(View):
@@ -535,7 +610,6 @@ class OrchestrationLogDetailView(View):
             "step_logs": step_logs
         }
         return render(request, "task_orchestration/log_detail.html", context)
-
 
 # AJAX获取日志状态（完全保留原有代码）
 class OrchestrationLogStatusView(View):
@@ -568,20 +642,18 @@ class OrchestrationLogStatusView(View):
                 "msg": str(e)
             })
 
-
+# 以下为原有测试相关代码（保留）
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.shortcuts import render  # 补充导入render
+from django.shortcuts import render
 from mycelery.email.tasks import send_email, send_email2
 from celery.result import AsyncResult
 from mycelery.main import app
-import json  # 新增：解析JSON请求体
-
+import json
 
 def send_sms(request):
     return render(request, 'sms_send.html')
-
 
 # 修正：兼容JSON和表单请求，加固参数校验
 def send_sms_view(request):
@@ -617,7 +689,6 @@ def send_sms_view(request):
             'mobile': mobile  # 新增：返回手机号，方便前端验证
         })
     return JsonResponse({'code': 405, 'msg': '仅支持POST请求'})
-
 
 # 保持查询接口不变
 @api_view(['GET'])

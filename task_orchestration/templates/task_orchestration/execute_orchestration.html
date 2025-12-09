@@ -268,22 +268,22 @@
                     <td>{{ log.orchestration.name }}</td>
                     <td>{{ log.device.device_name }} ({{ log.device.adb_connect_str }})</td>
                     <td>
-                        {% if log.status == 'running' %}
+                        {% if log.exec_status == 'running' %}
                         <span class="badge status-running">运行中</span>
-                        {% elif log.status == 'completed' %}
+                        {% elif log.exec_status == 'completed' %}
                         <span class="badge status-success">已完成</span>
-                        {% elif log.status == 'failed' %}
+                        {% elif log.exec_status == 'failed' or log.exec_status == 'part_failed' %}
                         <span class="badge status-failed">执行失败</span>
-                        {% elif log.status == 'stopped' %}
+                        {% elif log.exec_status == 'stopped' %}
                         <span class="badge status-stopped">已停止</span>
                         {% endif %}
                     </td>
-                    <td>{{ log.completed_steps }}/{{ log.total_steps }}</td>
+                    <td>{{ log.completed_steps|default:0 }}/{{ log.total_steps }}</td>
                     <td>{{ log.start_time|date:"Y-m-d H:i:s" }}</td>
                     <td>
                         <a href="{% url 'task_orchestration:log_detail' log.id %}" class="btn btn-sm btn-default">查看详情</a>
                         {% if log.is_running %}
-                        <a href="{% url 'task_orchestration:stop_orchestration' log.id %}" class="btn btn-sm btn-default" onclick="return confirm('确定要停止该任务吗？')">停止任务</a>
+                        <a href="{% url 'task_orchestration:stop_orchestration' log.id %}" class="btn btn-sm btn-default" onclick="return confirm('确定要停止该任务吗？停止后无法恢复！')">停止任务</a>
                         {% endif %}
                     </td>
                 </tr>
