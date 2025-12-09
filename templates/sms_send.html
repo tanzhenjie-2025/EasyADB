@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>发送短信（Celery异步任务）</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/1.6.8/axios.min.js"></script>
+</head>
+<body>
+    <h3>Celery异步发送短信测试</h3>
+    <div>
+        <input type="text" id="mobile" placeholder="请输入11位手机号">
+        <button onclick="sendSms()">提交任务</button>
+        <button onclick="checkTask()">查询任务结果</button>
+    </div>
+    <div id="result" style="margin-top: 20px;"></div>
+
+    <script>
+        let taskId = '';
+
+        // 提取CSRF Token
+        function getCsrfToken() {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, 10) === 'csrftoken=') {
+                        cookieValue = decodeURIComponent(cookie.substring(10));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function sendSms() {
+            const mobile = document.getElementById('mobile').value.trim();
+            if (!mobile) {
+                alert('请输入手机号');
+                return;
+            }
+
+            const csrfToken = getCsrfToken();
+            if (!csrfToken) {
+                document.getElementById('result').innerText = '获取CSRF Token失败，请刷新页面';
+                return;
+            }
+
+            axios.post('/task_orchestration/send/',
+                { mobile: mobile },
+                {
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            )
+            .then(res => {
+                // 关键：打印完整响应数据，排查字段问题
+                console.log('后端完整返回数据：', res.data);
+
+                // 加固：判断字段是否存在
+                if (res.data.code === 200) {
+                    taskId = res.data.task1_id || '';
+                    if (!taskId) {
+                        document.getElementById('result').innerText =
+                            `任务提交成功，但未获取到任务ID！\n后端返回：${JSON.stringify(res.data)}`;
+                    } else {
+                        document.getElementById('result').innerText =
+                            `任务提交成功！\n手机号：${res.data.mobile}\n任务ID：${taskId}\n请等待5秒后查询结果`;
+                    }
+                } else {
+                    document.getElementById('result').innerText = `提交失败：${res.data.msg}`;
+                }
+            })
+            .catch(err => {
+                console.error('请求失败详情：', err);
+                const errMsg = err.response?.data?.msg ||
+                    `请求失败（状态码：${err.response?.status || '未知'}）`;
+                document.getElementById('result').innerText = `提交失败：${errMsg}`;
+            });
+        }
+
+        function checkTask() {
+            if (!taskId) {
+                alert('请先提交任务并获取有效任务ID');
+                return;
+            }
+
+            axios.get(`/task_orchestration/task-result/?task_id=${taskId}`)
+                .then(res => {
+                    console.log('查询结果：', res.data);
+                    const data = res.data;
+                    let html = `
+                        任务ID：${data.task_id}<br>
+                        状态：${data.status}<br>
+                    `;
+                    if (data.status === 'SUCCESS') {
+                        html += `结果：${data.result}`;
+                    } else if (data.status === 'FAILURE') {
+                        html += `错误：${data.error}`;
+                    } else {
+                        html += '任务还在执行中...';
+                    }
+                    document.getElementById('result').innerHTML = html;
+                })
+                .catch(err => {
+                    console.error('查询失败：', err);
+                    document.getElementById('result').innerText =
+                        `查询失败：${err.message || '未知错误'}`;
+                });
+        }
+    </script>
+</body>
+</html>

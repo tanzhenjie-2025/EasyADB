@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-ry=y%_$0lp97sc0e9gv27p-6dxs*wu8#$$d7xss+m37zk-jl%#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']  # 补充，避免Django启动警告
 
 
 # Application definition
@@ -47,7 +47,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -62,8 +61,7 @@ ROOT_URLCONF = 'EasyADB.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,8 +79,6 @@ WSGI_APPLICATION = 'EasyADB.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# easy_adb/settings.py
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -92,7 +88,6 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -111,45 +106,38 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'zh-hans'  # 可选：改为中文，方便开发
+TIME_ZONE = 'Asia/Shanghai'  # 关键：和Celery时区一致
 USE_I18N = True
-
-USE_TZ = True
+USE_TZ = False  # 关键：关闭UTC，避免时区冲突（Celery已关闭enable_utc）
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']  # 补充：指定静态文件目录（如果有）
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# settings.py
 # Redis配置
-REDIS_HOST = "localhost"
+REDIS_HOST = "127.0.0.1"  # 用IP而非localhost，避免DNS解析问题
 REDIS_PORT = 6379
 REDIS_DB = 0
 
-# Celery配置（用于定时任务）
+# Celery核心配置（强制Celery读取Django的配置）
 CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
 CELERY_RESULT_BACKEND = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
-CELERY_TIMEZONE = "Asia/Shanghai"
-# CELERY_BEAT_SCHEDULE = {
-#     # 每30秒执行一次ADB设备监控
-#     "check_adb_devices": {
-#         "task": "your_app.tasks.check_and_reconnect_all_devices",
-#         "schedule": 30.0,
-#     },
-# }
+CELERY_TIMEZONE = TIME_ZONE  # 和Django时区绑定
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True  # 启动时重试连接
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_RESULT_EXPIRES = 3600
 
 AUTH_USER_MODEL = 'user_auth.CustomUser'
 
-CORS_ALLOW_ALL_ORIGINS = True  # 开发环境临时用，生产需指定域名
+# CORS配置（开发环境）
+CORS_ALLOW_ALL_ORIGINS = True  # 生产环境需改为CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:8000"]

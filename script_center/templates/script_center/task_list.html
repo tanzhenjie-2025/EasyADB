@@ -1,124 +1,53 @@
+{% extends 'base.html' %}  <!-- 核心：继承base模板 -->
 {% load static %}
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page_title }}</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            padding: 20px;
-            background-color: #f5f7fa;
-            font-family: "Microsoft YaHei", sans-serif;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            color: #303133;
-            font-size: 24px;
-        }
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            text-decoration: none;
-            display: inline-block;
-            margin: 0 4px;
-        }
-        .btn-primary {
-            background-color: #409eff;
-            color: #fff;
-        }
-        .btn-primary:hover {
-            background-color: #66b1ff;
-        }
-        .btn-danger {
-            background-color: #f56c6c;
-            color: #fff;
-        }
-        .btn-danger:hover {
-            background-color: #f78989;
-        }
-        .btn-warning {
-            background-color: #e6a23c;
-            color: #fff;
-        }
-        .btn-warning:hover {
-            background-color: #ebb563;
-        }
-        .card {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ebeef5;
-        }
-        th {
-            background-color: #f8f9fa;
-            font-weight: 500;
-        }
-        .status-active {
-            color: #67c23a;
-        }
-        .status-disabled {
-            color: #909399;
-        }
-        .status-draft {
-            color: #e6a23c;
-        }
-        .alert {
-            padding: 12px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        .alert-success {
-            background-color: #f0f9ff;
-            color: #67c23a;
-        }
-        .alert-error {
-            background-color: #fef0f0;
-            color: #f56c6c;
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>{{ page_title }}</h1>
-        <div>
-            <a href="{% url 'adb_manager:index' %}" class="btn btn-primary">设备管理</a>
-            <a href="{% url 'script_center:task_add' %}" class="btn btn-primary">➕ 新增任务</a>
-            <a href="{% url 'script_center:execute_task' %}" class="btn btn-warning">▶️ 执行任务</a>
-        </div>
-    </div>
 
-    <!-- 提示信息 -->
+<!-- 1. 页面标题 -->
+{% block title %}{{ page_title }}{% endblock %}
+
+<!-- 2. 仅保留base未覆盖的「特有样式」 -->
+{% block extra_css %}
+<style>
+    /* 状态文字样式（base无此样式，保留） */
+    .status-active { color: #67c23a; }
+    .status-disabled { color: #909399; }
+    .status-draft { color: #e6a23c; }
+
+    /* 小按钮样式（原有样式补充） */
+    .btn-small {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    /* 空数据单元格样式（特有样式） */
+    .empty-data-cell {
+        text-align: center;
+        color: #909399;
+    }
+</style>
+{% endblock %}
+
+<!-- 3. 页面头部（标题+操作按钮）：复用base的page-header布局 -->
+{% block page_header %}
+<div class="page-header">  <!-- base已定义该类的flex布局，和原有.header样式一致 -->
+    <h1>{{ page_title }}</h1>
+    <div>
+        <a href="{% url 'adb_manager:index' %}" class="btn btn-primary">设备管理</a>
+        <a href="{% url 'script_center:task_add' %}" class="btn btn-primary">➕ 新增任务</a>
+        <a href="{% url 'script_center:execute_task' %}" class="btn btn-warning">▶️ 执行任务</a>
+    </div>
+</div>
+{% endblock %}
+
+<!-- 4. 核心内容区域：提示信息+表格卡片 -->
+{% block content %}
+    <!-- 提示信息（保留原有逻辑，样式复用base的alert风格） -->
     {% if request.GET.msg %}
         <div class="alert {% if '成功' in request.GET.msg|urlencode %}alert-success{% else %}alert-error{% endif %}">
             {{ request.GET.msg|urlencode }}
         </div>
     {% endif %}
 
+    <!-- 任务表格卡片（复用base的card样式） -->
     <div class="card">
         <table>
             <thead>
@@ -168,11 +97,13 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" style="text-align: center; color: #909399;">暂无任务数据，请点击"新增任务"创建</td>
+                    <td colspan="6" class="empty-data-cell">暂无任务数据，请点击"新增任务"创建</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-</body>
-</html>
+{% endblock %}
+
+<!-- 5. 页面无额外JS，此块可留空或省略 -->
+{% block extra_js %}{% endblock %}

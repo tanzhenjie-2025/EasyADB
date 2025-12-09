@@ -1,25 +1,25 @@
+# mycelery/main.py 最终版
 import os
 from celery import Celery
 import django
-#创建celery实例对象
-app = Celery("sms")
-#把celery和django进行组合，识别和加载django的配置文件
-os.environ.setdefault('DJANGO_SETTINGS_MODULE','CheckObjection.settings')
+
+# 1. 强制设置Django环境变量（优先级最高）
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'EasyADB.settings')
+
+# 2. 初始化Django（必须在Celery实例创建前）
 django.setup()
-#通过app对象加载配置
-app.config_from_object("mycelery.config")
-#加载任务
-#参数必须必须是一个列表，里面的每一个任务都是任务的路径名称
-#app.autodiscover_tasks（["任务i","任务2"]）
-app.autodiscover_tasks(["mycelery.sms", "mycelery.email", "task_orchestration"])
-#启动celery的命令
-# 强烈建议切换目录到mycelery根目录下启动
-# celery -A mycelery.main worker --loglevel=info
 
+# 3. 创建Celery实例（名称和项目一致）
+app = Celery("EasyADB")
 
-# 自动发现任务
-app.autodiscover_tasks()
+# 4. 核心：从Django的settings.py读取Celery配置（覆盖所有其他配置）
+app.config_from_object('django.conf:settings', namespace='CELERY')
 
+# 5. 自动发现所有已安装APP中的tasks.py
+app.autodiscover_tasks(["mycelery.sms","mycelery.email","task_orchestration"])
+
+# 调试任务（验证Celery是否正常）
 @app.task(bind=True)
 def debug_task(self):
     print(f'Request: {self.request!r}')
+    print(f"Celery Broker: {app.conf.broker_url}")  # 打印当前broker，验证是否为Redis

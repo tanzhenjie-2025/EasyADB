@@ -246,6 +246,7 @@
     <div class="header">
         <h1>{{ page_title }}</h1>
         <div>
+            <a href="{% url 'task_orchestration:execute_orchestration' %}" class="btn btn-default">编排任务执行</a>
             <a href="{% url 'script_center:task_list' %}" class="btn btn-default">🔙 任务管理</a>
         </div>
     </div>

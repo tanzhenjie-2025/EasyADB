@@ -23,8 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # 挂载ADB管理应用的URL，指定命名空间（关键）
     path('adb/', include(('adb_manager.urls', 'adb_manager'), namespace='adb_manager')),
-# 新增脚本中心路由
+    # 新增脚本中心路由
     path('script/', include('script_center.urls')),
 
-path('task_orchestration/', include('task_orchestration.urls')),
+    path('task_orchestration/', include('task_orchestration.urls')),
 ]
