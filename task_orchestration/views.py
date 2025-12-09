@@ -88,7 +88,7 @@ from adb_manager.models import ADBDevice
 from .models import OrchestrationTask, TaskStep, OrchestrationLog, StepExecutionLog
 from .forms import OrchestrationTaskForm, TaskStepForm
 from script_center.models import ScriptTask, TaskExecutionLog
-from script_center.views import running_processes as script_running_processes, process_lock as script_process_lock
+# from script_center.views import running_processes as script_running_processes, process_lock as script_process_lock
 from .tasks import execute_step_task  # 导入Celery任务
 
 # 编排任务列表（完全保留原有代码）

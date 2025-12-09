@@ -16,7 +16,7 @@ app = Celery("EasyADB")
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # 5. 自动发现所有已安装APP中的tasks.py
-app.autodiscover_tasks(["mycelery.sms","mycelery.email","task_orchestration"])
+app.autodiscover_tasks(["mycelery.sms","mycelery.email","task_orchestration","script_center"])
 
 # 调试任务（验证Celery是否正常）
 @app.task(bind=True)
