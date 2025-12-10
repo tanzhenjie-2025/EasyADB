@@ -44,7 +44,7 @@ class ScriptTask(models.Model):
         return os.path.exists(self.python_path)
 
 class TaskExecutionLog(models.Model):
-    """任务执行日志模型"""
+    """任务执行日志模型（修复stdout/stderr默认值为空字符串，避免NoneType拼接）"""
     EXEC_STATUS = (
         ("running", "执行中"),
         ("success", "执行成功"),
@@ -55,9 +55,9 @@ class TaskExecutionLog(models.Model):
     task = models.ForeignKey(ScriptTask, on_delete=models.CASCADE, verbose_name="关联任务")
     device = models.ForeignKey(ADBDevice, on_delete=models.CASCADE, verbose_name="执行设备")
     exec_status = models.CharField("执行状态", max_length=20, choices=EXEC_STATUS, default="running")
-    exec_command = models.TextField("执行命令", blank=True, null=True)
-    stdout = models.TextField("标准输出", blank=True, null=True)
-    stderr = models.TextField("错误输出", blank=True, null=True)
+    exec_command = models.TextField("执行命令", blank=True, default='')  # 修复默认值
+    stdout = models.TextField("标准输出", blank=True, default='')       # 核心修复：默认空字符串，去掉null=True
+    stderr = models.TextField("错误输出", blank=True, default='')       # 核心修复：默认空字符串，去掉null=True
     start_time = models.DateTimeField("开始时间", default=timezone.now)
     end_time = models.DateTimeField("结束时间", blank=True, null=True)
     exec_duration = models.FloatField("执行耗时(秒)", blank=True, null=True)

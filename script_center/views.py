@@ -19,7 +19,7 @@ from django.utils import timezone
 from celery.result import AsyncResult
 
 # 导入Celery任务
-from .tasks import execute_script_task, _terminate_process
+from .tasks import execute_script_task, _graceful_terminate_process  # 替换为新的优雅终止函数
 from .models import ScriptTask, TaskExecutionLog
 from .forms import ScriptTaskForm
 from adb_manager.models import ADBDevice
@@ -39,13 +39,8 @@ logging.basicConfig(
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 os.environ['PYTHONLEGACYWINDOWSSTDIO'] = 'utf-8'
 
-# ===================== 全局存储（记录Celery任务ID） =====================
-# 存储格式：{log_id: celery_task_id}
-running_celery_tasks = {}
-task_lock = threading.Lock()
 
-
-# ===================== Redis连接函数 =====================
+# ===================== Redis连接及任务ID操作函数 =====================
 def get_redis_conn():
     """获取Redis连接"""
     try:
@@ -61,6 +56,39 @@ def get_redis_conn():
     except Exception as e:
         logger.error(f"Redis连接失败：{str(e)}")
         return None
+
+
+def save_celery_task(log_id, celery_task_id):
+    """保存Celery任务ID到Redis"""
+    r = get_redis_conn()
+    if r:
+        try:
+            r.hset("script_running_tasks", log_id, celery_task_id)
+            logger.info(f"已保存Celery任务ID到Redis - 日志ID：{log_id}，任务ID：{celery_task_id}")
+        except Exception as e:
+            logger.error(f"保存Celery任务ID失败：{str(e)}")
+
+
+def get_celery_task(log_id):
+    """从Redis获取Celery任务ID"""
+    r = get_redis_conn()
+    if r:
+        try:
+            return r.hget("script_running_tasks", log_id)
+        except Exception as e:
+            logger.error(f"获取Celery任务ID失败：{str(e)}")
+    return None
+
+
+def delete_celery_task(log_id):
+    """从Redis删除Celery任务ID"""
+    r = get_redis_conn()
+    if r:
+        try:
+            r.hdel("script_running_tasks", log_id)
+            logger.info(f"已删除Redis中的Celery任务ID - 日志ID：{log_id}")
+        except Exception as e:
+            logger.error(f"删除Celery任务ID失败：{str(e)}")
 
 
 # ===================== 任务管理视图 =====================
@@ -161,9 +189,9 @@ class ExecuteTaskView(View):
         recent_logs = TaskExecutionLog.objects.all().order_by("-id")[:10]
         logger.info(f"最近执行日志数量：{recent_logs.count()}")
         for log in recent_logs:
-            # 标记是否正在运行（基于Celery任务）
-            with task_lock:
-                log.is_running = log.id in running_celery_tasks and log.exec_status == "running"
+            # 标记是否正在运行（基于Redis中的Celery任务）
+            celery_task_id = get_celery_task(log.id)
+            log.is_running = celery_task_id is not None and log.exec_status == "running"
             logger.info(f"日志ID：{log.id}，状态：{log.exec_status}，是否运行中：{log.is_running}")
 
         context = {
@@ -233,9 +261,8 @@ class ExecuteTaskView(View):
                 # 提交Celery异步任务
                 try:
                     celery_task = execute_script_task.delay(task.id, device.id, log.id)
-                    # 记录Celery任务ID
-                    with task_lock:
-                        running_celery_tasks[log.id] = celery_task.id
+                    # 记录Celery任务ID到Redis
+                    save_celery_task(log.id, celery_task.id)
                     logger.info(f"提交Celery任务 - 日志ID：{log.id}，任务ID：{celery_task.id}")
                 except Exception as celery_err:
                     log.exec_status = "error"
@@ -272,52 +299,64 @@ class StopTaskView(View):
                 logger.warning(error_msg)
                 return redirect(f"{reverse('script_center:execute_task')}?msg={error_msg}")
 
-            # 2. 终止Celery任务
-            with task_lock:
-                if log_id not in running_celery_tasks:
-                    error_msg = quote(f"未找到任务【{log.task.task_name}】的Celery执行记录！")
-                    logger.warning(error_msg)
-                    return redirect(f"{reverse('script_center:execute_task')}?msg={error_msg}")
+            # 2. 终止Celery任务（从Redis获取任务ID）
+            celery_task_id = get_celery_task(log_id)
+            if not celery_task_id:
+                error_msg = quote(f"未找到任务【{log.task.task_name}】的Celery执行记录！")
+                logger.warning(error_msg)
+                return redirect(f"{reverse('script_center:execute_task')}?msg={error_msg}")
 
-                celery_task_id = running_celery_tasks[log_id]
-                # 强制终止Celery任务
-                AsyncResult(celery_task_id).revoke(terminate=True)
-                del running_celery_tasks[log_id]
-                logger.info(f"已终止Celery任务 - ID：{celery_task_id}，日志ID：{log_id}")
-
-            # 3. 从Redis获取进程并终止
+            # 发送停止信号（先不立即终止，让脚本优雅退出）
             r = get_redis_conn()
             device_serial = None
             if r:
                 process_info_str = r.hget("script_running_processes", log_id)
                 if process_info_str:
                     process_info = json.loads(process_info_str)
-                    pid = process_info.get("pid")
                     device_serial = process_info.get("device_serial")
-
-                    # 发送停止信号
+                    # 发送停止信号（有效期60秒）
                     r.set(f"airtest_stop_flag_{device_serial}", "True", ex=60)
-                    logger.info(f"已发送Redis停止信号 - 设备：{device_serial}")
+                    logger.info(f"已发送Redis停止信号 - 设备：{device_serial}，日志ID：{log_id}")
 
-                    # 终止进程
-                    if pid:
-                        _terminate_process(pid)
+            # 温柔终止Celery任务（不立即kill，给脚本响应时间）
+            AsyncResult(celery_task_id).revoke(terminate=False)  # 关键：terminate=False 不立即终止
+            delete_celery_task(log_id)
+            logger.info(f"已发送Celery停止信号 - ID：{celery_task_id}，日志ID：{log_id}")
+
+            # 延长等待时间至8秒，确保脚本输出优雅退出日志
+            time.sleep(8)
+
+            # 3. 从Redis获取进程并优雅终止（如果仍在运行）
+            if r and process_info_str:
+                process_info = json.loads(process_info_str)
+                pid = process_info.get("pid")
+                if pid:
+                    try:
+                        # 检查进程是否仍在运行，再终止
+                        if psutil.pid_exists(pid):
+                            _graceful_terminate_process(pid, wait_time=3)
+                            logger.info(f"已优雅终止进程{pid} - 设备：{device_serial}")
+                        else:
+                            logger.info(f"进程{pid}已自行退出（优雅退出成功）")
+                    except Exception as e:
+                        logger.error(f"终止进程{pid}失败：{str(e)}")
 
                     # 清理Redis
                     r.hdel("script_running_processes", log_id)
                     r.delete(f"airtest_stop_flag_{device_serial}")
 
-            # 4. 更新日志状态
+            # 4. 更新日志状态（修复：标记为stopped，而非error）
             log.exec_status = "stopped"
-            log.stderr = f"""任务已手动停止
+            log.stderr = f"""任务已手动停止（优雅退出）
 - 停止时间：{timezone.now()}
 - 设备序列号：{device_serial or '未知'}
 - Celery任务ID：{celery_task_id}
-- 终止日志ID：{log_id}"""
+- 终止日志ID：{log_id}
+- 已等待8秒让脚本完成清理和日志输出"""
             log.end_time = timezone.now()
             log.save()
 
-            success_msg = quote(f"任务【{log.task.task_name}】已成功停止！")
+            success_msg = quote(f"任务【{log.task.task_name}】已发送停止信号，脚本已优雅退出！")
             logger.info(success_msg)
             return redirect(f"{reverse('script_center:execute_task')}?msg={success_msg}")
 
@@ -350,8 +389,9 @@ class LogStatusView(View):
     def get(self, request, log_id):
         try:
             log = get_object_or_404(TaskExecutionLog, id=log_id)
-            with task_lock:
-                is_running = log.id in running_celery_tasks and log.exec_status == "running"
+            # 从Redis判断是否运行中
+            celery_task_id = get_celery_task(log.id)
+            is_running = celery_task_id is not None and log.exec_status == "running"
             return JsonResponse({
                 "code": 200,
                 "status": log.exec_status,

@@ -6532,3 +6532,945 @@ def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, 
 2025-12-09 22:44:56,885 - script_center.views - INFO - 日志ID：44，状态：stopped，是否运行中：False
 2025-12-09 22:44:56,885 - script_center.views - INFO - 日志ID：43，状态：timeout，是否运行中：False
 2025-12-09 22:44:56,886 - script_center.views - INFO - 日志ID：42，状态：success，是否运行中：False
+2025-12-10 18:50:22,753 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 18:50:22,755 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 18:50:22,755 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 18:50:22,755 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 18:50:22,755 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 18:50:22,756 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 18:50:22,756 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 18:50:22,756 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-10 18:50:22,756 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-10 18:50:22,756 - script_center.views - INFO - 日志ID：32，状态：running，是否运行中：False
+2025-12-10 18:50:22,756 - script_center.views - INFO - 日志ID：31，状态：failed，是否运行中：False
+2025-12-10 18:50:27,818 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：6
+2025-12-10 18:50:27,823 - script_center.views - INFO - 获取到任务：打开快手，脚本路径：C:\Users\TanZhenJie\AppData\Local\Temp\AirtestIDE\scripts\Open_Kuaishou.air\Open_Kuaishou.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-10 18:50:27,826 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-10 18:50:27,842 - script_center.views - INFO - 创建执行日志 - ID：41，设备：10AF5E1AKU003NR
+2025-12-10 18:50:27,856 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-10 18:50:27,859 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-10 18:50:27,860 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-10 18:50:27,860 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-10 18:50:27,860 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-10 18:50:27,861 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-10 18:50:27,861 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-10 18:50:27,862 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-10 18:50:27,862 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-10 18:50:27,862 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-10 18:50:27,863 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-10 18:50:27,863 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-10 18:50:27,864 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-10 18:50:27,864 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-10 18:50:28,085 - script_center.views - INFO - 提交Celery任务 - 日志ID：41，任务ID：15733de7-1db8-44cc-bf97-3ccf035bc06a
+2025-12-10 18:50:28,086 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E6%89%93%E5%BC%80%E5%BF%AB%E6%89%8B%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%B7%B2%E8%87%AA%E5%8A%A8%E6%9B%BF%E6%8D%A2%E4%B8%BA%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-10 18:50:28,097 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 18:50:28,098 - script_center.views - INFO - 日志ID：41，状态：running，是否运行中：True
+2025-12-10 18:50:28,099 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 18:50:28,099 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 18:50:28,099 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 18:50:28,099 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 18:50:28,099 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 18:50:28,099 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 18:50:28,099 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-10 18:50:28,099 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-10 18:50:28,099 - script_center.views - INFO - 日志ID：32，状态：running，是否运行中：False
+2025-12-10 18:50:38,451 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 18:50:38,452 - script_center.views - INFO - 日志ID：41，状态：running，是否运行中：True
+2025-12-10 18:50:38,452 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 18:50:38,452 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 18:50:38,452 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 18:50:38,452 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 18:50:38,452 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 18:50:38,452 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 18:50:38,452 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-10 18:50:38,452 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-10 18:50:38,452 - script_center.views - INFO - 日志ID：32，状态：running，是否运行中：False
+2025-12-10 18:50:51,561 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-10 18:50:51,561 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-10 18:50:51,562 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-10 18:50:51,562 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-10 18:50:51,563 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-10 18:50:51,563 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-10 18:50:51,564 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-10 18:50:51,564 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-10 18:50:51,564 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-10 18:50:51,565 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-10 18:50:51,565 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-10 18:50:51,566 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-10 18:50:51,566 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-10 18:50:51,566 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-10 18:51:18,304 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 18:51:18,306 - script_center.views - INFO - 日志ID：41，状态：running，是否运行中：True
+2025-12-10 18:51:18,306 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 18:51:18,306 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 18:51:18,306 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 18:51:18,306 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 18:51:18,306 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 18:51:18,306 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 18:51:18,306 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-10 18:51:18,306 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-10 18:51:18,306 - script_center.views - INFO - 日志ID：32，状态：running，是否运行中：False
+2025-12-10 18:52:12,342 - script_center.views - INFO - 接收到停止任务请求 - 日志ID：41
+2025-12-10 18:52:12,490 - script_center.views - INFO - 已终止Celery任务 - ID：15733de7-1db8-44cc-bf97-3ccf035bc06a，日志ID：41
+2025-12-10 18:52:12,516 - script_center.views - INFO - 已发送Redis停止信号 - 设备：10AF5E1AKU003NR
+2025-12-10 18:52:13,534 - script_center.tasks - INFO - 进程7080及其子进程已彻底终止
+2025-12-10 18:52:13,548 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E6%89%93%E5%BC%80%E5%BF%AB%E6%89%8B%E3%80%91%E5%B7%B2%E6%88%90%E5%8A%9F%E5%81%9C%E6%AD%A2%EF%BC%81
+2025-12-10 18:52:13,557 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 18:52:13,558 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 18:52:13,558 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 18:52:13,559 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 18:52:13,559 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 18:52:13,559 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 18:52:13,559 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 18:52:13,559 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 18:52:13,559 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-10 18:52:13,559 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-10 18:52:13,559 - script_center.views - INFO - 日志ID：32，状态：running，是否运行中：False
+2025-12-10 18:55:33,808 - task_orchestration.views - INFO - 已终止Celery任务4cc8e737-0be1-4b74-a998-e865c5a91085（编排日志12，步骤0）
+2025-12-10 18:55:33,809 - task_orchestration.views - INFO - 已终止Celery任务5d1c9091-c38c-4767-9144-4815ef0b5412（编排日志12，步骤1）
+2025-12-10 18:55:33,811 - task_orchestration.views - INFO - 已终止Celery任务2d279634-c68c-4a4e-8410-19a03d324595（编排日志12，步骤2）
+2025-12-10 18:55:34,832 - task_orchestration.views - INFO - 已终止Redis中记录的进程40328（KEY：12_2）
+2025-12-10 18:55:34,835 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=12_2
+2025-12-10 18:55:34,838 - task_orchestration.views - ERROR - 终止Redis进程失败（KEY：12_1）：process PID not found (pid=49628)
+2025-12-10 18:55:34,863 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=12_1
+2025-12-10 18:55:34,879 - task_orchestration.views - ERROR - 终止Redis进程失败（KEY：12_0）：process PID not found (pid=19720)
+2025-12-10 18:55:34,881 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=12_0
+2025-12-10 18:55:44,380 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-10 18:55:44,381 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-10 18:55:44,381 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-10 18:55:44,383 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-10 18:55:44,383 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-10 18:55:44,384 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-10 18:55:44,384 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-10 18:55:44,385 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-10 18:55:44,386 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-10 18:55:44,387 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-10 18:55:47,472 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 18:55:47,474 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 18:55:47,474 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 18:55:47,474 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 18:55:47,474 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 18:55:47,474 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 18:55:47,474 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 18:55:47,475 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 18:55:47,475 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-10 18:55:47,475 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-10 18:55:47,475 - script_center.views - INFO - 日志ID：32，状态：running，是否运行中：False
+2025-12-10 18:55:58,815 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：6
+2025-12-10 18:55:58,818 - script_center.views - INFO - 获取到任务：打开快手，脚本路径：C:\Users\TanZhenJie\AppData\Local\Temp\AirtestIDE\scripts\Open_Kuaishou.air\Open_Kuaishou.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-10 18:55:58,821 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-10 18:55:58,837 - script_center.views - INFO - 创建执行日志 - ID：42，设备：10AF5E1AKU003NR
+2025-12-10 18:55:58,838 - script_center.views - INFO - 提交Celery任务 - 日志ID：42，任务ID：6df0b094-f66e-44ec-aad2-4ad3864e9a4d
+2025-12-10 18:55:58,838 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E6%89%93%E5%BC%80%E5%BF%AB%E6%89%8B%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%B7%B2%E8%87%AA%E5%8A%A8%E6%9B%BF%E6%8D%A2%E4%B8%BA%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-10 18:55:58,848 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 18:55:58,849 - script_center.views - INFO - 日志ID：42，状态：running，是否运行中：True
+2025-12-10 18:55:58,849 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 18:55:58,849 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 18:55:58,849 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 18:55:58,849 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 18:55:58,850 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 18:55:58,850 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 18:55:58,850 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 18:55:58,850 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-10 18:55:58,850 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-10 18:57:34,882 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 18:57:34,884 - script_center.views - INFO - 日志ID：42，状态：running，是否运行中：True
+2025-12-10 18:57:34,884 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 18:57:34,885 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 18:57:34,885 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 18:57:34,885 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 18:57:34,885 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 18:57:34,885 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 18:57:34,885 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 18:57:34,885 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-10 18:57:34,885 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-10 18:57:37,282 - script_center.views - INFO - 接收到停止任务请求 - 日志ID：42
+2025-12-10 18:57:37,286 - script_center.views - INFO - 已终止Celery任务 - ID：6df0b094-f66e-44ec-aad2-4ad3864e9a4d，日志ID：42
+2025-12-10 18:57:37,288 - script_center.views - INFO - 已发送Redis停止信号 - 设备：10AF5E1AKU003NR
+2025-12-10 18:57:38,304 - script_center.tasks - INFO - 进程13100及其子进程已彻底终止
+2025-12-10 18:57:38,320 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E6%89%93%E5%BC%80%E5%BF%AB%E6%89%8B%E3%80%91%E5%B7%B2%E6%88%90%E5%8A%9F%E5%81%9C%E6%AD%A2%EF%BC%81
+2025-12-10 18:57:38,329 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 18:57:38,330 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 18:57:38,330 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 18:57:38,330 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 18:57:38,330 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 18:57:38,330 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 18:57:38,330 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 18:57:38,330 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 18:57:38,330 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 18:57:38,330 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-10 18:57:38,330 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-10 18:59:09,976 - django.request - ERROR - Internal Server Error: /script/add/
+Traceback (most recent call last):
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: NOT NULL constraint failed: script_center_scripttask.is_long_running
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\views\generic\base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\django_projects\EasyADB\script_center\views.py", line 93, in post
+    task = form.save()
+           ^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\forms\models.py", line 554, in save
+    self.instance.save()
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\base.py", line 891, in save
+    self.save_base(
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\base.py", line 997, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\base.py", line 1160, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\base.py", line 1201, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\query.py", line 1847, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\compiler.py", line 1836, in execute_sql
+    cursor.execute(sql, params)
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\backends\sqlite3\base.py", line 354, in execute
+    return super().execute(query, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: NOT NULL constraint failed: script_center_scripttask.is_long_running
+2025-12-10 19:01:38,029 - task_orchestration.views - INFO - 已终止Celery任务cf221368-ee5f-4e19-a2b3-63f8f75d5dd9（编排日志13，步骤1）
+2025-12-10 19:01:38,030 - task_orchestration.views - INFO - 已终止Celery任务965c5507-7931-4359-bad7-c7bbec9f3a54（编排日志13，步骤2）
+2025-12-10 19:01:38,070 - task_orchestration.views - ERROR - 终止Redis进程失败（KEY：13_1）：process PID not found (pid=40616)
+2025-12-10 19:01:38,085 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=13_1
+2025-12-10 19:01:39,102 - task_orchestration.views - INFO - 已终止Redis中记录的进程32328（KEY：13_2）
+2025-12-10 19:01:39,127 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=13_2
+2025-12-10 19:01:44,489 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:01:44,491 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:01:44,491 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:01:44,491 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:01:44,491 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:01:44,491 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:01:44,491 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 19:01:44,492 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 19:01:44,492 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 19:01:44,492 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-10 19:01:44,492 - script_center.views - INFO - 日志ID：33，状态：timeout，是否运行中：False
+2025-12-10 19:01:51,647 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：7
+2025-12-10 19:01:51,649 - script_center.views - INFO - 获取到任务：打开抖音，脚本路径：E:\Airtest_Scripts\Open_Tiktok.air\Open_Tiktok.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-10 19:01:51,650 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-10 19:01:51,686 - script_center.views - INFO - 创建执行日志 - ID：43，设备：10AF5E1AKU003NR
+2025-12-10 19:01:51,688 - script_center.views - INFO - 提交Celery任务 - 日志ID：43，任务ID：0227fb79-fa38-4587-8c57-a0cc5453e8b0
+2025-12-10 19:01:51,689 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E6%89%93%E5%BC%80%E6%8A%96%E9%9F%B3%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%B7%B2%E8%87%AA%E5%8A%A8%E6%9B%BF%E6%8D%A2%E4%B8%BA%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-10 19:01:51,699 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:01:51,701 - script_center.views - INFO - 日志ID：43，状态：running，是否运行中：True
+2025-12-10 19:01:51,701 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:01:51,701 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:01:51,701 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:01:51,701 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:01:51,701 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:01:51,701 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 19:01:51,701 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 19:01:51,701 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 19:01:51,701 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-10 19:02:05,996 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:02:05,997 - script_center.views - INFO - 日志ID：43，状态：running，是否运行中：True
+2025-12-10 19:02:05,997 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:02:05,997 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:02:05,997 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:02:05,997 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:02:05,997 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:02:05,997 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 19:02:05,998 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 19:02:05,998 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 19:02:05,998 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-10 19:02:39,318 - script_center.views - INFO - 接收到停止任务请求 - 日志ID：43
+2025-12-10 19:02:39,321 - script_center.views - INFO - 已终止Celery任务 - ID：0227fb79-fa38-4587-8c57-a0cc5453e8b0，日志ID：43
+2025-12-10 19:02:39,342 - script_center.views - INFO - 已发送Redis停止信号 - 设备：10AF5E1AKU003NR
+2025-12-10 19:02:40,368 - script_center.tasks - INFO - 进程13704及其子进程已彻底终止
+2025-12-10 19:02:40,383 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E6%89%93%E5%BC%80%E6%8A%96%E9%9F%B3%E3%80%91%E5%B7%B2%E6%88%90%E5%8A%9F%E5%81%9C%E6%AD%A2%EF%BC%81
+2025-12-10 19:02:40,404 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:02:40,405 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-10 19:02:40,405 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:02:40,405 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:02:40,405 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:02:40,406 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:02:40,406 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:02:40,406 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 19:02:40,406 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 19:02:40,406 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 19:02:40,406 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-10 19:17:54,588 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\script_center\tasks.py changed, reloading.
+2025-12-10 19:18:07,319 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\script_center\views.py changed, reloading.
+2025-12-10 19:18:26,918 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-10 19:18:26,919 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-10 19:18:26,919 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-10 19:18:26,920 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-10 19:18:26,920 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-10 19:18:26,920 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-10 19:18:26,921 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-10 19:18:26,921 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-10 19:18:26,922 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-10 19:18:26,922 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-10 19:18:26,923 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-10 19:18:26,923 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-10 19:18:26,924 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-10 19:18:26,924 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-10 19:18:32,420 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:18:32,437 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-10 19:18:32,438 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:18:32,452 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:18:32,469 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:18:32,483 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:18:32,499 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:18:32,514 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 19:18:32,530 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 19:18:32,546 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 19:18:32,547 - script_center.views - INFO - 日志ID：34，状态：timeout，是否运行中：False
+2025-12-10 19:18:35,372 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：7
+2025-12-10 19:18:35,374 - script_center.views - INFO - 获取到任务：打开抖音，脚本路径：E:\Airtest_Scripts\Open_Tiktok.air\Open_Tiktok.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-10 19:18:35,376 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-10 19:18:35,392 - script_center.views - INFO - 创建执行日志 - ID：44，设备：10AF5E1AKU003NR
+2025-12-10 19:18:35,403 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-10 19:18:35,406 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-10 19:18:35,406 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-10 19:18:35,408 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-10 19:18:35,408 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-10 19:18:35,408 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-10 19:18:35,409 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-10 19:18:35,409 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-10 19:18:35,409 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-10 19:18:35,410 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-10 19:18:35,410 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-10 19:18:35,411 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-10 19:18:35,411 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-10 19:18:35,412 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-10 19:18:35,641 - script_center.views - INFO - 已保存Celery任务ID到Redis - 日志ID：44，任务ID：699d5d79-ec27-4f98-a8c1-42a6465a55af
+2025-12-10 19:18:35,643 - script_center.views - INFO - 提交Celery任务 - 日志ID：44，任务ID：699d5d79-ec27-4f98-a8c1-42a6465a55af
+2025-12-10 19:18:35,643 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E6%89%93%E5%BC%80%E6%8A%96%E9%9F%B3%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%B7%B2%E8%87%AA%E5%8A%A8%E6%9B%BF%E6%8D%A2%E4%B8%BA%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-10 19:18:35,708 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:18:35,711 - script_center.views - INFO - 日志ID：44，状态：running，是否运行中：True
+2025-12-10 19:18:35,713 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-10 19:18:35,739 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:18:35,755 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:18:35,770 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:18:35,784 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:18:35,800 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:18:35,802 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 19:18:35,816 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 19:18:35,831 - script_center.views - INFO - 日志ID：35，状态：success，是否运行中：False
+2025-12-10 19:25:20,447 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\script_center\models.py changed, reloading.
+2025-12-10 19:26:06,795 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\script_center\tasks.py changed, reloading.
+2025-12-10 19:26:46,239 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-10 19:26:46,240 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-10 19:26:46,241 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-10 19:26:46,241 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-10 19:26:46,241 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-10 19:26:46,242 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-10 19:26:46,242 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-10 19:26:46,243 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-10 19:26:46,243 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-10 19:26:46,244 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-10 19:26:46,244 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-10 19:26:46,245 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-10 19:26:46,245 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-10 19:26:46,245 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-10 19:27:02,119 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：7
+2025-12-10 19:27:02,124 - script_center.views - INFO - 获取到任务：打开抖音，脚本路径：E:\Airtest_Scripts\Open_Tiktok.air\Open_Tiktok.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-10 19:27:02,127 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-10 19:27:02,141 - script_center.views - INFO - 创建执行日志 - ID：45，设备：10AF5E1AKU003NR
+2025-12-10 19:27:02,155 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-10 19:27:02,157 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-10 19:27:02,158 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-10 19:27:02,158 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-10 19:27:02,158 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-10 19:27:02,159 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-10 19:27:02,159 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-10 19:27:02,160 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-10 19:27:02,160 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-10 19:27:02,160 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-10 19:27:02,161 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-10 19:27:02,161 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-10 19:27:02,162 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-10 19:27:02,162 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-10 19:27:02,401 - script_center.views - INFO - 已保存Celery任务ID到Redis - 日志ID：45，任务ID：65e85dd6-5d80-45fd-93ef-4e0c31da74de
+2025-12-10 19:27:02,401 - script_center.views - INFO - 提交Celery任务 - 日志ID：45，任务ID：65e85dd6-5d80-45fd-93ef-4e0c31da74de
+2025-12-10 19:27:02,402 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E6%89%93%E5%BC%80%E6%8A%96%E9%9F%B3%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%B7%B2%E8%87%AA%E5%8A%A8%E6%9B%BF%E6%8D%A2%E4%B8%BA%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-10 19:27:02,423 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:27:02,427 - script_center.views - INFO - 日志ID：45，状态：running，是否运行中：True
+2025-12-10 19:27:02,429 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-10 19:27:02,442 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-10 19:27:02,458 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:27:02,460 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:27:02,474 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:27:02,476 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:27:02,504 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:27:02,506 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 19:27:02,518 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 19:31:56,255 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\script_center\tasks.py changed, reloading.
+2025-12-10 19:32:19,455 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\script_center\tasks.py changed, reloading.
+2025-12-10 19:32:45,760 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\script_center\tasks.py changed, reloading.
+2025-12-10 19:37:35,907 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\script_center\tasks.py changed, reloading.
+2025-12-10 19:38:21,922 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-10 19:38:21,923 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-10 19:38:21,924 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-10 19:38:21,924 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-10 19:38:21,924 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-10 19:38:21,925 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-10 19:38:21,925 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-10 19:38:21,926 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-10 19:38:21,926 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-10 19:38:21,926 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-10 19:38:21,927 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-10 19:38:21,927 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-10 19:38:21,928 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-10 19:38:21,928 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-10 19:39:10,443 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:39:10,448 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-10 19:39:10,477 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-10 19:39:10,491 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-10 19:39:10,507 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:39:10,509 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:39:10,524 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:39:10,538 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:39:10,553 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:39:10,556 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 19:39:10,570 - script_center.views - INFO - 日志ID：36，状态：success，是否运行中：False
+2025-12-10 19:39:23,656 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：1
+2025-12-10 19:39:23,659 - script_center.views - INFO - 获取到任务：自动刷视频，脚本路径：C:\Users\TanZhenJie\AppData\Local\Temp\AirtestIDE\scripts\Vidio_Watch.air\Vidio_Watch.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-10 19:39:23,662 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-10 19:39:23,678 - script_center.views - INFO - 创建执行日志 - ID：46，设备：10AF5E1AKU003NR
+2025-12-10 19:39:23,695 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-10 19:39:23,697 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-10 19:39:23,698 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-10 19:39:23,698 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-10 19:39:23,699 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-10 19:39:23,699 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-10 19:39:23,700 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-10 19:39:23,700 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-10 19:39:23,701 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-10 19:39:23,701 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-10 19:39:23,702 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-10 19:39:23,702 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-10 19:39:23,703 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-10 19:39:23,703 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-10 19:39:23,895 - script_center.views - INFO - 已保存Celery任务ID到Redis - 日志ID：46，任务ID：63de36aa-2f27-4c8a-8e86-73028d9a6c3a
+2025-12-10 19:39:23,895 - script_center.views - INFO - 提交Celery任务 - 日志ID：46，任务ID：63de36aa-2f27-4c8a-8e86-73028d9a6c3a
+2025-12-10 19:39:23,895 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E8%87%AA%E5%8A%A8%E5%88%B7%E8%A7%86%E9%A2%91%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%B7%B2%E8%87%AA%E5%8A%A8%E6%9B%BF%E6%8D%A2%E4%B8%BA%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-10 19:39:23,904 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:39:23,908 - script_center.views - INFO - 日志ID：46，状态：running，是否运行中：True
+2025-12-10 19:39:23,929 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-10 19:39:23,944 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-10 19:39:23,959 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-10 19:39:23,961 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:39:23,974 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:39:23,990 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:39:23,992 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:39:24,006 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:39:24,022 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 19:39:42,813 - script_center.views - INFO - 接收到停止任务请求 - 日志ID：46
+2025-12-10 19:39:42,851 - script_center.views - INFO - 已发送Redis停止信号 - 设备：10AF5E1AKU003NR，日志ID：46
+2025-12-10 19:39:42,992 - script_center.views - INFO - 已删除Redis中的Celery任务ID - 日志ID：46
+2025-12-10 19:39:42,992 - script_center.views - INFO - 已发送Celery停止信号 - ID：63de36aa-2f27-4c8a-8e86-73028d9a6c3a，日志ID：46
+2025-12-10 19:39:45,993 - script_center.tasks - INFO - 开始优雅终止进程27176，等待2秒让脚本清理...
+2025-12-10 19:39:46,994 - script_center.tasks - INFO - 等待脚本优雅退出中...剩余1秒
+2025-12-10 19:39:46,994 - script_center.tasks - INFO - 进程27176已自行退出（优雅退出成功）
+2025-12-10 19:39:46,994 - script_center.views - INFO - 已优雅终止进程27176 - 设备：10AF5E1AKU003NR
+2025-12-10 19:39:47,004 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E8%87%AA%E5%8A%A8%E5%88%B7%E8%A7%86%E9%A2%91%E3%80%91%E5%B7%B2%E5%8F%91%E9%80%81%E5%81%9C%E6%AD%A2%E4%BF%A1%E5%8F%B7%EF%BC%8C%E8%84%9A%E6%9C%AC%E6%AD%A3%E5%9C%A8%E4%BC%98%E9%9B%85%E9%80%80%E5%87%BA%EF%BC%81
+2025-12-10 19:39:47,015 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:39:47,045 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-10 19:39:47,059 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-10 19:39:47,074 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-10 19:39:47,076 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-10 19:39:47,090 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:39:47,105 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:39:47,107 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:39:47,120 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:39:47,136 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:39:47,151 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 19:40:36,576 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:40:36,591 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-10 19:40:36,608 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-10 19:40:36,623 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-10 19:40:36,639 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-10 19:40:36,654 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:40:36,669 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:40:36,685 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:40:36,686 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:40:36,701 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:40:36,718 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 19:41:10,714 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:41:10,719 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-10 19:41:10,742 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-10 19:41:10,758 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-10 19:41:10,774 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-10 19:41:10,789 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:41:10,804 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:41:10,821 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:41:10,835 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:41:10,837 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:41:10,851 - script_center.views - INFO - 日志ID：37，状态：failed，是否运行中：False
+2025-12-10 19:41:45,232 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：7
+2025-12-10 19:41:45,234 - script_center.views - INFO - 获取到任务：打开抖音，脚本路径：E:\Airtest_Scripts\Open_Tiktok.air\Open_Tiktok.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-10 19:41:45,236 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-10 19:41:45,257 - script_center.views - INFO - 创建执行日志 - ID：47，设备：10AF5E1AKU003NR
+2025-12-10 19:41:45,271 - script_center.views - INFO - 已保存Celery任务ID到Redis - 日志ID：47，任务ID：e5c50490-1d7a-4023-a8fe-d044e9c509ba
+2025-12-10 19:41:45,271 - script_center.views - INFO - 提交Celery任务 - 日志ID：47，任务ID：e5c50490-1d7a-4023-a8fe-d044e9c509ba
+2025-12-10 19:41:45,271 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E6%89%93%E5%BC%80%E6%8A%96%E9%9F%B3%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%B7%B2%E8%87%AA%E5%8A%A8%E6%9B%BF%E6%8D%A2%E4%B8%BA%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-10 19:41:45,282 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:41:45,302 - script_center.views - INFO - 日志ID：47，状态：running，是否运行中：True
+2025-12-10 19:41:45,317 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-10 19:41:45,319 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-10 19:41:45,321 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-10 19:41:45,323 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-10 19:41:45,348 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:41:45,364 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:41:45,380 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:41:45,382 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:41:45,385 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:45:04,573 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:45:04,595 - script_center.views - INFO - 日志ID：47，状态：success，是否运行中：False
+2025-12-10 19:45:04,597 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-10 19:45:04,609 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-10 19:45:04,612 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-10 19:45:04,626 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-10 19:45:04,641 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:45:04,655 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:45:04,671 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:45:04,687 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:45:04,703 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:45:47,226 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 19:45:47,255 - script_center.views - INFO - 日志ID：47，状态：success，是否运行中：False
+2025-12-10 19:45:47,257 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-10 19:45:47,270 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-10 19:45:47,285 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-10 19:45:47,301 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-10 19:45:47,317 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 19:45:47,319 - script_center.views - INFO - 日志ID：41，状态：stopped，是否运行中：False
+2025-12-10 19:45:47,321 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 19:45:47,322 - script_center.views - INFO - 日志ID：39，状态：timeout，是否运行中：False
+2025-12-10 19:45:47,348 - script_center.views - INFO - 日志ID：38，状态：stopped，是否运行中：False
+2025-12-10 19:48:46,006 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\script_center\tasks.py changed, reloading.
+2025-12-10 19:49:26,562 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\script_center\views.py changed, reloading.
+2025-12-10 19:50:11,475 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-10 19:50:11,475 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-10 19:50:11,476 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-10 19:50:11,476 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-10 19:50:11,476 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-10 19:50:11,477 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-10 19:50:11,477 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-10 19:50:11,477 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-10 19:50:11,478 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-10 19:50:11,478 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-10 19:50:11,478 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-10 19:50:11,479 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-10 19:50:11,479 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-10 19:50:11,479 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
