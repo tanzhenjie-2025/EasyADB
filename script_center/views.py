@@ -93,13 +93,22 @@ def delete_celery_task(log_id):
 
 # ===================== 任务管理视图 =====================
 class TaskListView(View):
-    """任务列表页"""
+    """任务列表页（新增搜索功能）"""
 
     def get(self, request):
-        tasks = ScriptTask.objects.all()
+        # 获取搜索关键词
+        search_query = request.GET.get('search', '').strip()
+
+        # 基础查询集，支持按任务名称模糊搜索
+        tasks_query = ScriptTask.objects.all()
+        if search_query:
+            tasks_query = tasks_query.filter(task_name__icontains=search_query)
+
+        tasks = tasks_query
         context = {
             "page_title": "脚本任务管理",
-            "tasks": tasks
+            "tasks": tasks,
+            "search_query": search_query  # 传递搜索关键词到模板
         }
         return render(request, "script_center/task_list.html", context)
 
@@ -175,9 +184,12 @@ class TaskDeleteView(View):
 
 # ===================== 任务执行/停止核心逻辑 =====================
 class ExecuteTaskView(View):
-    """执行任务页面 + Celery异步执行逻辑"""
+    """执行任务页面 + Celery异步执行逻辑（新增搜索功能）"""
 
     def get(self, request):
+        # 获取搜索关键词
+        search_query = request.GET.get('search', '').strip()
+
         # 获取所有可用设备和任务
         devices = ADBDevice.objects.filter(is_active=True)
         device_list = []
@@ -188,6 +200,13 @@ class ExecuteTaskView(View):
         # 按创建时间倒序获取日志
         recent_logs = TaskExecutionLog.objects.all().order_by("-id")[:10]
         logger.info(f"最近执行日志数量：{recent_logs.count()}")
+
+        # 构建任务查询集，添加搜索过滤
+        tasks_query = ScriptTask.objects.filter(status="active")
+        if search_query:
+            tasks_query = tasks_query.filter(task_name__icontains=search_query)
+        tasks = tasks_query
+
         for log in recent_logs:
             # 标记是否正在运行（基于Redis中的Celery任务）
             celery_task_id = get_celery_task(log.id)
@@ -197,8 +216,9 @@ class ExecuteTaskView(View):
         context = {
             "page_title": "执行脚本任务",
             "devices": device_list,
-            "tasks": ScriptTask.objects.filter(status="active"),
-            "recent_logs": recent_logs
+            "tasks": tasks,
+            "recent_logs": recent_logs,
+            "search_query": search_query  # 传递搜索关键词到模板
         }
         return render(request, "script_center/execute_task.html", context)
 
@@ -405,5 +425,3 @@ class LogStatusView(View):
                 "code": 500,
                 "msg": str(e)
             })
-
-

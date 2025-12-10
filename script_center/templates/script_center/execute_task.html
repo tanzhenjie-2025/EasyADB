@@ -54,6 +54,7 @@
         .btn-sm {
             padding: 4px 8px;
             font-size: 12px;
+            min-width: 60px; /* 新增：确保小按钮有最小宽度，不会被压缩 */
         }
         .card {
             background-color: #fff;
@@ -240,6 +241,41 @@
             background-color: #303133;
             color: #fff;
         }
+
+        /* 新增搜索样式（重点修复：确保搜索按钮可见） */
+        .search-box {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center; /* 新增：垂直居中，防止按钮错位 */
+            width: 100%; /* 新增：占满父容器宽度 */
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            font-size: 14px;
+            min-height: 36px; /* 新增：统一输入框高度 */
+        }
+
+        .search-results {
+            color: #606266;
+            font-size: 12px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        /* 任务列表页搜索容器样式（补充） */
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+            flex-wrap: nowrap; /* 禁止换行，确保按钮和输入框在一行 */
+        }
     </style>
 </head>
 <body>
@@ -308,13 +344,35 @@
                     </div>
                 </div>
 
-                <!-- 任务选择 -->
+                <!-- 任务选择（新增搜索功能） -->
                 <div class="form-col">
                     <div class="form-group">
                         <label>选择执行任务（单选）</label>
-                        <div class="task-list">
+
+                        <!-- 新增：任务搜索框（修复按钮可见性） -->
+                        <div class="search-box">
+                            <input type="text"
+                                   id="taskSearch"
+                                   class="search-input"
+                                   placeholder="搜索任务名称..."
+                                   value="{{ search_query|default:'' }}">
+                            <!-- 修复：始终显示清除按钮（无值时置灰），避免看不到 -->
+                            <button type="button" id="clearSearch" class="btn btn-sm btn-default" {% if not search_query %}disabled style="opacity:0.6; cursor:not-allowed;"{% endif %}>
+                                清除
+                            </button>
+                            <!-- 新增：手动触发搜索按钮（确保可见） -->
+                            <button type="button" id="doSearch" class="btn btn-sm btn-primary">
+                                搜索
+                            </button>
+                        </div>
+
+                        <div class="search-results" id="searchResults">
+                            共 {{ tasks|length }} 个任务
+                        </div>
+
+                        <div class="task-list" id="taskList">
                             {% for task in tasks %}
-                                <div class="task-item" data-task-id="{{ task.id }}">
+                                <div class="task-item" data-task-id="{{ task.id }}" data-task-name="{{ task.task_name|lower }}">
                                     <input type="radio" name="task_id" id="task_{{ task.id }}" value="{{ task.id }}" {% if forloop.first %}checked{% endif %} class="task-radio">
                                     <label for="task_{{ task.id }}">
                                         {{ task.task_name }}
@@ -387,7 +445,7 @@
         </table>
     </div>
 
-    <!-- 新增：多选功能JS - 核心修复 -->
+    <!-- 新增：多选功能JS - 核心修复 + 搜索功能（解决重复声明变量） -->
     <script>
         // 防抖函数（防止多次点击触发重复事件）
         function debounce(func, delay = 100) {
@@ -402,14 +460,19 @@
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 获取元素
+            // ========== 统一获取所有元素（只声明一次，解决重复声明报错） ==========
             const selectAllCheckbox = document.getElementById('selectAll');
             const selectOnlineBtn = document.getElementById('selectOnlineOnly');
             const deviceCheckboxes = document.querySelectorAll('.device-checkbox');
             const deviceItems = document.querySelectorAll('.device-item');
             const taskRadios = document.querySelectorAll('.task-radio');
-            const taskItems = document.querySelectorAll('.task-item');
+            const taskItems = document.querySelectorAll('.task-item'); // 只声明一次！
             const selectedCountEl = document.getElementById('selectedCount');
+            // 搜索功能元素（新增，统一声明）
+            const taskSearch = document.getElementById('taskSearch');
+            const clearSearch = document.getElementById('clearSearch');
+            const doSearch = document.getElementById('doSearch');
+            const searchResults = document.getElementById('searchResults');
 
             // 初始化选中状态和数量
             initSelectedStates();
@@ -619,6 +682,53 @@
                     alert('请至少选择一个在线设备！');
                 }
             });
+
+            // ========== 任务搜索功能（复用已声明的变量，解决重复声明） ==========
+            function filterTasks() {
+                const searchTerm = taskSearch.value.toLowerCase().trim();
+                let visibleCount = 0;
+
+                // 复用前面声明的taskItems，不再重复声明！
+                taskItems.forEach(item => {
+                    const taskName = item.getAttribute('data-task-name');
+                    if (searchTerm === '' || taskName.includes(searchTerm)) {
+                        item.style.display = '';
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                searchResults.textContent = `找到 ${visibleCount} 个任务（共 ${taskItems.length} 个）`;
+
+                // 动态更新清除按钮状态
+                if (searchTerm) {
+                    clearSearch.disabled = false;
+                    clearSearch.style.opacity = '1';
+                    clearSearch.style.cursor = 'pointer';
+                } else {
+                    clearSearch.disabled = true;
+                    clearSearch.style.opacity = '0.6';
+                    clearSearch.style.cursor = 'not-allowed';
+                }
+            }
+
+            // 实时搜索（输入时）
+            taskSearch.addEventListener('input', debounce(filterTasks, 150));
+
+            // 手动点击搜索按钮触发
+            doSearch.addEventListener('click', filterTasks);
+
+            // 清除搜索
+            clearSearch.addEventListener('click', function() {
+                taskSearch.value = '';
+                filterTasks();
+            });
+
+            // 初始过滤（如果有搜索参数）
+            if (taskSearch.value) {
+                filterTasks();
+            }
         });
     </script>
 </body>

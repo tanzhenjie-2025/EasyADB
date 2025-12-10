@@ -23,6 +23,35 @@
         text-align: center;
         color: #909399;
     }
+
+    /* 新增搜索样式（确保按钮可见） */
+    .search-container {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        width: 100%;
+        flex-wrap: nowrap; /* 禁止换行，确保按钮和输入框在一行 */
+    }
+
+    .search-input {
+        flex: 1;
+        max-width: 500px;
+        padding: 8px 12px;
+        border: 1px solid #dcdfe6;
+        border-radius: 4px;
+        font-size: 14px;
+        min-height: 36px; /* 统一高度 */
+    }
+
+    /* 确保按钮不会被压缩 */
+    .search-container .btn {
+        min-width: 80px;
+        height: 36px; /* 和输入框高度一致 */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
 </style>
 {% endblock %}
 
@@ -36,6 +65,26 @@
         <a href="{% url 'script_center:execute_task' %}" class="btn btn-warning">▶️ 执行任务</a>
     </div>
 </div>
+
+<!-- 新增搜索栏（修复按钮可见性） -->
+<div class="search-container">
+    <form method="get" action="{% url 'script_center:task_list' %}" style="width: 100%; display: flex; gap: 10px;">
+        <input type="text"
+               name="search"
+               class="search-input"
+               placeholder="搜索任务名称..."
+               value="{{ search_query|default:'' }}">
+        <!-- 强制显示搜索按钮，确保可见 -->
+        <button type="submit" class="btn btn-primary" style="min-width: 80px;">
+            搜索
+        </button>
+        {% if search_query %}
+            <a href="{% url 'script_center:task_list' %}" class="btn btn-default" style="min-width: 80px;">
+                清除
+            </a>
+        {% endif %}
+    </form>
+</div>
 {% endblock %}
 
 <!-- 4. 核心内容区域：提示信息+表格卡片 -->
@@ -44,6 +93,13 @@
     {% if request.GET.msg %}
         <div class="alert {% if '成功' in request.GET.msg|urlencode %}alert-success{% else %}alert-error{% endif %}">
             {{ request.GET.msg|urlencode }}
+        </div>
+    {% endif %}
+
+    <!-- 搜索结果提示 -->
+    {% if search_query %}
+        <div class="alert alert-success">
+            搜索关键词: "{{ search_query }}", 找到 {{ tasks.count }} 个结果
         </div>
     {% endif %}
 
