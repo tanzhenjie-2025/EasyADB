@@ -7816,3 +7816,61 @@ def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, 
 2025-12-10 21:52:37,143 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=16_0
 2025-12-10 21:52:38,177 - task_orchestration.views - INFO - 已终止Redis中记录的进程49292（KEY：16_2）
 2025-12-10 21:52:38,203 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=16_2
+2025-12-10 22:00:22,224 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-10 22:02:17,340 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\urls.py changed, reloading.
+2025-12-10 22:04:14,488 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-10 22:04:14,495 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-10 22:04:14,495 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-10 22:04:14,496 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-10 22:04:14,496 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-10 22:04:14,496 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-10 22:04:14,498 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-10 22:04:14,499 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-10 22:04:14,499 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-10 22:04:14,500 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-10 22:04:14,500 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-10 22:04:14,501 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-10 22:04:14,501 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-10 22:04:14,503 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+

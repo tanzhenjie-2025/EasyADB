@@ -6,30 +6,33 @@
 
 <!-- 2. 额外样式：只保留原有样式中base没有的部分（避免重复） -->
 {% block extra_css %}
-<style>
-    /* 仅保留原有样式中base未覆盖的特有样式（示例：如果有需要补充的） */
-    .text-center { text-align: center; }
-    /* base已包含btn、table、body等样式，无需重复定义 */
-</style>
+    <style>
+        /* 仅保留原有样式中base未覆盖的特有样式（示例：如果有需要补充的） */
+        .text-center {
+            text-align: center;
+        }
+
+        /* base已包含btn、table、body等样式，无需重复定义 */
+    </style>
 {% endblock %}
 
 <!-- 3. 页面头部（标题+操作按钮）：复用base的page-header布局 -->
 {% block page_header %}
-<div class="page-header">
-    <h1>{{ page_title }}</h1>
-    <div class="btn-group">
-        <!-- 原有两个按钮移到这里，复用base的btn样式 -->
-        <a href="{% url 'task_orchestration:create' %}" class="btn btn-primary">创建新编排任务</a>
-        <a href="{% url 'task_orchestration:execute_orchestration' %}" class="btn btn-success">批量执行编排任务</a>
+    <div class="page-header">
+        <h1>{{ page_title }}</h1>
+        <div class="btn-group">
+            <!-- 原有两个按钮移到这里，复用base的btn样式 -->
+            <a href="{% url 'task_orchestration:create' %}" class="btn btn-primary">创建新编排任务</a>
+            <a href="{% url 'task_orchestration:execute_orchestration' %}" class="btn btn-success">批量执行编排任务</a>
+        </div>
     </div>
-</div>
 {% endblock %}
 
 <!-- 4. 核心内容区域：放置表格和业务逻辑 -->
 {% block content %}
-<div class="card">  <!-- 复用base的card样式，让表格更美观 -->
-    <table>
-        <thead>
+    <div class="card">  <!-- 复用base的card样式，让表格更美观 -->
+        <table>
+            <thead>
             <tr>
                 <th>任务名称</th>
                 <th>描述</th>
@@ -37,45 +40,49 @@
                 <th>步骤数</th>
                 <th>操作</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             {% for task in tasks %}
-            <tr>
-                <td>{{ task.name }}</td>
-                <td>{{ task.description|default:"无" }}</td>
-                <td>{{ task.get_status_display }}</td>
-                <td>{{ task.steps.count }}</td>
-                <td>
-                    <a href="{% url 'task_orchestration:edit_steps' task.id %}" class="btn btn-default">编辑步骤</a>
-                    {% if task.status == 'active' %}
-                        <button onclick="executeOrchestration({{ task.id }})" class="btn btn-success">快速执行</button>
-                    {% endif %}
-                </td>
-            </tr>
+                <tr>
+                    <td>{{ task.name }}</td>
+                    <td>{{ task.description|default:"无" }}</td>
+                    <td>{{ task.get_status_display }}</td>
+                    <td>{{ task.steps.count }}</td>
+                    <td>
+                        <a href="{% url 'task_orchestration:edit_steps' task.id %}" class="btn btn-default">编辑步骤</a>
+                        <a href="{% url 'task_orchestration:clone' task.id %}" class="btn btn-default">克隆任务</a>
+                        {% if task.status == 'active' %}
+                            <button onclick="executeOrchestration({{ task.id }})" class="btn btn-success">快速执行
+                            </button>
+                        {% endif %}
+                    </td>
+                </tr>
             {% empty %}
-            <tr><td colspan="5" class="text-center">暂无编排任务</td></tr>
+                <tr>
+                    <td colspan="5" class="text-center">暂无编排任务</td>
+                </tr>
             {% endfor %}
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
 
 <!-- 5. 额外JS：放置页面专属的脚本 -->
 {% block extra_js %}
-<script>
-function executeOrchestration(taskId) {
-    // 原有逻辑完全保留
-    fetch(`{% url 'task_orchestration:execute_api' 0 %}`.replace('0', taskId), {
-        method: 'POST',
-        headers: {'X-CSRFToken': '{{ csrf_token }}'}
-    }).then(res => res.json()).then(data => {
-        alert(data.msg);
-        if (data.status === 'success') {
-            window.location.reload();
+    <script>
+        function executeOrchestration(taskId) {
+            // 原有逻辑完全保留
+            fetch(`{% url 'task_orchestration:execute_api' 0 %}`.replace('0', taskId), {
+                method: 'POST',
+                headers: {'X-CSRFToken': '{{ csrf_token }}'}
+            }).then(res => res.json()).then(data => {
+                alert(data.msg);
+                if (data.status === 'success') {
+                    window.location.reload();
+                }
+            }).catch(err => {
+                alert('执行请求失败：' + err);
+            });
         }
-    }).catch(err => {
-        alert('执行请求失败：' + err);
-    });
-}
-</script>
+    </script>
 {% endblock %}

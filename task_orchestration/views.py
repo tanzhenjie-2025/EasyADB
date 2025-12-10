@@ -748,3 +748,58 @@ def check_task_result(request):
         'result': task.result if task.status == 'SUCCESS' else None,
         'error': str(task.result) if task.status == 'FAILURE' else None
     })
+
+
+# 在现有视图下方添加
+class OrchestrationCloneView(View):
+    def get(self, request, task_id):
+        """显示克隆任务确认页面"""
+        original_task = get_object_or_404(OrchestrationTask, id=task_id)
+        return render(request, "task_orchestration/clone.html", {
+            "original_task": original_task,
+            "page_title": f"克隆任务 - {original_task.name}"
+        })
+
+    def post(self, request, task_id):
+        """执行任务克隆操作"""
+        original_task = get_object_or_404(OrchestrationTask, id=task_id)
+
+        # 获取新任务名称
+        new_task_name = request.POST.get("new_task_name")
+        if not new_task_name:
+            return render(request, "task_orchestration/clone.html", {
+                "original_task": original_task,
+                "page_title": f"克隆任务 - {original_task.name}",
+                "error_msg": "新任务名称不能为空"
+            })
+
+        # 检查名称唯一性
+        if OrchestrationTask.objects.filter(name=new_task_name).exists():
+            return render(request, "task_orchestration/clone.html", {
+                "original_task": original_task,
+                "page_title": f"克隆任务 - {original_task.name}",
+                "error_msg": "任务名称已存在，请使用其他名称"
+            })
+
+        # 创建新任务
+        new_task = OrchestrationTask.objects.create(
+            name=new_task_name,
+            description=original_task.description,
+            status="draft",  # 克隆任务默认为草稿状态
+            create_time=timezone.now(),
+            update_time=timezone.now()
+        )
+
+        # 复制所有子任务步骤
+        original_steps = original_task.steps.all().order_by("execution_order")
+        for step in original_steps:
+            TaskStep.objects.create(
+                orchestration=new_task,
+                script_task=step.script_task,
+                execution_order=step.execution_order,
+                run_duration=step.run_duration,
+                create_time=timezone.now()
+            )
+
+        # 克隆成功后跳转到编辑页面
+        return redirect(reverse("task_orchestration:edit_steps", args=[new_task.id]) + "?msg=任务克隆成功")

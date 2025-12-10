@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <style>
+        /* 复用现有样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            padding: 20px;
+            background-color: #f5f7fa;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #303133;
+            font-size: 24px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 4px;
+            transition: background-color 0.2s;
+        }
+        .btn-primary {
+            background-color: #409eff;
+            color: #fff;
+        }
+        .btn-default {
+            background-color: #f5f7fa;
+            color: #606266;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #303133;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .alert-error {
+            padding: 12px;
+            background-color: #fef0f0;
+            color: #f56c6c;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .task-info {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #f5f7fa;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ page_title }}</h1>
+        <div>
+            <a href="{% url 'task_orchestration:list' %}" class="btn btn-default">🔙 返回任务列表</a>
+        </div>
+    </div>
+
+    {% if error_msg %}
+        <div class="alert-error">
+            {{ error_msg }}
+        </div>
+    {% endif %}
+
+    <div class="card">
+        <h3>原任务信息</h3>
+        <div class="task-info">
+            <p><strong>任务名称：</strong>{{ original_task.name }}</p>
+            <p><strong>描述：</strong>{{ original_task.description|default:"无" }}</p>
+            <p><strong>状态：</strong>{{ original_task.get_status_display }}</p>
+            <p><strong>子任务步骤数量：</strong>{{ original_task.steps.count }}</p>
+        </div>
+
+        <h3 style="margin-top: 20px;">新任务信息</h3>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="new_task_name">新任务名称 <span style="color: red;">*</span></label>
+                <input type="text" id="new_task_name" name="new_task_name"
+                       value="{{ original_task.name }}_克隆" required>
+                <small style="color: #909399;">请输入新任务的名称，克隆后可在编辑页面修改详细信息</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">确认克隆</button>
+            <a href="{% url 'task_orchestration:list' %}" class="btn btn-default">取消</a>
+        </form>
+    </div>
+</body>
+</html>
