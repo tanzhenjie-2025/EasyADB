@@ -405,3 +405,5 @@ class LogStatusView(View):
                 "code": 500,
                 "msg": str(e)
             })
+
+

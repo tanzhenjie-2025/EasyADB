@@ -14,7 +14,6 @@ urlpatterns = [
     path('log/<int:log_id>/', views.OrchestrationLogDetailView.as_view(), name='log_detail'),
     path('log/status/<int:log_id>/', views.OrchestrationLogStatusView.as_view(), name='log_status'),  # 新增
 
-
     path('',views.send_sms,name='send_sms_index'),
     path('send/', views.send_sms_view, name='send_sms'),  # 普通视图
     path('task-result/', views.check_task_result, name='check_task'),  # 查询任务结果

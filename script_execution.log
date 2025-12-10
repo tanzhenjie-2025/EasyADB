@@ -7474,3 +7474,345 @@ def backend_cleanup():
 def send_email2(mobile):
     return 1
 
+2025-12-10 21:29:08,302 - django.request - WARNING - Not Found: /
+2025-12-10 21:29:12,249 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-10 21:29:12,250 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-10 21:29:12,250 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-10 21:29:12,252 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-10 21:29:12,252 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-10 21:29:12,253 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-10 21:29:12,253 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-10 21:29:12,254 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-10 21:29:12,254 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-10 21:29:12,255 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-10 21:29:30,321 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-10 21:29:30,339 - script_center.views - INFO - 日志ID：49，状态：success，是否运行中：False
+2025-12-10 21:29:30,354 - script_center.views - INFO - 日志ID：48，状态：stopped，是否运行中：False
+2025-12-10 21:29:30,371 - script_center.views - INFO - 日志ID：47，状态：success，是否运行中：False
+2025-12-10 21:29:30,387 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-10 21:29:30,401 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-10 21:29:30,404 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-10 21:29:30,417 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-10 21:29:30,432 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-10 21:29:30,448 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-10 21:29:30,464 - script_center.views - INFO - 日志ID：40，状态：failed，是否运行中：False
+2025-12-10 21:30:38,169 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-10 21:30:38,169 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-10 21:30:38,170 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-10 21:30:38,170 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-10 21:30:38,170 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-10 21:30:38,171 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-10 21:30:38,171 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-10 21:30:38,171 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-10 21:30:38,172 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-10 21:30:38,172 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-10 21:30:38,173 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-10 21:30:38,173 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-10 21:30:38,173 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-10 21:30:38,173 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-10 21:31:24,732 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-10 21:31:24,733 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-10 21:31:24,733 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-10 21:31:24,735 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-10 21:31:24,735 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-10 21:31:24,737 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-10 21:31:24,737 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-10 21:31:24,738 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-10 21:31:24,738 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-10 21:31:24,740 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-10 21:34:51,347 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\forms.py changed, reloading.
+2025-12-10 21:36:20,794 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\script_center\views.py changed, reloading.
+2025-12-10 21:37:13,217 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-10 21:40:11,575 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\forms.py changed, reloading.
+2025-12-10 21:41:25,533 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\forms.py changed, reloading.
+2025-12-10 21:43:01,819 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-10 21:43:50,352 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\templates\dict_filters.py changed, reloading.
+2025-12-10 21:44:14,303 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\urls.py changed, reloading.
+2025-12-10 21:44:32,423 - django.request - ERROR - Internal Server Error: /task_orchestration/edit_steps/4/
+Traceback (most recent call last):
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\defaulttags.py", line 1035, in find_library
+    return parser.libraries[name]
+           ~~~~~~~~~~~~~~~~^^^^^^
+KeyError: 'dict_filters'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\views\generic\base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\django_projects\EasyADB\task_orchestration\views.py", line 137, in get
+    return render(request, "task_orchestration/edit_steps.html", {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\defaulttags.py", line 1097, in load
+    lib = find_library(parser, name)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\defaulttags.py", line 1037, in find_library
+    raise TemplateSyntaxError(
+django.template.exceptions.TemplateSyntaxError: 'dict_filters' is not a registered tag library. Must be one of:
+admin_list
+admin_modify
+admin_urls
+cache
+i18n
+l10n
+log
+static
+tz
+2025-12-10 21:49:20,345 - django.request - ERROR - Internal Server Error: /task_orchestration/edit_steps/4/
+Traceback (most recent call last):
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\defaulttags.py", line 1035, in find_library
+    return parser.libraries[name]
+           ~~~~~~~~~~~~~~~~^^^^^^
+KeyError: 'dict_filters'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\views\generic\base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\django_projects\EasyADB\task_orchestration\views.py", line 137, in get
+    return render(request, "task_orchestration/edit_steps.html", {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\defaulttags.py", line 1097, in load
+    lib = find_library(parser, name)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\defaulttags.py", line 1037, in find_library
+    raise TemplateSyntaxError(
+django.template.exceptions.TemplateSyntaxError: 'dict_filters' is not a registered tag library. Must be one of:
+admin_list
+admin_modify
+admin_urls
+cache
+i18n
+l10n
+log
+static
+tz
+2025-12-10 21:50:32,841 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-10 21:50:32,842 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-10 21:50:32,842 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-10 21:50:32,845 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-10 21:50:32,845 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-10 21:50:32,846 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-10 21:50:32,846 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-10 21:50:32,848 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-10 21:50:32,848 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-10 21:50:32,849 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-10 21:51:16,698 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-10 21:51:16,700 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-10 21:51:16,700 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-10 21:51:16,701 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-10 21:51:16,701 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-10 21:51:16,703 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-10 21:51:16,703 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-10 21:51:16,704 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-10 21:51:16,704 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-10 21:51:16,704 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-10 21:51:24,205 - adb_manager.views - INFO - 执行ADB连接命令：adb connect 192.168.33.204:5555
+2025-12-10 21:51:25,956 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-10 21:51:25,957 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-10 21:51:25,957 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-10 21:51:25,958 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'online', 'stdout': 'connected to 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-10 21:51:25,958 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-10 21:51:25,958 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-10 21:51:25,959 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-10 21:51:25,959 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-10 21:51:25,959 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-10 21:51:25,961 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-10 21:51:46,962 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-10 21:51:46,965 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-10 21:51:46,966 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-10 21:51:46,966 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-10 21:51:46,966 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-10 21:51:46,966 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-10 21:51:46,967 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-10 21:51:46,967 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-10 21:51:46,968 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-10 21:51:46,968 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-10 21:51:46,968 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-10 21:51:46,970 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-10 21:51:46,970 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-10 21:51:46,970 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-10 21:52:37,087 - task_orchestration.views - INFO - 已终止Celery任务5bbece55-a48f-4fff-ac14-e6063355cf73（编排日志16，步骤0）
+2025-12-10 21:52:37,088 - task_orchestration.views - INFO - 已终止Celery任务e593d054-0346-4c7b-9066-1a00318c38dd（编排日志16，步骤1）
+2025-12-10 21:52:37,088 - task_orchestration.views - INFO - 已终止Celery任务361f46bd-3ffe-4feb-9704-0217e4e2778b（编排日志16，步骤2）
+2025-12-10 21:52:37,113 - task_orchestration.views - ERROR - 终止Redis进程失败（KEY：16_1）：process PID not found (pid=49844)
+2025-12-10 21:52:37,114 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=16_1
+2025-12-10 21:52:37,129 - task_orchestration.views - ERROR - 终止Redis进程失败（KEY：16_0）：process PID not found (pid=51456)
+2025-12-10 21:52:37,143 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=16_0
+2025-12-10 21:52:38,177 - task_orchestration.views - INFO - 已终止Redis中记录的进程49292（KEY：16_2）
+2025-12-10 21:52:38,203 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=16_2

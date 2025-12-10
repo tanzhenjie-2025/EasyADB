@@ -36,6 +36,7 @@ process_lock = threading.Lock()
 running_tasks = {}  # 新增：记录Celery任务ID
 task_lock = threading.Lock()
 
+
 # ===================== Redis进程存储函数（和tasks保持一致，避免循环导入） =====================
 def get_redis_conn():
     try:
@@ -52,6 +53,7 @@ def get_redis_conn():
         logger.error(f"Redis连接失败：{str(e)}")
         return None
 
+
 def save_running_process(process_key, process_info):
     """保存进程信息到Redis"""
     r = get_redis_conn()
@@ -60,6 +62,7 @@ def save_running_process(process_key, process_info):
             r.hset("orch_running_processes", process_key, json.dumps(process_info))
         except Exception as e:
             logger.error(f"Redis保存进程信息失败：{str(e)}")
+
 
 def get_running_process(process_key):
     """从Redis获取进程信息"""
@@ -72,6 +75,7 @@ def get_running_process(process_key):
             logger.error(f"Redis获取进程信息失败：{str(e)}")
     return None
 
+
 def remove_running_process(process_key):
     """从Redis删除进程信息"""
     r = get_redis_conn()
@@ -81,15 +85,17 @@ def remove_running_process(process_key):
             logger.info(f"Redis中进程信息已删除，KEY={process_key}")
         except Exception as e:
             logger.error(f"Redis删除进程信息失败：{str(e)}")
+
+
 # ===================== Redis进程存储函数结束 =====================
 
 # 模型和表单导入
 from adb_manager.models import ADBDevice
 from .models import OrchestrationTask, TaskStep, OrchestrationLog, StepExecutionLog
-from .forms import OrchestrationTaskForm, TaskStepForm
+from .forms import OrchestrationTaskForm, TaskStepForm, TaskStepEditForm
 from script_center.models import ScriptTask, TaskExecutionLog
-# from script_center.views import running_processes as script_running_processes, process_lock as script_process_lock
 from .tasks import execute_step_task  # 导入Celery任务
+
 
 # 编排任务列表（完全保留原有代码）
 class OrchestrationListView(View):
@@ -99,6 +105,7 @@ class OrchestrationListView(View):
             "tasks": tasks,
             "page_title": "编排任务管理"
         })
+
 
 # 创建编排任务（完全保留原有代码）
 class OrchestrationCreateView(View):
@@ -116,19 +123,23 @@ class OrchestrationCreateView(View):
             return redirect(reverse("task_orchestration:edit_steps", args=[task.id]))
         return render(request, "task_orchestration/form.html", {"form": form})
 
-# 编辑子任务步骤（完全保留原有代码）
+
+# 编辑子任务步骤（合并后完整版本，包含编辑超时时间功能）
 class StepEditView(View):
     def get(self, request, task_id):
         orchestration = get_object_or_404(OrchestrationTask, id=task_id)
         steps = orchestration.steps.all().order_by("execution_order")
         task_form = OrchestrationTaskForm(instance=orchestration)
         step_form = TaskStepForm()
+        # 初始化编辑表单（每个步骤对应一个编辑表单）
+        edit_forms = {step.id: TaskStepEditForm(instance=step) for step in steps}
 
         return render(request, "task_orchestration/edit_steps.html", {
             "orchestration": orchestration,
             "steps": steps,
             "task_form": task_form,
             "step_form": step_form,
+            "edit_forms": edit_forms,  # 传递编辑表单到模板
             "page_title": f"编辑步骤 - {orchestration.name}"
         })
 
@@ -136,13 +147,16 @@ class StepEditView(View):
         orchestration = get_object_or_404(OrchestrationTask, id=task_id)
         steps = orchestration.steps.all().order_by("execution_order")
 
+        # 处理任务信息更新（如名称、状态、描述）
         if "action" in request.POST and request.POST["action"] == "update_task":
             task_form = OrchestrationTaskForm(request.POST, instance=orchestration)
             step_form = TaskStepForm()
             if task_form.is_valid():
                 task_form.save()
                 return redirect(f"{reverse('task_orchestration:edit_steps', args=[task_id])}?msg=状态修改成功")
-        else:
+
+        # 处理步骤添加
+        elif "action" not in request.POST or request.POST["action"] == "add_step":
             task_form = OrchestrationTaskForm(instance=orchestration)
             step_form = TaskStepForm(request.POST)
             if step_form.is_valid():
@@ -151,14 +165,38 @@ class StepEditView(View):
                 step.save()
                 return redirect(f"{reverse('task_orchestration:edit_steps', args=[task_id])}?msg=步骤添加成功")
 
+        # 处理步骤编辑（超时时间）
+        elif "action" in request.POST and request.POST["action"] == "edit_step":
+            step_id = request.POST.get("step_id")
+            step = get_object_or_404(TaskStep, id=step_id, orchestration=orchestration)
+            form = TaskStepEditForm(request.POST, instance=step)
+
+            if form.is_valid():
+                form.save()
+                return redirect(f"{reverse('task_orchestration:edit_steps', args=[task_id])}?msg=步骤更新成功")
+            else:
+                # 表单验证失败，返回错误
+                return render(request, "task_orchestration/edit_steps.html", {
+                    "orchestration": orchestration,
+                    "steps": steps,
+                    "task_form": OrchestrationTaskForm(instance=orchestration),
+                    "step_form": TaskStepForm(),
+                    "edit_forms": {step.id: form for step in steps},
+                    "page_title": f"编辑步骤 - {orchestration.name}",
+                    "error_msg": "表单填写有误，请检查（运行时长最小10秒）"
+                })
+
+        # 表单验证失败的默认返回
         return render(request, "task_orchestration/edit_steps.html", {
             "orchestration": orchestration,
             "steps": steps,
-            "task_form": task_form,
-            "step_form": step_form,
+            "task_form": task_form if 'task_form' in locals() else OrchestrationTaskForm(instance=orchestration),
+            "step_form": step_form if 'step_form' in locals() else TaskStepForm(),
+            "edit_forms": {step.id: TaskStepEditForm(instance=step) for step in steps},
             "page_title": f"编辑步骤 - {orchestration.name}",
             "error_msg": "表单填写有误，请检查"
         })
+
 
 # 旧版执行接口（修改为Celery异步执行，保留原有入参和返回格式）
 class ExecuteOrchestrationAPIView(View):
@@ -405,6 +443,7 @@ class ExecuteOrchestrationAPIView(View):
         except Exception as e:
             logger.error(f"终止Redis进程失败（KEY：{process_key}）：{str(e)}")
 
+
 # 新版执行页面（完全保留原有代码，仅修改_run_orchestration调用）
 class OrchestrationExecuteView(View):
     def get(self, request):
@@ -487,6 +526,7 @@ class OrchestrationExecuteView(View):
     def _run_orchestration(self, orch_log, steps, device):
         """复用修改后的执行逻辑（Celery异步+异常捕获）"""
         ExecuteOrchestrationAPIView()._run_orchestration(orch_log, steps, device)
+
 
 # 停止编排任务（增强版：支持Celery+Redis进程双终止）
 class StopOrchestrationView(View):
@@ -584,6 +624,7 @@ class StopOrchestrationView(View):
         except Exception as e:
             logger.error(f"终止Redis进程失败（KEY：{process_key}）：{str(e)}")
 
+
 # 删除步骤（完全保留原有代码）
 class StepDeleteView(View):
     def get(self, request, step_id):
@@ -591,6 +632,7 @@ class StepDeleteView(View):
         task_id = step.orchestration.id
         step.delete()
         return redirect(reverse("task_orchestration:edit_steps", args=[task_id]))
+
 
 # 编排日志详情（完全保留原有代码）
 class OrchestrationLogDetailView(View):
@@ -610,6 +652,7 @@ class OrchestrationLogDetailView(View):
             "step_logs": step_logs
         }
         return render(request, "task_orchestration/log_detail.html", context)
+
 
 # AJAX获取日志状态（完全保留原有代码）
 class OrchestrationLogStatusView(View):
@@ -642,18 +685,17 @@ class OrchestrationLogStatusView(View):
                 "msg": str(e)
             })
 
+
 # 以下为原有测试相关代码（保留）
-from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.shortcuts import render
 from mycelery.email.tasks import send_email, send_email2
-from celery.result import AsyncResult
 from mycelery.main import app
-import json
+
 
 def send_sms(request):
     return render(request, 'sms_send.html')
+
 
 # 修正：兼容JSON和表单请求，加固参数校验
 def send_sms_view(request):
@@ -689,6 +731,7 @@ def send_sms_view(request):
             'mobile': mobile  # 新增：返回手机号，方便前端验证
         })
     return JsonResponse({'code': 405, 'msg': '仅支持POST请求'})
+
 
 # 保持查询接口不变
 @api_view(['GET'])

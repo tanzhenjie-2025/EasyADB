@@ -37,3 +37,23 @@ class TaskStepForm(forms.ModelForm):
                 "placeholder": "单位：秒，最小10秒"
             }),
         }
+
+# 新增：步骤编辑表单（仅编辑超时时间）
+class TaskStepEditForm(forms.ModelForm):
+    class Meta:
+        model = TaskStep
+        fields = ["run_duration"]
+        widgets = {
+            "run_duration": forms.NumberInput(attrs={
+                "class": "form-control",
+                "min": 10,  # 和添加时保持一致的最小值
+                "step": 1,
+                "placeholder": "单位：秒，最小10秒"
+            }),
+        }
+        labels = {
+            "run_duration": "运行时长(秒)",
+        }
+        help_texts = {
+            "run_duration": "指定该子任务运行多久后自动停止（最小10秒）",
+        }
