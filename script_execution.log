@@ -8180,3 +8180,578 @@ def backend_cleanup():
 2025-12-10 22:34:44,086 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=18_2
 2025-12-10 22:34:44,089 - task_orchestration.views - ERROR - 终止Redis进程失败（KEY：18_1）：process PID not found (pid=50700)
 2025-12-10 22:34:44,102 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=18_1
+2025-12-11 17:04:50,772 - django.request - WARNING - Not Found: /
+2025-12-11 17:04:54,341 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-11 17:04:54,343 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-11 17:04:54,343 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-11 17:04:54,345 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-11 17:04:54,345 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-11 17:04:54,347 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-11 17:04:54,347 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-11 17:04:54,348 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-11 17:04:54,348 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-11 17:04:54,349 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-11 17:05:46,238 - django.request - ERROR - Internal Server Error: /scheduler/create/
+Traceback (most recent call last):
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\views\generic\base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\django_projects\EasyADB\task_scheduler\views.py", line 42, in post
+    schedule = form.save()
+               ^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\forms\models.py", line 554, in save
+    self.instance.save()
+  File "E:\django_projects\EasyADB\task_scheduler\models.py", line 55, in save
+    super().save(*args, **kwargs)
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\base.py", line 891, in save
+    self.save_base(
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\base.py", line 997, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\base.py", line 1160, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\base.py", line 1201, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\query.py", line 1847, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\compiler.py", line 1835, in execute_sql
+    for sql, params in self.as_sql():
+                       ^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\compiler.py", line 1758, in as_sql
+    value_rows = [
+                 ^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\compiler.py", line 1759, in <listcomp>
+    [
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\compiler.py", line 1760, in <listcomp>
+    self.prepare_value(field, self.pre_save_val(field, obj))
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\compiler.py", line 1699, in prepare_value
+    return field.get_db_prep_save(value, connection=self.connection)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\fields\__init__.py", line 1008, in get_db_prep_save
+    return self.get_db_prep_value(value, connection=connection, prepared=False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\fields\__init__.py", line 1678, in get_db_prep_value
+    return connection.ops.adapt_datetimefield_value(value)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\backends\sqlite3\operations.py", line 271, in adapt_datetimefield_value
+    raise ValueError(
+ValueError: SQLite backend does not support timezone-aware datetimes when USE_TZ is False.
+2025-12-11 17:08:46,430 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_scheduler\models.py changed, reloading.
+2025-12-11 17:09:32,250 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_scheduler\views.py changed, reloading.
+2025-12-11 17:11:00,192 - django.request - ERROR - Internal Server Error: /scheduler/execute/1/
+Traceback (most recent call last):
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\views\generic\base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\django_projects\EasyADB\task_scheduler\views.py", line 148, in post
+    log.end_time = datetime.datetime.now()  # 改这里：去掉timezone.now()
+                   ^^^^^^^^
+NameError: name 'datetime' is not defined
+2025-12-11 17:14:16,566 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_scheduler\views.py changed, reloading.
+2025-12-11 17:14:45,472 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-11 17:14:45,474 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-11 17:14:45,474 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-11 17:14:45,475 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-11 17:14:45,476 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-11 17:14:45,476 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-11 17:14:45,477 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-11 17:14:45,477 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-11 17:14:45,478 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-11 17:14:45,478 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-11 17:14:46,835 - adb_manager.views - INFO - 执行ADB连接命令：adb -s 10AF5E1AKU003NR wait-for-device shell echo connected
+2025-12-11 17:14:47,296 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-11 17:14:47,297 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-11 17:14:47,297 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-11 17:14:47,298 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-11 17:14:47,298 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-11 17:14:47,299 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-11 17:14:47,299 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-11 17:14:47,300 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-11 17:14:47,300 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-11 17:14:47,300 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-11 17:18:59,966 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_scheduler\views.py changed, reloading.
+2025-12-11 17:20:01,489 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-11 17:20:01,489 - celery.utils.functional - DEBUG - 
+def check_and_execute_schedules():
+    return 1
+
+2025-12-11 17:20:01,490 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-11 17:20:01,490 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-11 17:20:01,491 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-11 17:20:01,491 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-11 17:20:01,491 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-11 17:20:01,492 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-11 17:20:01,492 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-11 17:20:01,492 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-11 17:20:01,492 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-11 17:20:01,493 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-11 17:20:01,493 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-11 17:20:01,495 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-11 17:20:01,495 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-11 17:25:10,697 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_scheduler\views.py changed, reloading.
+2025-12-11 17:25:39,736 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-11 17:25:39,737 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-11 17:25:39,737 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-11 17:25:39,738 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-11 17:25:39,738 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-11 17:25:39,738 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-11 17:25:39,739 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-11 17:25:39,739 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-11 17:25:39,740 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-11 17:25:39,740 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-11 17:25:39,740 - celery.utils.functional - DEBUG - 
+def check_and_execute_schedules():
+    return 1
+
+2025-12-11 17:25:39,741 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-11 17:25:39,741 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-11 17:25:39,741 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-11 17:25:39,741 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-11 17:25:48,496 - task_scheduler.views - INFO - 开始执行定时任务 定时看快手，设备ID：3
+2025-12-11 17:25:48,512 - task_scheduler.views - INFO - 指定设备：10AF5E1AKU003NR (10AF5E1AKU003NR)，is_active：True
+2025-12-11 17:25:48,518 - task_scheduler.views - INFO - 选中执行设备：10AF5E1AKU003NR
+2025-12-11 17:25:48,519 - task_scheduler.views - INFO - 调用编排任务接口，ID：3
+2025-12-11 17:25:48,522 - task_scheduler.views - ERROR - 执行失败：Cannot resolve keyword 'device_status' into field. Choices are: created_at, device_ip, device_name, device_port, device_serial, id, is_active, orchestrationlog, scheduleexecutionlog, scheduletask, taskexecutionlog, updated_at, user, user_id
+Traceback (most recent call last):
+  File "E:\django_projects\EasyADB\task_scheduler\views.py", line 137, in post
+    response = execution_view.post(request, schedule.orchestration.id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\django_projects\EasyADB\task_orchestration\views.py", line 212, in post
+    device = ADBDevice.objects.filter(device_status="online").first()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\query.py", line 1476, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\query.py", line 1494, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\query.py", line 1501, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\query.py", line 1609, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\query.py", line 1641, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\query.py", line 1491, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\query.py", line 1303, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\query.py", line 1768, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'device_status' into field. Choices are: created_at, device_ip, device_name, device_port, device_serial, id, is_active, orchestrationlog, scheduleexecutionlog, scheduletask, taskexecutionlog, updated_at, user, user_id
+2025-12-11 17:27:55,413 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-11 17:28:10,683 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-11 17:28:10,684 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-11 17:28:10,684 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-11 17:28:10,685 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-11 17:28:10,685 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-11 17:28:10,686 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-11 17:28:10,686 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-11 17:28:10,687 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-11 17:28:10,687 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-11 17:28:10,687 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-11 17:28:10,688 - celery.utils.functional - DEBUG - 
+def check_and_execute_schedules():
+    return 1
+
+2025-12-11 17:28:10,688 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-11 17:28:10,688 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-11 17:28:10,689 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-11 17:28:10,689 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-11 17:28:19,175 - task_scheduler.views - INFO - 开始执行定时任务 定时看快手，设备ID：3
+2025-12-11 17:28:19,197 - task_scheduler.views - INFO - 指定设备：10AF5E1AKU003NR (10AF5E1AKU003NR)，is_active：True
+2025-12-11 17:28:19,204 - task_scheduler.views - INFO - 选中执行设备：10AF5E1AKU003NR
+2025-12-11 17:28:19,205 - task_scheduler.views - INFO - 调用编排任务接口，ID：3
+2025-12-11 17:28:19,208 - task_scheduler.views - ERROR - 执行失败：['“online”的值应该为True或False']
+Traceback (most recent call last):
+  File "E:\django_projects\EasyADB\task_scheduler\views.py", line 137, in post
+    response = execution_view.post(request, schedule.orchestration.id)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\django_projects\EasyADB\task_orchestration\views.py", line 212, in post
+    device = ADBDevice.objects.filter(is_active="online").first()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\query.py", line 1476, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\query.py", line 1494, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\query.py", line 1501, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\query.py", line 1609, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\query.py", line 1641, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\query.py", line 1555, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\sql\query.py", line 1385, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\lookups.py", line 30, in __init__
+    self.rhs = self.get_prep_lookup()
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\lookups.py", line 369, in get_prep_lookup
+    return super().get_prep_lookup()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\lookups.py", line 88, in get_prep_lookup
+    return self.lhs.output_field.get_prep_value(self.rhs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\fields\__init__.py", line 1184, in get_prep_value
+    return self.to_python(value)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\db\models\fields\__init__.py", line 1174, in to_python
+    raise exceptions.ValidationError(
+django.core.exceptions.ValidationError: ['“online”的值应该为True或False']
+2025-12-11 17:28:31,222 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-11 17:30:42,777 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-11 17:30:42,782 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-11 17:30:42,783 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-11 17:30:42,783 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-11 17:30:42,784 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-11 17:30:42,785 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-11 17:30:42,785 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-11 17:30:42,786 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-11 17:30:42,787 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-11 17:30:42,788 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-11 17:30:42,789 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-11 17:30:42,789 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-11 17:30:42,791 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-11 17:30:42,791 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-11 17:33:43,091 - task_orchestration.views - INFO - 已终止Celery任务fc3155e1-57b6-4b0b-bca7-83e2a8c2cb6f（编排日志19，步骤0）
+2025-12-11 17:33:43,091 - task_orchestration.views - INFO - 已终止Celery任务86e7ea50-d3b6-4f4f-a4e0-5f7b9447081e（编排日志19，步骤1）
+2025-12-11 17:33:43,092 - task_orchestration.views - INFO - 已终止Celery任务68711806-4d08-4366-b946-42cb39d39ac6（编排日志19，步骤2）
+2025-12-11 17:33:43,131 - task_orchestration.views - ERROR - 终止Redis进程失败（KEY：19_1）：process PID not found (pid=36088)
+2025-12-11 17:33:43,144 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=19_1
+2025-12-11 17:33:43,146 - task_orchestration.views - ERROR - 终止Redis进程失败（KEY：19_0）：process PID not found (pid=50404)
+2025-12-11 17:33:43,161 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=19_0
+2025-12-11 17:33:44,176 - task_orchestration.views - INFO - 已终止Redis中记录的进程28476（KEY：19_2）
+2025-12-11 17:33:44,189 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=19_2
+2025-12-11 17:35:53,550 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-11 17:36:00,975 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-11 17:36:00,976 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-11 17:36:00,977 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-11 17:36:00,977 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-11 17:36:00,978 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-11 17:36:00,978 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-11 17:36:00,979 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-11 17:36:00,979 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-11 17:36:00,979 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-11 17:36:00,980 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-11 17:36:00,980 - celery.utils.functional - DEBUG - 
+def check_and_execute_schedules():
+    return 1
+
+2025-12-11 17:36:00,981 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-11 17:36:00,981 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-11 17:36:00,981 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-11 17:36:00,982 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-11 17:36:21,089 - task_scheduler.views - INFO - 开始执行定时任务 定时看快手，设备ID：3
+2025-12-11 17:36:21,110 - task_scheduler.views - INFO - 指定设备：10AF5E1AKU003NR (10AF5E1AKU003NR)，is_active：True
+2025-12-11 17:36:21,117 - task_scheduler.views - INFO - 选中执行设备：10AF5E1AKU003NR
+2025-12-11 17:36:21,118 - task_scheduler.views - INFO - 调用编排任务接口，ID：3
+2025-12-11 17:36:21,129 - task_scheduler.views - ERROR - 执行失败：'JsonResponse' object has no attribute 'json'
+Traceback (most recent call last):
+  File "E:\django_projects\EasyADB\task_scheduler\views.py", line 139, in post
+    if response.status_code == 200 and response.json().get("status") == "success":
+                                       ^^^^^^^^^^^^^
+AttributeError: 'JsonResponse' object has no attribute 'json'
+2025-12-11 17:36:21,146 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-11 17:36:21,148 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-11 17:36:21,149 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-11 17:36:21,149 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-11 17:36:21,149 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-11 17:36:21,150 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-11 17:36:21,150 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-11 17:36:21,150 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-11 17:36:21,151 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-11 17:36:21,151 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-11 17:36:21,151 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-11 17:36:21,152 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-11 17:36:21,152 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-11 17:36:21,152 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+

@@ -144,6 +144,7 @@
             <li><a href="{% url 'adb_manager:index' %}" class="nav-link {% if request.resolver_match.namespace == 'adb_manager' %}active{% endif %}">设备管理</a></li>
             <li><a href="{% url 'script_center:task_list' %}" class="nav-link {% if request.resolver_match.namespace == 'script_center' %}active{% endif %}">脚本中心</a></li>
             <li><a href="{% url 'task_orchestration:list' %}" class="nav-link {% if request.resolver_match.namespace == 'task_orchestration' %}active{% endif %}">任务编排</a></li>
+            <li><a href="{% url 'task_scheduler:list' %}" class="nav-link {% if request.resolver_match.namespace == 'task_scheduler' %}active{% endif %}">定时任务</a></li>
             <li><a href="/admin/" class="nav-link {% if '/admin/' in request.path %}active{% endif %}">管理员后台</a></li>
         </ul>
     </nav>

@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ page_title }}</h1>
+        <a href="{% url 'task_scheduler:create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> 创建定时任务
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 15%;">名称</th>
+                        <th style="width: 18%;">关联编排任务</th>
+                        <th style="width: 15%;">执行设备</th>
+                        <th style="width: 20%;">Cron表达式</th>
+                        <th style="width: 12%;">下次执行</th>
+                        <th style="width: 8%;">状态</th>
+                        <th style="width: 12%;">操作</th> <!-- 给操作列固定宽度，避免挤压 -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for schedule in schedules %}
+                    <tr>
+                        <td>{{ schedule.name }}</td>
+                        <td>{{ schedule.orchestration.name }}</td>
+                        <td>
+                            {% if schedule.device %}
+                                {{ schedule.device.device_name }}
+                            {% else %}
+                                <span class="text-muted">自动选择</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ schedule.cron_expression }}</td>
+                        <td>
+                            {% if schedule.next_run_time %}
+                                {{ schedule.next_run_time|date:"Y-m-d H:i" }}
+                            {% else %}
+                                <span class="text-muted">未计算</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if schedule.is_active %}
+                                <span class="badge bg-success">已启用</span>
+                            {% else %}
+                                <span class="badge bg-secondary">已禁用</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <!-- 重构按钮组：去掉嵌套form，改用button+form分开，优化布局 -->
+                            <div class="d-flex gap-1"> <!-- 用gap-1控制按钮间距，替代btn-group避免嵌套问题 -->
+                                <!-- 查看按钮 -->
+                                <a href="{% url 'task_scheduler:detail' schedule.id %}"
+                                   class="btn btn-info btn-sm d-flex align-items-center"
+                                   title="查看详情">
+                                    <i class="bi bi-eye me-1"></i> <!-- me-1：图标和文字间距 -->
+                                    <span>查看</span>
+                                </a>
+                                <!-- 编辑按钮 -->
+                                <a href="{% url 'task_scheduler:edit' schedule.id %}"
+                                   class="btn btn-warning btn-sm d-flex align-items-center"
+                                   title="编辑任务">
+                                    <i class="bi bi-pencil me-1"></i>
+                                    <span>编辑</span>
+                                </a>
+                                <!-- 启用/禁用按钮（单独form，避免嵌套） -->
+                                <form method="post" action="{% url 'task_scheduler:toggle' schedule.id %}" class="m-0">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="btn {% if schedule.is_active %}btn-danger{% else %}btn-success{% endif %} btn-sm d-flex align-items-center"
+                                            title="{% if schedule.is_active %}禁用任务{% else %}启用任务{% endif %}">
+                                        <i class="bi {% if schedule.is_active %}bi-power{% else %}bi-play{% endif %} me-1"></i>
+                                        <span>{% if schedule.is_active %}禁用{% else %}启用{% endif %}</span>
+                                    </button>
+                                </form>
+                                <!-- 立即执行按钮（单独form） -->
+                                <form method="post" action="{% url 'task_scheduler:execute' schedule.id %}" class="m-0">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="btn btn-primary btn-sm d-flex align-items-center"
+                                            title="立即执行">
+                                        <i class="bi bi-play-circle me-1"></i>
+                                        <span>执行</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <div class="text-muted">暂无定时任务，请点击"创建定时任务"按钮添加</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- 可选：添加确认提示（禁用/执行时防误操作） -->
+<script>
+// 给禁用/执行按钮添加确认提示
+document.addEventListener('DOMContentLoaded', function() {
+    // 禁用/启用按钮
+    const toggleButtons = document.querySelectorAll('button[title*="禁用任务"], button[title*="启用任务"]');
+    toggleButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            const action = this.textContent.trim();
+            if (!confirm(`确认${action}该定时任务吗？`)) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    // 立即执行按钮
+    const executeButtons = document.querySelectorAll('button[title="立即执行"]');
+    executeButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            if (!confirm('确认立即执行该定时任务吗？')) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

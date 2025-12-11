@@ -209,7 +209,16 @@ class ExecuteOrchestrationAPIView(View):
                 "msg": "该编排任务没有子任务步骤"
             })
 
-        device = ADBDevice.objects.filter(device_status="online").first()
+        # ========== 核心修复：替换device_status的ORM过滤逻辑 ==========
+        # 先查is_active的设备，再遍历判断device_status属性（动态属性不能用于ORM过滤）
+        device = None
+        active_devices = ADBDevice.objects.filter(is_active=True)
+        for dev in active_devices:
+            if dev.device_status == "online":  # 这里用实例属性判断，不是ORM过滤
+                device = dev
+                break
+        # ========== 核心修复结束 ==========
+
         if not device:
             return JsonResponse({
                 "status": "error",
@@ -480,7 +489,7 @@ class OrchestrationExecuteView(View):
                 error_msg = quote(f"编排任务【{orchestration.name}】没有配置子任务步骤！")
                 return redirect(f"{reverse('task_orchestration:execute_orchestration')}?msg={error_msg}")
 
-            # 校验设备（保留原有逻辑）
+            # 校验设备（保留原有逻辑，这里是实例属性判断，不是ORM过滤，无需修改）
             offline_devices = []
             valid_device_ids = []
             for device_id in device_ids:

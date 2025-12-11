@@ -27,4 +27,5 @@ urlpatterns = [
     path('script/', include('script_center.urls')),
 
     path('task_orchestration/', include('task_orchestration.urls')),
+path('scheduler/', include('task_scheduler.urls')),
 ]

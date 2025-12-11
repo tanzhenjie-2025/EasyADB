@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ page_title }}</h1>
+        <a href="{% url 'task_scheduler:list' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> 返回列表
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="text-danger">{{ form.name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.orchestration.id_for_label }}" class="form-label">{{ form.orchestration.label }}</label>
+                    {{ form.orchestration }}
+                    {% if form.orchestration.errors %}
+                        <div class="text-danger">{{ form.orchestration.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.device.id_for_label }}" class="form-label">{{ form.device.label }}</label>
+                    {{ form.device }}
+                    <div class="form-text">{{ form.device.help_text }}</div>
+                    {% if form.device.errors %}
+                        <div class="text-danger">{{ form.device.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.cron_template.id_for_label }}" class="form-label">常用Cron模板</label>
+                    {{ form.cron_template }}
+                    <div class="form-text">选择后会自动填充下方Cron表达式</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.cron_expression.id_for_label }}" class="form-label">{{ form.cron_expression.label }}</label>
+                    {{ form.cron_expression }}
+                    <div class="form-text">{{ form.cron_expression.help_text|safe }}</div>
+                    {% if form.cron_expression.errors %}
+                        <div class="text-danger">{{ form.cron_expression.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3 form-check">
+                    {{ form.is_active }}
+                    <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                        {{ form.is_active.label }}
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">保存</button>
+                <a href="{% url 'task_scheduler:list' %}" class="btn btn-secondary">取消</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// 选择模板时自动填充Cron表达式
+document.addEventListener('DOMContentLoaded', function() {
+    const templateSelect = document.getElementById('{{ form.cron_template.id_for_label }}');
+    const cronInput = document.getElementById('{{ form.cron_expression.id_for_label }}');
+
+    templateSelect.addEventListener('change', function() {
+        if (this.value) {
+            cronInput.value = this.value;
+        }
+    });
+});
+</script>
+{% endblock %}
