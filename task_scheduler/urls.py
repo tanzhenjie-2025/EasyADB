@@ -11,4 +11,5 @@ urlpatterns = [
     path('detail/<int:schedule_id>/', views.ScheduleTaskDetailView.as_view(), name='detail'),
     path('toggle/<int:schedule_id>/', views.ScheduleTaskToggleView.as_view(), name='toggle'),
     path('execute/<int:schedule_id>/', views.ExecuteScheduledTaskView.as_view(), name='execute'),
+
 ]

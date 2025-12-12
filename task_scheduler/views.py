@@ -80,6 +80,21 @@ class ScheduleTaskDetailView(View):
     def get(self, request, schedule_id):
         schedule = get_object_or_404(ScheduleTask, id=schedule_id)
         logs = schedule.logs.all()[:100]
+
+        # 关联查询对应的编排执行日志（用于显示停止按钮）
+        orch_logs = []
+        for log in logs:
+            if log.orchestration_log_id:
+                try:
+                    from task_orchestration.models import OrchestrationLog
+                    orch_log = OrchestrationLog.objects.get(id=log.orchestration_log_id)
+                    log.orch_log = orch_log  # 给日志对象添加编排日志属性
+                except Exception as e:
+                    logger.error(f"获取编排日志失败：{str(e)}")
+                    log.orch_log = None
+            else:
+                log.orch_log = None
+
         return render(request, "task_scheduler/schedule_detail.html", {
             "schedule": schedule,
             "logs": logs,
@@ -131,18 +146,21 @@ class ExecuteScheduledTaskView(View):
             log.save()
             logger.info(f"选中执行设备：{device.device_name}")
 
-            # 调用编排任务执行接口
+            # 调用编排任务执行接口（修复核心：正确解析JsonResponse）
             execution_view = ExecuteOrchestrationAPIView()
             logger.info(f"调用编排任务接口，ID：{schedule.orchestration.id}")
             response = execution_view.post(request, schedule.orchestration.id)
 
-            if response.status_code == 200 and response.json().get("status") == "success":
-                log.orchestration_log_id = response.json().get("log_id")
+            # 修复：Django的JsonResponse没有json()方法，需要解析content
+            import json
+            response_data = json.loads(response.content)  # 替换 response.json()
+            if response.status_code == 200 and response_data.get("status") == "success":
+                log.orchestration_log_id = response_data.get("log_id")
                 log.exec_status = "success"
                 messages.success(request, f"定时任务已手动执行")
             else:
                 log.exec_status = "failed"
-                log.error_msg = response.json().get("msg", "执行失败")
+                log.error_msg = response_data.get("msg", "执行失败")
                 messages.error(request, f"定时任务执行失败：{log.error_msg}")
 
         except Exception as e:

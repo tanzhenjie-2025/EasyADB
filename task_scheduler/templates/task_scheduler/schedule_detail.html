@@ -1,179 +1,132 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>{{ page_title }}</h1>
-        <div>
-            <a href="{% url 'task_scheduler:edit' schedule.id %}" class="btn btn-warning">
-                <i class="bi bi-pencil"></i> 编辑
-            </a>
-            <a href="{% url 'task_scheduler:list' %}" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> 返回列表
-            </a>
-        </div>
+<h1>{{ page_title }}</h1>
+
+<div class="card">
+  <div class="card-header">
+    <h3>任务信息</h3>
+  </div>
+  <div class="card-body">
+    <table class="table table-borderless">
+      <tr>
+        <th width="200">任务名称</th>
+        <td>{{ schedule.name }}</td>
+      </tr>
+      <tr>
+        <th>关联编排任务</th>
+        <td>{{ schedule.orchestration.name }}</td>
+      </tr>
+      <tr>
+        <th>执行设备</th>
+        <td>{{ schedule.device.device_name|default:"自动选择" }}</td>
+      </tr>
+      <tr>
+        <th>Cron表达式</th>
+        <td>{{ schedule.cron_expression }}</td>
+      </tr>
+      <tr>
+        <th>状态</th>
+        <td>
+          {% if schedule.is_active %}
+            <span class="badge bg-success">已启用</span>
+          {% else %}
+            <span class="badge bg-secondary">已禁用</span>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th>最后执行时间</th>
+        <td>{{ schedule.last_run_time|default:"从未执行" }}</td>
+      </tr>
+      <tr>
+        <th>下次执行时间</th>
+        <td>{{ schedule.next_run_time|default:"未计算" }}</td>
+      </tr>
+    </table>
+    <div class="mt-3">
+      <a href="{% url 'task_scheduler:edit' schedule.id %}" class="btn btn-primary">编辑任务</a>
+      <form action="{% url 'task_scheduler:toggle' schedule.id %}" method="post" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn {% if schedule.is_active %}btn-warning{% else %}btn-success{% endif %}">
+          {% if schedule.is_active %}禁用{% else %}启用{% endif %}
+        </button>
+      </form>
+      <form action="{% url 'task_scheduler:execute' schedule.id %}" method="post" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-info">立即执行</button>
+      </form>
     </div>
+  </div>
+</div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">任务信息</h5>
-                </div>
-                <div class="card-body">
-                    <table class="table">
-                        <tr>
-                            <th style="width: 30%">名称</th>
-                            <td>{{ schedule.name }}</td>
-                        </tr>
-                        <tr>
-                            <th>关联编排任务</th>
-                            <td>{{ schedule.orchestration.name }}</td>
-                        </tr>
-                        <tr>
-                            <th>执行设备</th>
-                            <td>
-                                {% if schedule.device %}
-                                    {{ schedule.device.device_name }}
-                                {% else %}
-                                    <span class="text-muted">自动选择</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Cron表达式</th>
-                            <td>{{ schedule.cron_expression }}</td>
-                        </tr>
-                        <tr>
-                            <th>状态</th>
-                            <td>
-                                {% if schedule.is_active %}
-                                    <span class="badge bg-success">已启用</span>
-                                {% else %}
-                                    <span class="badge bg-secondary">已禁用</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>最后执行时间</th>
-                            <td>
-                                {% if schedule.last_run_time %}
-                                    {{ schedule.last_run_time|date:"Y-m-d H:i:s" }}
-                                {% else %}
-                                    <span class="text-muted">从未执行</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>下次执行时间</th>
-                            <td>
-                                {% if schedule.next_run_time %}
-                                    {{ schedule.next_run_time|date:"Y-m-d H:i:s" }}
-                                {% else %}
-                                    <span class="text-muted">未计算</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="card-footer">
-                    <form method="post" action="{% url 'task_scheduler:execute' schedule.id %}" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-play-circle"></i> 立即执行
-                        </button>
-                    </form>
-                    <form method="post" action="{% url 'task_scheduler:toggle' schedule.id %}" class="d-inline ms-2">
-                        {% csrf_token %}
-                        <button type="submit" class="btn {% if schedule.is_active %}btn-danger{% else %}btn-success{% endif %}">
-                            {% if schedule.is_active %}
-                                <i class="bi bi-power"></i> 禁用
-                            {% else %}
-                                <i class="bi bi-play"></i> 启用
-                            {% endif %}
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">执行日志</h5>
-                    <span class="badge bg-secondary">{{ logs.count }} 条记录</span>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>时间</th>
-                                    <th>状态</th>
-                                    <th>设备</th>
-                                    <th>操作</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for log in logs %}
-                                <tr>
-                                    <td>{{ log.start_time|date:"Y-m-d H:i" }}</td>
-                                    <td>
-                                        {% if log.exec_status == 'success' %}
-                                            <span class="badge bg-success">成功</span>
-                                        {% elif log.exec_status == 'failed' %}
-                                            <span class="badge bg-danger">失败</span>
-                                        {% else %}
-                                            <span class="badge bg-warning">执行中</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if log.device %}
-                                            {{ log.device.device_name }}
-                                        {% else %}
-                                            <span class="text-muted">无</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        {% if log.error_msg %}
-                                            <button type="button" class="btn btn-sm btn-danger"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#errorModal{{ log.id }}">
-                                                查看错误
-                                            </button>
-
-                                            <div class="modal fade" id="errorModal{{ log.id }}" tabindex="-1">
-                                                <div class="modal-dialog modal-lg">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">错误信息</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <pre>{{ log.error_msg }}</pre>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        {% elif log.orchestration_log %}
-                                            <a href="{% url 'task_orchestration:log_detail' log.orchestration_log.id %}"
-                                               class="btn btn-sm btn-info">查看详情</a>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="4" class="text-center py-3">
-                                        <div class="text-muted">暂无执行记录</div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+<div class="card mt-4">
+  <div class="card-header">
+    <h3>执行日志</h3>
+  </div>
+  <div class="card-body">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>时间</th>
+          <th>状态</th>
+          <th>设备</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td>{{ log.create_time|date:"Y-m-d H:i:s" }}</td>
+          <td>
+            {% if log.exec_status == 'success' %}
+              <span class="badge bg-success">成功</span>
+            {% elif log.exec_status == 'failed' %}
+              <span class="badge bg-danger">失败</span>
+            {% elif log.exec_status == 'running' %}
+              <span class="badge bg-primary">运行中</span>
+            {% endif %}
+          </td>
+          <td>{{ log.device.device_name|default:"未知" }}</td>
+          <td>
+            {% if log.exec_status == 'failed' %}
+              <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#errorModal{{ log.id }}">
+                查看错误
+              </button>
+              <!-- 错误详情模态框 -->
+              <div class="modal fade" id="errorModal{{ log.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">错误信息</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
+                    <div class="modal-body">
+                      <pre>{{ log.error_msg }}</pre>
+                    </div>
+                  </div>
                 </div>
-            </div>
-        </div>
-    </div>
+              </div>
+            {% endif %}
+
+            <!-- 显示编排日志详情和停止按钮 -->
+            {% if log.orch_log %}
+              <a href="{% url 'task_orchestration:log_detail' log.orch_log.id %}" class="btn btn-sm btn-info">查看编排日志</a>
+              {% if log.orch_log.exec_status == 'running' %}
+                <a href="{% url 'task_orchestration:stop_orchestration' log.orch_log.id %}" class="btn btn-sm btn-danger" onclick="return confirm('确定要停止该任务吗？')">
+                  中止任务
+                </a>
+              {% endif %}
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="text-center">暂无执行日志</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

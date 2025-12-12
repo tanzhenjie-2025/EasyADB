@@ -54,13 +54,16 @@ def check_and_execute_schedules():
                 execution_view = ExecuteOrchestrationAPIView()
                 response = execution_view.post(fake_request, schedule.orchestration.id)
 
-                if response.status_code == 200 and response.json().get("status") == "success":
-                    log.orchestration_log_id = response.json().get("log_id")
+                # 修复：解析Django JsonResponse
+                import json
+                response_data = json.loads(response.content)  # 替换 response.json()
+                if response.status_code == 200 and response_data.get("status") == "success":
+                    log.orchestration_log_id = response_data.get("log_id")
                     log.exec_status = "success"
                     logger.info(f"定时任务{schedule.name}执行成功")
                 else:
                     log.exec_status = "failed"
-                    log.error_msg = response.json().get("msg", "执行失败")
+                    log.error_msg = response_data.get("msg", "执行失败")
                     logger.error(f"定时任务{schedule.name}执行失败：{log.error_msg}")
 
                 # 更新日志和任务信息

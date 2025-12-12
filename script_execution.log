@@ -8995,3 +8995,200 @@ def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
 2025-12-12 11:01:18,894 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop status.battery.health
 2025-12-12 11:01:19,030 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop status.battery.state
 2025-12-12 11:01:19,187 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell ip addr show wlan0
+2025-12-12 11:08:50,861 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_scheduler\views.py changed, reloading.
+2025-12-12 11:09:57,028 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_scheduler\views.py changed, reloading.
+2025-12-12 11:12:02,800 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_scheduler\urls.py changed, reloading.
+2025-12-12 11:14:56,132 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_scheduler\urls.py changed, reloading.
+2025-12-12 11:15:12,319 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_scheduler\urls.py changed, reloading.
+2025-12-12 11:17:01,321 - task_scheduler.views - INFO - 开始执行定时任务 定时看快手，设备ID：3
+2025-12-12 11:17:01,342 - task_scheduler.views - INFO - 指定设备：10AF5E1AKU003NR (10AF5E1AKU003NR)，is_active：True
+2025-12-12 11:17:01,347 - task_scheduler.views - INFO - 选中执行设备：10AF5E1AKU003NR
+2025-12-12 11:17:01,348 - task_scheduler.views - INFO - 调用编排任务接口，ID：3
+2025-12-12 11:17:01,378 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-12 11:17:01,381 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-12 11:17:01,381 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-12 11:17:01,381 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-12 11:17:01,382 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-12 11:17:01,383 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-12 11:17:01,384 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-12 11:17:01,384 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-12 11:17:01,384 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-12 11:17:01,385 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-12 11:17:01,385 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-12 11:17:01,386 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-12 11:17:01,386 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-12 11:17:01,386 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-12 11:18:03,737 - task_orchestration.views - INFO - 已终止Celery任务b10e12c9-bcd0-429c-92d3-1fafbdd20e7a（编排日志22，步骤0）
+2025-12-12 11:18:03,747 - task_orchestration.views - INFO - 已终止Celery任务f46a345e-ec8a-48ff-ae2c-a3d1d48cb191（编排日志22，步骤1）
+2025-12-12 11:18:03,748 - task_orchestration.views - INFO - 已终止Celery任务80485885-3191-4e9f-b867-c871670865c8（编排日志22，步骤2）
+2025-12-12 11:18:03,774 - task_orchestration.views - ERROR - 终止Redis进程失败（KEY：22_1）：process PID not found (pid=40080)
+2025-12-12 11:18:03,790 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=22_1
+2025-12-12 11:18:03,805 - task_orchestration.views - ERROR - 终止Redis进程失败（KEY：22_0）：process PID not found (pid=10628)
+2025-12-12 11:18:03,821 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=22_0
+2025-12-12 11:18:04,855 - task_orchestration.views - INFO - 已终止Redis中记录的进程32252（KEY：22_2）
+2025-12-12 11:18:04,873 - task_orchestration.views - INFO - Redis中进程信息已删除，KEY=22_2
+2025-12-12 11:22:07,912 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-12 11:22:07,917 - script_center.views - INFO - 日志ID：50，状态：success，是否运行中：False
+2025-12-12 11:22:07,932 - script_center.views - INFO - 日志ID：49，状态：success，是否运行中：False
+2025-12-12 11:22:07,935 - script_center.views - INFO - 日志ID：48，状态：stopped，是否运行中：False
+2025-12-12 11:22:07,937 - script_center.views - INFO - 日志ID：47，状态：success，是否运行中：False
+2025-12-12 11:22:07,948 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-12 11:22:07,965 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-12 11:22:07,967 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-12 11:22:07,969 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-12 11:22:07,997 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-12 11:22:08,011 - script_center.views - INFO - 日志ID：41，状态：failed，是否运行中：False
+2025-12-12 11:22:10,951 - script_center.views - INFO - 接收到执行请求 - 设备ID：['3']，任务ID：4
+2025-12-12 11:22:10,957 - script_center.views - INFO - 获取到任务：快手看广告机，脚本路径：C:\Users\TanZhenJie\AppData\Local\Temp\AirtestIDE\scripts\Advertisement_kuaishou.air\Advertisement_kuaishou.py，Python路径：C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe
+2025-12-12 11:22:10,962 - script_center.views - INFO - 检查设备状态 - ID：3，名称：10AF5E1AKU003NR，状态：online
+2025-12-12 11:22:10,978 - script_center.views - INFO - 创建执行日志 - ID：51，设备：10AF5E1AKU003NR
+2025-12-12 11:22:10,998 - script_center.views - INFO - 已保存Celery任务ID到Redis - 日志ID：51，任务ID：d6b44f05-9323-4460-832a-f838eb8fac97
+2025-12-12 11:22:10,998 - script_center.views - INFO - 提交Celery任务 - 日志ID：51，任务ID：d6b44f05-9323-4460-832a-f838eb8fac97
+2025-12-12 11:22:10,998 - script_center.views - INFO - %E4%BB%BB%E5%8A%A1%E3%80%90%E5%BF%AB%E6%89%8B%E7%9C%8B%E5%B9%BF%E5%91%8A%E6%9C%BA%E3%80%91%E5%B7%B2%E5%90%AF%E5%8A%A8%EF%BC%81%E5%85%B11%E4%B8%AA%E5%9C%A8%E7%BA%BF%E8%AE%BE%E5%A4%87%E6%89%A7%E8%A1%8C%E4%B8%AD%EF%BC%88%E6%B3%A8%E6%84%8F%EF%BC%9APython%E8%B7%AF%E5%BE%84%E4%B8%BAWindowsApps%E5%BF%AB%E6%8D%B7%E6%96%B9%E5%BC%8F%EF%BC%8C%E5%B7%B2%E8%87%AA%E5%8A%A8%E6%9B%BF%E6%8D%A2%E4%B8%BA%E7%9C%9F%E5%AE%9E%E8%B7%AF%E5%BE%84%EF%BC%89
+2025-12-12 11:22:11,010 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-12 11:22:11,014 - script_center.views - INFO - 日志ID：51，状态：running，是否运行中：True
+2025-12-12 11:22:11,041 - script_center.views - INFO - 日志ID：50，状态：success，是否运行中：False
+2025-12-12 11:22:11,056 - script_center.views - INFO - 日志ID：49，状态：success，是否运行中：False
+2025-12-12 11:22:11,072 - script_center.views - INFO - 日志ID：48，状态：stopped，是否运行中：False
+2025-12-12 11:22:11,088 - script_center.views - INFO - 日志ID：47，状态：success，是否运行中：False
+2025-12-12 11:22:11,103 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-12 11:22:11,118 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-12 11:22:11,133 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-12 11:22:11,149 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-12 11:22:11,165 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-12 11:36:08,559 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-12 11:36:08,560 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-12 11:36:08,560 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-12 11:36:08,562 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-12 11:36:08,562 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-12 11:36:08,564 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-12 11:36:08,564 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-12 11:36:08,565 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-12 11:36:08,566 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-12 11:36:08,566 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-12 11:36:13,601 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop ro.product.brand
+2025-12-12 11:36:13,774 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop ro.product.model
+2025-12-12 11:36:13,991 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop ro.build.version.release
+2025-12-12 11:36:14,122 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR get-serialno
+2025-12-12 11:36:14,227 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell dumpsys battery
+2025-12-12 11:36:14,394 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop status.battery.level
+2025-12-12 11:36:14,548 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop status.battery.health
+2025-12-12 11:36:14,722 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop status.battery.state
+2025-12-12 11:36:14,869 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell ip addr show wlan0
+2025-12-12 11:41:47,886 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-12 11:41:47,886 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-12 11:41:47,887 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-12 11:41:47,889 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-12 11:41:47,889 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-12 11:41:47,890 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-12 11:41:47,890 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-12 11:41:47,892 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-12 11:41:47,892 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-12 11:41:47,893 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-12 11:42:05,776 - adb_manager.views - INFO - 执行命令：adb devices -l
+2025-12-12 11:43:03,995 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-12 11:43:03,996 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-12 11:43:03,996 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-12 11:43:03,997 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-12 11:43:03,997 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-12 11:43:03,998 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-12 11:43:03,999 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-12 11:43:04,000 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-12 11:43:04,000 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-12 11:43:04,001 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-12 11:43:10,245 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-12 11:43:10,246 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-12 11:43:10,246 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-12 11:43:10,248 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-12 11:43:10,248 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-12 11:43:10,250 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-12 11:43:10,250 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-12 11:43:10,251 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-12 11:43:10,252 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-12 11:43:10,253 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-12 11:43:34,761 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-12 11:43:34,766 - script_center.views - INFO - 日志ID：51，状态：success，是否运行中：False
+2025-12-12 11:43:34,790 - script_center.views - INFO - 日志ID：50，状态：success，是否运行中：False
+2025-12-12 11:43:34,806 - script_center.views - INFO - 日志ID：49，状态：success，是否运行中：False
+2025-12-12 11:43:34,821 - script_center.views - INFO - 日志ID：48，状态：stopped，是否运行中：False
+2025-12-12 11:43:34,837 - script_center.views - INFO - 日志ID：47，状态：success，是否运行中：False
+2025-12-12 11:43:34,853 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-12 11:43:34,869 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-12 11:43:34,883 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-12 11:43:34,899 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-12 11:43:34,914 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-12 11:43:55,744 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-12 11:43:55,759 - script_center.views - INFO - 日志ID：51，状态：success，是否运行中：False
+2025-12-12 11:43:55,773 - script_center.views - INFO - 日志ID：50，状态：success，是否运行中：False
+2025-12-12 11:43:55,790 - script_center.views - INFO - 日志ID：49，状态：success，是否运行中：False
+2025-12-12 11:43:55,804 - script_center.views - INFO - 日志ID：48，状态：stopped，是否运行中：False
+2025-12-12 11:43:55,821 - script_center.views - INFO - 日志ID：47，状态：success，是否运行中：False
+2025-12-12 11:43:55,836 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-12 11:43:55,850 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-12 11:43:55,867 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-12 11:43:55,883 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-12 11:43:55,898 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-12 11:44:02,883 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-12 11:44:02,900 - script_center.views - INFO - 日志ID：51，状态：success，是否运行中：False
+2025-12-12 11:44:02,916 - script_center.views - INFO - 日志ID：50，状态：success，是否运行中：False
+2025-12-12 11:44:02,918 - script_center.views - INFO - 日志ID：49，状态：success，是否运行中：False
+2025-12-12 11:44:02,930 - script_center.views - INFO - 日志ID：48，状态：stopped，是否运行中：False
+2025-12-12 11:44:02,946 - script_center.views - INFO - 日志ID：47，状态：success，是否运行中：False
+2025-12-12 11:44:02,948 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-12 11:44:02,961 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-12 11:44:02,977 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-12 11:44:02,979 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-12 11:44:02,992 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
+2025-12-12 11:44:16,686 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-12 11:44:16,703 - script_center.views - INFO - 日志ID：51，状态：success，是否运行中：False
+2025-12-12 11:44:16,719 - script_center.views - INFO - 日志ID：50，状态：success，是否运行中：False
+2025-12-12 11:44:16,721 - script_center.views - INFO - 日志ID：49，状态：success，是否运行中：False
+2025-12-12 11:44:16,734 - script_center.views - INFO - 日志ID：48，状态：stopped，是否运行中：False
+2025-12-12 11:44:16,749 - script_center.views - INFO - 日志ID：47，状态：success，是否运行中：False
+2025-12-12 11:44:16,765 - script_center.views - INFO - 日志ID：46，状态：stopped，是否运行中：False
+2025-12-12 11:44:16,781 - script_center.views - INFO - 日志ID：45，状态：success，是否运行中：False
+2025-12-12 11:44:16,796 - script_center.views - INFO - 日志ID：44，状态：error，是否运行中：False
+2025-12-12 11:44:16,798 - script_center.views - INFO - 日志ID：43，状态：stopped，是否运行中：False
+2025-12-12 11:44:16,802 - script_center.views - INFO - 日志ID：42，状态：stopped，是否运行中：False
