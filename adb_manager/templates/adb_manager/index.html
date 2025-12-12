@@ -1,44 +1,130 @@
-{% extends 'base.html' %}  <!-- 核心：继承base模板 -->
+{% extends 'base.html' %}
 {% load static %}
 
-<!-- 1. 页面标题 -->
 {% block title %}{{ page_title }}{% endblock %}
 
-<!-- 2. 仅保留base未覆盖的「业务特有样式」 -->
 {% block extra_css %}
 <style>
-    /* 设备状态文字样式（base无此样式） */
+    /* 原有样式保持不变 */
     .status-online { color: #67c23a; font-weight: 500; }
     .status-offline { color: #f56c6c; }
     .status-error { color: #e6a23c; }
-
-    /* 操作小按钮样式（特有） */
     .action-btn {
         padding: 4px 8px;
         font-size: 12px;
         margin-right: 5px;
     }
-
-    /* 序列号列换行样式（特有） */
     .serial-column {
         max-width: 200px;
         word-break: break-all;
     }
-
-    /* 设备表格hover效果（base表格无hover，补充） */
     .device-table tr:hover {
         background-color: #f8f9fa;
     }
-
-    /* 空数据单元格样式 */
     .empty-device-cell {
         text-align: center;
         padding: 30px !important;
     }
+
+    /* 原有模态框样式保持不变 */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-content {
+        background-color: #fff;
+        width: 80%;
+        max-width: 1000px;
+        border-radius: 8px;
+        padding: 20px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+    }
+    .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1989fa;
+    }
+    .close-modal {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #999;
+    }
+    .close-modal:hover {
+        color: #333;
+    }
+    .device-list-item {
+        padding: 8px 0;
+        border-bottom: 1px dashed #eee;
+    }
+    .device-list-item:last-child {
+        border-bottom: none;
+    }
+    .device-serial {
+        font-weight: 500;
+        color: #1989fa;
+    }
+    .raw-output {
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-radius: 4px;
+        font-family: monospace;
+        font-size: 14px;
+        margin-top: 15px;
+        white-space: pre-wrap;
+    }
+
+    /* 新增：设备详情样式 */
+    .detail-item {
+        display: flex;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px dashed #eee;
+    }
+    .detail-label {
+        width: 120px;
+        font-weight: 600;
+        color: #666;
+    }
+    .detail-value {
+        flex: 1;
+        color: #333;
+    }
+    .detail-section {
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    .detail-section:last-child {
+        border-bottom: none;
+    }
+    .detail-section-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #1989fa;
+    }
 </style>
 {% endblock %}
 
-<!-- 3. 页面头部（标题+操作按钮）：复用base的page-header布局 -->
 {% block page_header %}
 <div class="page-header">
     <h1>📱 {{ page_title }}</h1>
@@ -56,20 +142,20 @@
             {% csrf_token %}
             <button type="submit" class="btn btn-warning">刷新所有状态</button>
         </form>
+        <!-- 原有：查看已连接设备按钮 -->
+        <button id="listDevicesBtn" class="btn btn-info">查看已连接设备</button>
     </div>
 </div>
 {% endblock %}
 
-<!-- 4. 核心内容区域：提示信息+设备表格 -->
 {% block content %}
-    <!-- 提示信息（复用base的msg-box样式） -->
+    <!-- 原有提示信息保持不变 -->
     {% if request.GET.msg %}
         <div class="msg-box {% if '成功' in request.GET.msg %}msg-success{% else %}msg-error{% endif %}">
             {{ request.GET.msg }}
         </div>
     {% endif %}
 
-    <!-- 设备列表：套base的card样式，精简device-table -->
     <div class="card">
         <table class="device-table">
             <thead>
@@ -101,25 +187,23 @@
                         </td>
                         <td>{% if device.is_active %}✅ 是{% else %}❌ 否{% endif %}</td>
                         <td>
-                            <!-- 连接 -->
                             <form method="POST" action="{% url 'adb_manager:connect' %}" style="display: inline;">
                                 {% csrf_token %}
                                 <input type="hidden" name="device_id" value="{{ device.id }}">
                                 <button type="submit" class="btn btn-success action-btn">连接</button>
                             </form>
-                            <!-- 断开 -->
                             <form method="POST" action="{% url 'adb_manager:disconnect' %}" style="display: inline;">
                                 {% csrf_token %}
                                 <input type="hidden" name="device_id" value="{{ device.id }}">
                                 <button type="submit" class="btn btn-danger action-btn">断开</button>
                             </form>
-                            <!-- 编辑 -->
                             <a href="{% url 'adb_manager:edit_device' device.id %}" class="btn btn-primary action-btn">编辑</a>
-                            <!-- 删除 -->
                             <form method="POST" action="{% url 'adb_manager:delete_device' device.id %}" style="display: inline;" onsubmit="return confirm('确定删除该设备吗？');">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-warning action-btn">删除</button>
                             </form>
+                            <!-- 新增：设备详情按钮 -->
+                            <button class="btn btn-info action-btn view-detail-btn" data-device-id="{{ device.id }}">详情</button>
                         </td>
                     </tr>
                 {% empty %}
@@ -132,7 +216,237 @@
             </tbody>
         </table>
     </div>
+
+    <!-- 原有：已连接设备列表模态框（保持不变） -->
+    <div id="devicesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">📱 ADB已连接设备列表</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div id="modalBody">
+                <div id="loading">加载中...请稍候</div>
+                <div id="resultContainer" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增：设备详情模态框 -->
+    <div id="deviceDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">📱 设备详细信息</h3>
+                <button class="close-modal" id="closeDetailModal">&times;</button>
+            </div>
+            <div id="detailModalBody">
+                <!-- 加载中提示 -->
+                <div id="detailLoading">加载中...请稍候（部分命令执行可能需要几秒）</div>
+                <!-- 结果展示区域 -->
+                <div id="detailResultContainer" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
-<!-- 5. 页面无额外JS，省略或留空均可 -->
-{% block extra_js %}{% endblock %}
+{% block extra_js %}
+<script>
+// 原有：已连接设备列表模态框逻辑（保持不变）
+const modal = document.getElementById("devicesModal");
+const listDevicesBtn = document.getElementById("listDevicesBtn");
+const closeModalBtn = document.querySelector(".close-modal");
+const loading = document.getElementById("loading");
+const resultContainer = document.getElementById("resultContainer");
+
+listDevicesBtn.addEventListener("click", function() {
+    modal.style.display = "flex";
+    loading.style.display = "block";
+    resultContainer.style.display = "none";
+
+    fetch("{% url 'adb_manager:list_devices' %}", {
+        method: "GET",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        loading.style.display = "none";
+        resultContainer.style.display = "block";
+
+        if (data.code === 200) {
+            const { device_count, connected_devices, raw_output, error } = data.data;
+            let html = `
+                <div class="alert alert-info">
+                    共检测到 <strong>${device_count}</strong> 台已连接设备
+                </div>
+            `;
+
+            if (device_count > 0) {
+                html += "<h4>设备详情：</h4>";
+                connected_devices.forEach(device => {
+                    html += `
+                        <div class="device-list-item">
+                            <span class="device-serial">${device.serial}</span> -
+                            状态：<span class="${device.status === 'device' ? 'status-online' : 'status-offline'}">${device.status}</span>
+                            ${device.details ? `<br>详情：${device.details}` : ''}
+                        </div>
+                    `;
+                });
+            } else {
+                html += "<div class='alert alert-warning'>暂无已连接的ADB设备</div>";
+            }
+
+            html += "<h4>原始输出：</h4>";
+            html += `<div class="raw-output">${raw_output || '无'}</div>`;
+
+            if (error) {
+                html += `<div class="alert alert-danger" style="margin-top: 10px;">错误信息：${error}</div>`;
+            }
+
+            resultContainer.innerHTML = html;
+        } else {
+            resultContainer.innerHTML = `<div class="alert alert-danger">${data.msg}</div>`;
+        }
+    })
+    .catch(error => {
+        loading.style.display = "none";
+        resultContainer.style.display = "block";
+        resultContainer.innerHTML = `<div class="alert alert-danger">请求失败：${error.message}</div>`;
+    });
+});
+
+closeModalBtn.addEventListener("click", function() {
+    modal.style.display = "none";
+});
+
+window.addEventListener("click", function(event) {
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+});
+
+// 新增：设备详情模态框逻辑
+const detailModal = document.getElementById("deviceDetailModal");
+const closeDetailModalBtn = document.getElementById("closeDetailModal");
+const detailLoading = document.getElementById("detailLoading");
+const detailResultContainer = document.getElementById("detailResultContainer");
+
+// 绑定所有详情按钮的点击事件
+document.querySelectorAll(".view-detail-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+        const deviceId = this.getAttribute("data-device-id");
+        detailModal.style.display = "flex";
+        detailLoading.style.display = "block";
+        detailResultContainer.style.display = "none";
+
+        // 发送获取设备详情的请求
+        fetch(`{% url 'adb_manager:detail_device' %}?device_id=${deviceId}`, {
+            method: "GET",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            detailLoading.style.display = "none";
+            detailResultContainer.style.display = "block";
+
+            if (data.code === 200) {
+                const d = data.data;
+                let html = `
+                    <!-- 基本信息 -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">基本信息</div>
+                        <div class="detail-item">
+                            <div class="detail-label">设备名称：</div>
+                            <div class="detail-value">${d.device_name}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">连接标识：</div>
+                            <div class="detail-value">${d.connect_id}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">设备序列号：</div>
+                            <div class="detail-value">${d.serial}</div>
+                        </div>
+                    </div>
+
+                    <!-- 硬件信息 -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">硬件信息</div>
+                        <div class="detail-item">
+                            <div class="detail-label">手机厂商：</div>
+                            <div class="detail-value">${d.brand}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">手机型号：</div>
+                            <div class="detail-value">${d.model}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">系统版本：</div>
+                            <div class="detail-value">Android ${d.system_version}</div>
+                        </div>
+                    </div>
+
+                    <!-- 电池信息 -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">电池信息</div>
+                        <div class="detail-item">
+                            <div class="detail-label">当前电量：</div>
+                            <div class="detail-value">${d.battery_level}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">电池健康度：</div>
+                            <div class="detail-value">${d.battery_health}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">电池状态：</div>
+                            <div class="detail-value">${d.battery_status}</div>
+                        </div>
+                    </div>
+
+                    <!-- 网络信息 -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">网络信息</div>
+                        <div class="detail-item">
+                            <div class="detail-label">WiFi IP地址：</div>
+                            <div class="detail-value">${d.wifi_ip}</div>
+                        </div>
+                    </div>
+
+                    <!-- 调试信息（可选） -->
+                    <div class="detail-section">
+                        <div class="detail-section-title">原始命令输出（调试用）</div>
+                        <div class="raw-output" style="font-size: 12px;">
+                            <pre>${JSON.stringify(d.raw_commands, null, 2)}</pre>
+                        </div>
+                    </div>
+                `;
+                detailResultContainer.innerHTML = html;
+            } else {
+                detailResultContainer.innerHTML = `<div class="alert alert-danger">${data.msg}</div>`;
+            }
+        })
+        .catch(error => {
+            detailLoading.style.display = "none";
+            detailResultContainer.style.display = "block";
+            detailResultContainer.innerHTML = `<div class="alert alert-danger">请求失败：${error.message}</div>`;
+        });
+    });
+});
+
+// 关闭设备详情模态框
+closeDetailModalBtn.addEventListener("click", function() {
+    detailModal.style.display = "none";
+});
+
+// 点击模态框外部关闭
+window.addEventListener("click", function(event) {
+    if (event.target === detailModal) {
+        detailModal.style.display = "none";
+    }
+});
+</script>
+{% endblock %}

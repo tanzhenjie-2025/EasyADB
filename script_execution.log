@@ -8755,3 +8755,243 @@ def execute_script_task(self, task_id, device_id, log_id):
 def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
     return 1
 
+2025-12-11 17:46:24,232 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-11 17:46:24,234 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-11 17:46:24,234 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-11 17:46:24,235 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-11 17:46:24,236 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-11 17:46:24,237 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-11 17:46:24,237 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-11 17:46:24,238 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-11 17:46:24,238 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-11 17:46:24,240 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-11 17:50:17,207 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-11 17:50:17,208 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-11 17:50:17,208 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-11 17:50:17,210 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-11 17:50:17,210 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-11 17:50:17,211 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-11 17:50:17,211 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-11 17:50:17,212 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-11 17:50:17,212 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-11 17:50:17,213 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-11 17:50:18,680 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-11 17:50:18,681 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-11 17:50:18,681 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-11 17:50:18,682 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-11 17:50:18,682 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-11 17:50:18,682 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-11 17:50:18,682 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-11 17:50:18,683 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-11 17:50:18,683 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-11 17:50:18,683 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-12 10:17:27,240 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-12 10:17:27,240 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-12 10:17:27,242 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-12 10:17:27,242 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-12 10:17:27,242 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-12 10:17:27,243 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-12 10:17:27,243 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-12 10:17:27,244 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-12 10:17:27,244 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-12 10:17:27,244 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-12 10:17:27,245 - celery.utils.functional - DEBUG - 
+def check_and_execute_schedules():
+    return 1
+
+2025-12-12 10:17:27,245 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-12 10:17:27,246 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-12 10:17:27,246 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-12 10:17:27,246 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-12 10:17:34,210 - adb_manager.views - INFO - 执行ADB连接命令：adb -s 10AF5E1AKU003NR wait-for-device shell echo connected
+2025-12-12 10:17:34,741 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-12 10:17:34,742 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-12 10:17:34,742 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-12 10:17:34,744 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-12 10:17:34,744 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-12 10:17:34,744 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-12 10:17:34,745 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-12 10:17:34,745 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-12 10:17:34,745 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-12 10:17:34,746 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-12 10:17:41,000 - task_scheduler.views - INFO - 开始执行定时任务 定时看快手，设备ID：3
+2025-12-12 10:17:41,011 - task_scheduler.views - INFO - 指定设备：10AF5E1AKU003NR (10AF5E1AKU003NR)，is_active：True
+2025-12-12 10:17:41,016 - task_scheduler.views - INFO - 选中执行设备：10AF5E1AKU003NR
+2025-12-12 10:17:41,017 - task_scheduler.views - INFO - 调用编排任务接口，ID：3
+2025-12-12 10:17:41,031 - task_scheduler.views - ERROR - 执行失败：'JsonResponse' object has no attribute 'json'
+Traceback (most recent call last):
+  File "E:\django_projects\EasyADB\task_scheduler\views.py", line 139, in post
+    if response.status_code == 200 and response.json().get("status") == "success":
+                                       ^^^^^^^^^^^^^
+AttributeError: 'JsonResponse' object has no attribute 'json'
+2025-12-12 10:17:41,052 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-12 10:17:41,055 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-12 10:17:41,056 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-12 10:17:41,056 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-12 10:17:41,057 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-12 10:17:41,057 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-12 10:17:41,057 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-12 10:17:41,058 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-12 10:17:41,058 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-12 10:17:41,059 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-12 10:17:41,059 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-12 10:17:41,059 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-12 10:17:41,060 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-12 10:17:41,060 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-12 10:31:19,245 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\adb_manager\views.py changed, reloading.
+2025-12-12 10:31:33,424 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\adb_manager\urls.py changed, reloading.
+2025-12-12 10:32:42,021 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-12 10:32:42,023 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-12 10:32:42,023 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-12 10:32:42,024 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-12 10:32:42,024 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-12 10:32:42,025 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-12 10:32:42,025 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-12 10:32:42,026 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-12 10:32:42,026 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-12 10:32:42,027 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-12 10:32:45,861 - adb_manager.views - INFO - 执行命令：adb devices -l
+2025-12-12 10:51:51,752 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\adb_manager\views.py changed, reloading.
+2025-12-12 10:52:10,602 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\adb_manager\urls.py changed, reloading.
+2025-12-12 10:52:31,845 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-12 10:52:31,846 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-12 10:52:31,847 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-12 10:52:31,847 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-12 10:52:31,847 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-12 10:52:31,849 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-12 10:52:31,849 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-12 10:52:31,849 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-12 10:52:31,849 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-12 10:52:31,850 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-12 10:52:34,653 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop ro.product.brand
+2025-12-12 10:52:34,822 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop ro.product.model
+2025-12-12 10:52:35,002 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop ro.build.version.release
+2025-12-12 10:52:35,200 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR get-serialno
+2025-12-12 10:52:35,302 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell dumpsys battery
+2025-12-12 10:52:35,488 - adb_manager.views - ERROR - 设备10AF5E1AKU003NR执行battery命令失败：name 're' is not defined
+2025-12-12 10:52:35,488 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell ip addr show wlan0
+2025-12-12 10:55:01,040 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\adb_manager\views.py changed, reloading.
+2025-12-12 10:55:59,242 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\adb_manager\views.py changed, reloading.
+2025-12-12 10:56:03,218 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-12 10:56:03,221 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-12 10:56:03,221 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-12 10:56:03,222 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-12 10:56:03,223 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-12 10:56:03,223 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-12 10:56:03,223 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-12 10:56:03,225 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-12 10:56:03,225 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-12 10:56:03,226 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-12 10:56:05,760 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop ro.product.brand
+2025-12-12 10:56:05,936 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop ro.product.model
+2025-12-12 10:56:06,090 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop ro.build.version.release
+2025-12-12 10:56:06,270 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR get-serialno
+2025-12-12 10:56:06,355 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell dumpsys battery
+2025-12-12 10:56:06,520 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop status.battery.level
+2025-12-12 10:56:06,655 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop status.battery.health
+2025-12-12 10:56:06,849 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop status.battery.state
+2025-12-12 10:56:07,006 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell ip addr show wlan0
+2025-12-12 11:00:57,395 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\adb_manager\views.py changed, reloading.
+2025-12-12 11:01:14,607 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-12 11:01:14,609 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-12 11:01:14,609 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-12 11:01:14,611 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.204:5555\n', 'stderr': ''}
+2025-12-12 11:01:14,611 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-12 11:01:14,612 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected 192.168.33.198:5555\n', 'stderr': ''}
+2025-12-12 11:01:14,612 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-12 11:01:14,614 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'online', 'stdout': 'connected\n', 'stderr': ''}
+2025-12-12 11:01:14,614 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-12 11:01:14,614 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-12 11:01:18,007 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop ro.product.brand
+2025-12-12 11:01:18,172 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop ro.product.model
+2025-12-12 11:01:18,306 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop ro.build.version.release
+2025-12-12 11:01:18,491 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR get-serialno
+2025-12-12 11:01:18,574 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell dumpsys battery
+2025-12-12 11:01:18,749 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop status.battery.level
+2025-12-12 11:01:18,894 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop status.battery.health
+2025-12-12 11:01:19,030 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell getprop status.battery.state
+2025-12-12 11:01:19,187 - adb_manager.views - INFO - 执行设备详情命令：adb -s 10AF5E1AKU003NR shell ip addr show wlan0

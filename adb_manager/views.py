@@ -507,7 +507,7 @@ class DisconnectAllDevicesView(View):
                 error_msg = quote("暂无设备，无需断开！")
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
-            adb_path = r"C:\Users\谭振捷\AppData\Local\Android\Sdk\platform-tools\adb.exe"
+            adb_path = r"C:\Users\TanZhenJie\AppData\Local\Android\Sdk\platform-tools\adb.exe"
             if not os.path.exists(adb_path):
                 adb_path = "adb"
 
@@ -571,3 +571,291 @@ class CSRFTokenView(View):
             "code": 200,
             "csrf_token": get_token(request)
         })
+
+
+# 原有代码...（保持不变）
+
+class ADBDevicesListView(View):
+    """执行adb devices命令，返回所有已连接设备"""
+    def get(self, request):
+        try:
+            # 复用现有ADB路径配置
+            adb_path = r"C:\Users\TanZhenJie\AppData\Local\Android\Sdk\platform-tools\adb.exe"
+            if not os.path.exists(adb_path):
+                adb_path = "adb"
+
+            # 执行adb devices命令
+            cmd = [adb_path, "devices", "-l"]  # -l参数显示详细信息
+            logger.info(f"执行命令：{' '.join(cmd)}")
+            result = subprocess.run(
+                cmd,
+                shell=True,
+                capture_output=True,
+                encoding="utf-8",
+                timeout=10
+            )
+
+            # 解析命令结果
+            output = result.stdout.strip()
+            error = result.stderr.strip()
+            connected_devices = []
+
+            if output:
+                # 按行解析结果（跳过首行"List of devices attached"）
+                lines = output.splitlines()[1:]
+                for line in lines:
+                    line = line.strip()
+                    if line and not line.startswith("adb:"):
+                        # 分割设备信息（格式：序列号 状态 详细信息）
+                        parts = line.split(maxsplit=2)
+                        if len(parts) >= 2:
+                            device_info = {
+                                "serial": parts[0].strip(),
+                                "status": parts[1].strip(),
+                                "details": parts[2].strip() if len(parts) >=3 else ""
+                            }
+                            connected_devices.append(device_info)
+
+            # 返回结果
+            return JsonResponse({
+                "code": 200,
+                "msg": "执行成功",
+                "data": {
+                    "raw_output": output,
+                    "error": error,
+                    "connected_devices": connected_devices,
+                    "device_count": len(connected_devices)
+                }
+            })
+
+        except subprocess.TimeoutExpired:
+            logger.error("adb devices命令执行超时")
+            return JsonResponse({
+                "code": 500,
+                "msg": "命令执行超时",
+                "data": {"raw_output": "", "error": "执行超时", "connected_devices": [], "device_count": 0}
+            })
+        except Exception as e:
+            logger.error(f"执行adb devices失败：{str(e)}", exc_info=True)
+            return JsonResponse({
+                "code": 500,
+                "msg": f"执行失败：{str(e)}",
+                "data": {"raw_output": "", "error": str(e), "connected_devices": [], "device_count": 0}
+            })
+
+
+import re  # 确保已导入re模块
+
+
+# 原有代码保留，仅替换电池解析部分
+
+class ADBDeviceDetailView(View):
+    """获取指定设备的详细信息（厂商、型号、系统版本、电量、WiFi IP等）"""
+
+    def get(self, request):
+        try:
+            device_id = request.GET.get("device_id")
+            if not device_id or not device_id.isdigit():
+                return JsonResponse({
+                    "code": 400,
+                    "msg": "参数错误：device_id必须为数字",
+                    "data": {}
+                })
+
+            # 获取设备信息
+            device = get_object_or_404(ADBDevice, id=device_id)
+            connect_id = device.connect_identifier
+            if not connect_id:
+                return JsonResponse({
+                    "code": 400,
+                    "msg": "设备未配置序列号/IP+端口，无法获取详情",
+                    "data": {}
+                })
+
+            # ADB路径配置（复用现有配置）
+            adb_path = r"C:\Users\TanZhenJie\AppData\Local\Android\Sdk\platform-tools\adb.exe"
+            if not os.path.exists(adb_path):
+                adb_path = "adb"
+
+            # 定义需要执行的ADB命令列表（新增电池备用命令）
+            commands = {
+                "brand": [adb_path, "-s", connect_id, "shell", "getprop", "ro.product.brand"],  # 厂商
+                "model": [adb_path, "-s", connect_id, "shell", "getprop", "ro.product.model"],  # 型号
+                "system_version": [adb_path, "-s", connect_id, "shell", "getprop", "ro.build.version.release"],  # 系统版本
+                "serial": [adb_path, "-s", connect_id, "get-serialno"],  # 设备序列号
+                "battery": [adb_path, "-s", connect_id, "shell", "dumpsys", "battery"],  # 电池信息
+                "battery_level_backup": [adb_path, "-s", connect_id, "shell", "getprop", "status.battery.level"],
+                # 电量备用命令
+                "battery_health_backup": [adb_path, "-s", connect_id, "shell", "getprop", "status.battery.health"],
+                # 健康度备用
+                "battery_status_backup": [adb_path, "-s", connect_id, "shell", "getprop", "status.battery.state"],
+                # 状态备用
+                "wifi_ip": [adb_path, "-s", connect_id, "shell", "ip", "addr", "show", "wlan0"]  # WiFi IP
+            }
+
+            # 执行所有命令并解析结果
+            result_data = {
+                "device_name": device.device_name,
+                "connect_id": connect_id,
+                "brand": "",
+                "model": "",
+                "system_version": "",
+                "serial": "",
+                "battery_level": "",
+                "battery_health": "",
+                "battery_status": "",
+                "wifi_ip": "",
+                "raw_commands": {}  # 保存原始命令输出（用于调试）
+            }
+
+            # 执行每个命令
+            for cmd_key, cmd in commands.items():
+                try:
+                    logger.info(f"执行设备详情命令：{' '.join(cmd)}")
+                    result = subprocess.run(
+                        cmd,
+                        shell=True,
+                        capture_output=True,
+                        encoding="utf-8",
+                        timeout=15  # 延长超时时间（部分命令执行较慢）
+                    )
+                    stdout = result.stdout.strip()
+                    stderr = result.stderr.strip()
+                    result_data["raw_commands"][cmd_key] = {"stdout": stdout, "stderr": stderr}
+
+                    # 解析不同命令的结果
+                    if cmd_key == "brand":
+                        result_data["brand"] = stdout or "未知"
+                    elif cmd_key == "model":
+                        result_data["model"] = stdout or "未知"
+                    elif cmd_key == "system_version":
+                        result_data["system_version"] = stdout or "未知"
+                    elif cmd_key == "serial":
+                        result_data["serial"] = stdout or "未知"
+                    elif cmd_key == "battery":
+                        # 解析电池信息（适配数字/字符串两种格式）
+                        battery_info = stdout
+                        if not battery_info:
+                            result_data["battery_level"] = "未知"
+                            result_data["battery_health"] = "未知"
+                            result_data["battery_status"] = "未知"
+                            continue
+
+                        try:
+                            # 正则匹配（兼容数字/字符串格式）
+                            level_match = re.search(r"level:\s*(\d+)", battery_info, re.IGNORECASE)
+                            health_match = re.search(r"health:\s*(\d+|\w+)", battery_info, re.IGNORECASE)  # 匹配数字或字符串
+                            status_match = re.search(r"status:\s*(\d+|\w+)", battery_info, re.IGNORECASE)  # 匹配数字或字符串
+
+                            # 电量解析
+                            if level_match and level_match.group(1):
+                                result_data["battery_level"] = f"{level_match.group(1)}%"
+                            else:
+                                result_data["battery_level"] = "未知"
+
+                            # 健康度解析（同时兼容数字/字符串）
+                            health_val = health_match.group(1).upper() if (
+                                        health_match and health_match.group(1)) else ""
+                            # 数字映射表（优先）
+                            health_num_map = {
+                                "1": "未知",
+                                "2": "良好",
+                                "3": "过热",
+                                "4": "损坏",
+                                "5": "过压",
+                                "6": "未知故障",
+                                "7": "过冷"
+                            }
+                            # 字符串映射表（兼容其他设备）
+                            health_str_map = {
+                                "GOOD": "良好",
+                                "OVERHEAT": "过热",
+                                "DEAD": "损坏",
+                                "OVER_VOLTAGE": "过压",
+                                "UNSPECIFIED_FAILURE": "未知故障",
+                                "COLD": "过冷",
+                                "UNKNOWN": "未知"
+                            }
+                            # 优先按数字匹配，再按字符串匹配
+                            result_data["battery_health"] = health_num_map.get(health_val,
+                                                                               health_str_map.get(health_val, "未知"))
+
+                            # 状态解析（同时兼容数字/字符串）
+                            status_val = status_match.group(1).upper() if (
+                                        status_match and status_match.group(1)) else ""
+                            # 数字映射表（优先）
+                            status_num_map = {
+                                "1": "未知",
+                                "2": "充电中",
+                                "3": "放电中",
+                                "4": "未充电",
+                                "5": "已充满"
+                            }
+                            # 字符串映射表（兼容其他设备）
+                            status_str_map = {
+                                "CHARGING": "充电中",
+                                "DISCHARGING": "放电中",
+                                "NOT_CHARGING": "未充电",
+                                "FULL": "已充满",
+                                "UNKNOWN": "未知",
+                                "CONNECTED": "已连接电源（未充电）"
+                            }
+                            # 优先按数字匹配，再按字符串匹配
+                            result_data["battery_status"] = status_num_map.get(status_val,
+                                                                               status_str_map.get(status_val, "未知"))
+
+                        except Exception as e:
+                            logger.error(f"解析电池信息失败：{str(e)}")
+                            result_data["battery_level"] = "未知"
+                            result_data["battery_health"] = "未知"
+                            result_data["battery_status"] = "未知"
+                    # 备用电池信息解析（主命令失败时生效）
+                    elif cmd_key == "battery_level_backup":
+                        if not result_data["battery_level"] or result_data["battery_level"] == "未知":
+                            result_data["battery_level"] = f"{stdout}%" if stdout else "未知"
+                    elif cmd_key == "battery_health_backup":
+                        if not result_data["battery_health"] or result_data["battery_health"] == "未知":
+                            health_map = {"good": "良好", "bad": "损坏", "unknown": "未知"}
+                            result_data["battery_health"] = health_map.get(stdout.lower(), stdout or "未知")
+                    elif cmd_key == "battery_status_backup":
+                        if not result_data["battery_status"] or result_data["battery_status"] == "未知":
+                            status_map = {"charging": "充电中", "discharging": "放电中", "full": "已充满",
+                                          "not_charging": "未充电"}
+                            result_data["battery_status"] = status_map.get(stdout.lower(), stdout or "未知")
+                    elif cmd_key == "wifi_ip":
+                        # 解析WiFi IP（安卓10+）
+                        ip_lines = stdout.splitlines()
+                        for line in ip_lines:
+                            if "inet " in line and not "127.0.0.1" in line:
+                                ip_part = line.split("inet ")[1].split("/")[0].strip()
+                                result_data["wifi_ip"] = ip_part
+                                break
+                        if not result_data["wifi_ip"]:
+                            result_data["wifi_ip"] = "未连接WiFi/无IP"
+
+                except subprocess.TimeoutExpired:
+                    result_data["raw_commands"][cmd_key] = {"stdout": "", "stderr": "命令执行超时"}
+                    logger.error(f"设备{connect_id}执行{cmd_key}命令超时")
+                except Exception as e:
+                    result_data["raw_commands"][cmd_key] = {"stdout": "", "stderr": str(e)}
+                    logger.error(f"设备{connect_id}执行{cmd_key}命令失败：{str(e)}")
+
+            return JsonResponse({
+                "code": 200,
+                "msg": "获取设备详情成功",
+                "data": result_data
+            })
+
+        except ADBDevice.DoesNotExist:
+            return JsonResponse({
+                "code": 404,
+                "msg": "设备不存在",
+                "data": {}
+            })
+        except Exception as e:
+            logger.error(f"获取设备详情失败：{str(e)}", exc_info=True)
+            return JsonResponse({
+                "code": 500,
+                "msg": f"获取失败：{str(e)}",
+                "data": {}
+            })
