@@ -14,6 +14,7 @@ import redis  # 新增Redis导入
 
 logger = logging.getLogger(__name__)
 
+
 # ===================== 新增：Redis进程存储函数（避免循环导入） =====================
 def get_redis_conn():
     try:
@@ -30,6 +31,7 @@ def get_redis_conn():
         logger.error(f"Redis连接失败：{str(e)}")
         return None
 
+
 def save_running_process(process_key, process_info):
     """保存进程信息到Redis"""
     r = get_redis_conn()
@@ -39,11 +41,13 @@ def save_running_process(process_key, process_info):
             logger.info(f"Redis已存储进程信息：KEY={process_key}, PID={process_info.get('pid')}")
         except Exception as e:
             logger.error(f"Redis保存进程信息失败：{str(e)}")
+
+
 # ===================== Redis进程存储函数结束 =====================
 
 @shared_task(bind=True, max_retries=0, time_limit=3600)  # 最大执行时间1小时
 def execute_step_task(self, step_id, orch_log_id, device_data):
-    """Celery异步执行单个步骤，支持超时自动停止+Redis连接检查+进程信息存入Redis"""
+    """Celery异步执行单个步骤，支持实时输出+超时自动停止+Redis连接检查+进程信息存入Redis"""
     try:
         # 第一步：检查Redis连接（辅助排查连接问题）
         try:
@@ -99,7 +103,7 @@ def execute_step_task(self, step_id, orch_log_id, device_data):
             'LANG': 'en_US.UTF-8'
         })
 
-        # 启动进程（和原有逻辑一致）
+        # 启动进程（修改为非阻塞模式，实时读取输出）
         process = subprocess.Popen(
             command,
             shell=True,
@@ -108,7 +112,9 @@ def execute_step_task(self, step_id, orch_log_id, device_data):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             encoding="utf-8",
-            errors="replace"
+            errors="replace",
+            bufsize=1,  # 行缓冲
+            universal_newlines=True
         )
 
         # ===================== 核心新增：将进程信息存入Redis =====================
@@ -133,15 +139,44 @@ def execute_step_task(self, step_id, orch_log_id, device_data):
             'process_key': process_key  # 新增：传递Redis的KEY
         })
 
-        # 等待执行（设置超时，超时自动终止）
+        # 实时读取输出（核心修改：替换communicate为逐行读取）
         step_start_time = time.time()
+        stdout_buffer = []
+        stderr_buffer = []
+        return_code = None
+
         try:
-            stdout, stderr = process.communicate(timeout=step.run_duration)
+            # 并行读取stdout和stderr（避免阻塞）
+            import threading
+            stdout_thread = threading.Thread(
+                target=_read_stream,
+                args=(process.stdout, stdout_buffer, step_log, orch_log, 'stdout'),
+                daemon=True
+            )
+            stderr_thread = threading.Thread(
+                target=_read_stream,
+                args=(process.stderr, stderr_buffer, step_log, orch_log, 'stderr'),
+                daemon=True
+            )
+
+            stdout_thread.start()
+            stderr_thread.start()
+
+            # 等待进程结束或超时
+            while process.poll() is None:
+                if time.time() - step_start_time > step.run_duration:
+                    raise subprocess.TimeoutExpired(command, step.run_duration)
+                time.sleep(0.1)  # 减少CPU占用
+
+            # 等待输出线程结束
+            stdout_thread.join(timeout=1)
+            stderr_thread.join(timeout=1)
+
             return_code = process.returncode
 
-            # 更新步骤日志（和原有逻辑一致）
-            step_log.stdout = stdout
-            step_log.stderr = stderr
+            # 更新步骤日志最终状态
+            step_log.stdout = ''.join(stdout_buffer)
+            step_log.stderr = ''.join(stderr_buffer)
             step_log.return_code = return_code
             step_log.exec_duration = time.time() - step_start_time
 
@@ -158,8 +193,9 @@ def execute_step_task(self, step_id, orch_log_id, device_data):
             step_log.exec_status = "timeout"
             step_log.error_msg = f"执行超时（{step.run_duration}秒）"
             step_log.exec_duration = step.run_duration
-            stderr = f"进程超时被终止（{step.run_duration}秒）"
-            step_log.stderr = stderr
+            stderr_msg = f"进程超时被终止（{step.run_duration}秒）"
+            stderr_buffer.append(stderr_msg)
+            step_log.stderr = ''.join(stderr_buffer) + stderr_msg
 
         # 通用异常处理（保留原有逻辑）
         except Exception as e:
@@ -171,13 +207,19 @@ def execute_step_task(self, step_id, orch_log_id, device_data):
 完整栈：{sys.exc_info()}"""
             step_log.exec_status = "error"
             step_log.error_msg = error_detail
-            step_log.stderr = error_detail
+            step_log.stderr = ''.join(stderr_buffer) + error_detail
             step_log.exec_duration = time.time() - step_start_time
 
         # 最终保存步骤日志（保留原有逻辑）
         step_log.end_time = timezone.now()
         step_log.save()
-        return {"status": step_log.exec_status, "step_id": step_id}
+
+        # 实时更新编排日志的全局输出
+        orch_log.stdout = f"{orch_log.stdout}\n{step_log.stdout}"
+        orch_log.stderr = f"{orch_log.stderr}\n{step_log.stderr}"
+        orch_log.save()
+
+        return {"status": step_log.exec_status, "step_id": step_id, "step_log_id": step_log.id}
 
     except Exception as e:
         # 任务级异常处理（保留原有逻辑）
@@ -188,6 +230,29 @@ def execute_step_task(self, step_id, orch_log_id, device_data):
             step_log.save()
         logger.error(f"Celery任务执行失败：{str(e)}", exc_info=True)
         return {"status": "error", "msg": str(e)}
+
+
+def _read_stream(stream, buffer, step_log, orch_log, stream_type):
+    """实时读取进程输出并更新日志"""
+    try:
+        for line in iter(stream.readline, ''):
+            buffer.append(line)
+            # 实时更新步骤日志
+            if stream_type == 'stdout':
+                step_log.stdout = ''.join(buffer)
+            else:
+                step_log.stderr = ''.join(buffer)
+            step_log.save()
+
+            # 实时更新编排日志的全局输出
+            if stream_type == 'stdout':
+                orch_log.stdout = f"{orch_log.stdout}\n{line}"
+            else:
+                orch_log.stderr = f"{orch_log.stderr}\n{line}"
+            orch_log.save()
+    except Exception as e:
+        logger.error(f"读取{stream_type}失败：{str(e)}")
+
 
 def _get_real_python_path(script_task: ScriptTask) -> str:
     """获取真实的Python路径（保留原有逻辑）"""
@@ -203,6 +268,7 @@ def _get_real_python_path(script_task: ScriptTask) -> str:
             if os.path.exists(path):
                 return path
     return script_task.python_path
+
 
 def _terminate_process(pid: int):
     """彻底终止进程及所有子进程（保留原有逻辑）"""

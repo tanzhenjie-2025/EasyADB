@@ -19,10 +19,16 @@ stdout_buffer = {}
 stderr_buffer = {}
 
 
+# 新增导入：Channels的Channel Layer
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+# 1. 改造read_stream函数：每更新日志就推送
 def read_stream(stream, buffer_key, log, is_stdout=True):
-    """实时读取子进程输出流（线程执行）"""
+    """实时读取子进程输出流（线程执行）+ 推送WebSocket"""
     global stdout_buffer, stderr_buffer
     buffer = []
+    channel_layer = get_channel_layer()  # 获取Channel Layer
     try:
         for line in iter(stream.readline, ''):
             if line:
@@ -32,14 +38,36 @@ def read_stream(stream, buffer_key, log, is_stdout=True):
                     log.stdout += line
                 else:
                     log.stderr += line
-                # 每10行保存一次日志（减少数据库IO）
-                if len(buffer) % 10 == 0:
-                    log.save()
+                # 每1行保存一次（保证实时性）+ 推送WebSocket
+                log.save()
+                # 推送日志到WebSocket分组
+                async_to_sync(channel_layer.group_send)(
+                    f'script_log_{log.id}',  # 对应Consumers的分组名
+                    {
+                        'type': 'log_update',  # 对应Consumers的log_update方法
+                        'data': {
+                            'stdout': log.stdout,
+                            'stderr': log.stderr,
+                            'status': log.exec_status
+                        }
+                    }
+                )
                 # 强制刷新缓冲区
                 sys.stdout.flush()
-        # 剩余内容写入日志
+        # 剩余内容写入并推送
         if buffer:
             log.save()
+            async_to_sync(channel_layer.group_send)(
+                f'script_log_{log.id}',
+                {
+                    'type': 'log_update',
+                    'data': {
+                        'stdout': log.stdout,
+                        'stderr': log.stderr,
+                        'status': log.exec_status
+                    }
+                }
+            )
     except Exception as e:
         logger.error(f"读取子进程{buffer_key}流失败：{str(e)}")
     finally:
@@ -205,6 +233,18 @@ Celery任务ID：{self.request.id}
 """
         log.stdout += log_header
         log.save()
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'script_log_{log_id}',
+            {
+                'type': 'log_update',
+                'data': {
+                    'stdout': log.stdout,
+                    'stderr': log.stderr,
+                    'status': log.exec_status
+                }
+            }
+        )
 
         # 8. 启动线程实时读取stdout/stderr（核心修复：避免日志丢失）
         stdout_thread = threading.Thread(

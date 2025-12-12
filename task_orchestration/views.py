@@ -664,6 +664,7 @@ class OrchestrationLogDetailView(View):
 
 
 # AJAX获取日志状态（完全保留原有代码）
+# AJAX获取日志状态（修改step_data返回结构）
 class OrchestrationLogStatusView(View):
     def get(self, request, log_id):
         try:
@@ -672,6 +673,7 @@ class OrchestrationLogStatusView(View):
             step_data = []
             for sl in step_logs:
                 step_data.append({
+                    "step_log_id": sl.id,  # 新增：步骤日志ID（匹配前端元素ID）
                     "order": sl.step.execution_order,
                     "status": sl.exec_status,
                     "stdout": sl.stdout,

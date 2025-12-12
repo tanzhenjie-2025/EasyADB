@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     "adb_manager.apps.AdbManagerConfig",
     "script_center.apps.ScriptCenterConfig",
     "user_auth.apps.UserAuthConfig",
@@ -141,3 +142,15 @@ AUTH_USER_MODEL = 'user_auth.CustomUser'
 
 # CORS配置（开发环境）
 CORS_ALLOW_ALL_ORIGINS = True  # 生产环境需改为CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:8000"]
+
+ASGI_APPLICATION = 'EasyADB.asgi.application'
+
+# WebSocket通道层配置（使用Redis）
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],  # 与现有Redis配置一致
+        },
+    },
+}

@@ -310,7 +310,7 @@
     </div>
 
     <script>
-        // 全局标签切换
+        // 全局标签切换（保留原有逻辑）
         function switchTab(tabId) {
             document.querySelectorAll('.log-tab-item').forEach(item => {
                 item.classList.remove('active');
@@ -322,7 +322,7 @@
             document.getElementById(tabId).style.display = 'block';
         }
 
-        // 步骤标签切换
+        // 步骤标签切换（保留原有逻辑）
         function switchStepTab(tabId, el) {
             const parent = el.closest('.log-tab');
             parent.querySelectorAll('.log-tab-item').forEach(item => {
@@ -335,28 +335,97 @@
             document.getElementById(tabId).style.display = 'block';
         }
 
-        // 实时刷新日志（可选）
-        {% if orch_log.exec_status == 'running' %}
-        setInterval(() => {
-            fetch("{% url 'task_orchestration:log_status' orch_log.id %}")
-                .then(res => res.json())
-                .then(data => {
-                    if (data.code === 200) {
-                        // 更新全局日志
-                        document.getElementById('stdout').textContent = data.stdout || '无';
-                        document.getElementById('stderr').textContent = data.stderr || '无';
-
-                        // 更新步骤日志（简化版，完整版可循环更新）
-                        data.step_data.forEach(step => {
-                            const stdoutEl = document.getElementById(`step${step.order}-stdout`);
-                            const stderrEl = document.getElementById(`step${step.order}-stderr`);
-                            if (stdoutEl) stdoutEl.textContent = step.stdout || '无';
-                            if (stderrEl) stderrEl.textContent = step.stderr || '无';
-                        });
+        // 轮询刷新编排日志（兜底函数）
+function startOrchestrationPolling(logId) {
+    const pollInterval = setInterval(() => {
+        fetch(`{% url 'task_orchestration:log_status' 0 %}`.replace('0', logId))
+            .then(response => {
+                if (!response.ok) throw new Error('轮询接口异常');
+                return response.json();
+            })
+            .then(data => {
+                if (data.code === 200) {
+                    // 更新全局日志
+                    document.getElementById('stdout').textContent = data.stdout || '无';
+                    document.getElementById('stderr').textContent = data.stderr || '无';
+                    // 更新步骤日志（核心修改：用step_log_id匹配元素ID）
+                    data.step_data.forEach(step => {
+                        const stdoutEl = document.getElementById(`step${step.step_log_id}-stdout`);
+                        const stderrEl = document.getElementById(`step${step.step_log_id}-stderr`);
+                        if (stdoutEl) stdoutEl.textContent = step.stdout || '无';
+                        if (stderrEl) stderrEl.textContent = step.stderr || '无';
+                    });
+                    // 任务结束后停止轮询
+                    if (data.status !== "running") {
+                        clearInterval(pollInterval);
+                        location.reload();
                     }
-                });
-        }, 2000);
-        {% endif %}
+                }
+            })
+            .catch(err => {
+                console.warn('编排日志轮询失败:', err);
+            });
+    }, 2000);
+    return pollInterval;
+}
+
+// WebSocket + 轮询降级主逻辑
+document.addEventListener('DOMContentLoaded', function() {
+    const logId = "{{ orch_log.id }}";
+    const status = "{{ orch_log.exec_status }}";
+
+    if (status === "running") {
+        let pollInterval = null; // 轮询定时器
+
+        // 优先尝试 WebSocket 连接
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${wsProtocol}//${window.location.host}/ws/orchestration_log/${logId}/`;
+        const socket = new WebSocket(wsUrl);
+
+        // WebSocket 连接成功：禁用轮询
+        socket.onopen = function(e) {
+            console.log(`[编排日志-${logId}] WebSocket连接已建立`);
+            if (pollInterval) clearInterval(pollInterval);
+        };
+
+        // WebSocket 接收消息：实时更新日志（核心修改：用step_log_id匹配）
+        socket.onmessage = function(e) {
+            const response = JSON.parse(e.data);
+            if (response.type === 'log_update') {
+                const data = response.data;
+                document.getElementById('stdout').textContent = data.stdout || '无';
+                document.getElementById('stderr').textContent = data.stderr || '无';
+                if (data.step_data && Array.isArray(data.step_data)) {
+                    data.step_data.forEach(step => {
+                        const stdoutEl = document.getElementById(`step${step.step_log_id}-stdout`);
+                        const stderrEl = document.getElementById(`step${step.step_log_id}-stderr`);
+                        if (stdoutEl) stdoutEl.textContent = step.stdout || '无';
+                        if (stderrEl) stderrEl.textContent = step.stderr || '无';
+                    });
+                }
+                if (data.status !== "running") {
+                    socket.close();
+                    setTimeout(() => location.reload(), 1000);
+                }
+            }
+        };
+
+        // WebSocket 失败/关闭：启动轮询降级
+        socket.onerror = function(error) {
+            console.error(`[编排日志-${logId}] WebSocket连接失败，启动轮询降级`, error);
+            if (!pollInterval) pollInterval = startOrchestrationPolling(logId);
+        };
+        socket.onclose = function(e) {
+            if (status === "running" && e.code !== 1000) {
+                console.warn(`[编排日志-${logId}] WebSocket连接关闭，启动轮询降级`, e.code);
+                if (!pollInterval) pollInterval = startOrchestrationPolling(logId);
+            }
+        };
+
+        // 初始启动轮询（WebSocket 连接成功后会自动停止）
+        pollInterval = startOrchestrationPolling(logId);
+    }
+});
     </script>
 </body>
 </html>
