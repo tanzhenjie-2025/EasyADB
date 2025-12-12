@@ -859,3 +859,148 @@ class ADBDeviceDetailView(View):
                 "msg": f"获取失败：{str(e)}",
                 "data": {}
             })
+
+
+class ADBDeviceEnableWirelessView(View):
+    """开启设备无线ADB功能（先查IP→查数据库→再执行端口操作，已有信息则提示不保存）"""
+
+    def post(self, request):
+        try:
+            device_id = request.POST.get("device_id")
+            if not device_id or not device_id.isdigit():
+                error_msg = quote("参数错误：device_id必须为数字")
+                return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
+
+            device = get_object_or_404(ADBDevice, id=device_id)
+            connect_id = device.connect_identifier
+            if not connect_id:
+                error_msg = quote("设备未配置序列号/IP+端口，无法操作")
+                return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
+
+            # 检查设备是否在线
+            status = r.get(f"adb:device:{connect_id}") or "offline"
+            if status != "online":
+                error_msg = quote(f"设备{connect_id}当前不在线，无法开启无线ADB")
+                return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
+
+            # 检查是否已经是无线连接（通过IP:端口形式判断）
+            if ":" in connect_id:
+                adb_path = r"C:\Users\谭振捷\AppData\Local\Android\Sdk\platform-tools\adb.exe"
+                if not os.path.exists(adb_path):
+                    adb_path = "adb"
+
+                # 先获取WiFi IP（统一路径+兼容解析）
+                wifi_ip = self._get_wifi_ip(adb_path, connect_id)
+                success_msg = quote(f"设备{connect_id}已是无线连接状态，IP地址：{wifi_ip}")
+                return redirect(f"{reverse('adb_manager:index')}?msg={success_msg}")
+
+            # ========== 核心调整：先获取IP，再查数据库，最后执行tcpip命令 ==========
+            # 1. 统一ADB路径（使用正确的"谭振捷"路径）
+            adb_path = r"C:\Users\谭振捷\AppData\Local\Android\Sdk\platform-tools\adb.exe"
+            if not os.path.exists(adb_path):
+                adb_path = "adb"
+
+            # 2. 先获取设备WiFi IP（提前获取，失败则直接提示）
+            wifi_ip = self._get_wifi_ip(adb_path, connect_id)
+            if wifi_ip == "获取IP失败":
+                error_msg = quote(f"设备{connect_id}获取WiFi IP失败，无法开启无线ADB，请检查设备网络连接！")
+                return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
+
+            # 3. 【关键】先查数据库：检查当前设备/其他设备是否已有该无线信息
+            db_check_msg = ""
+            need_save = True  # 是否需要保存数据库的标记
+
+            # 3.1 检查当前设备是否已有IP+端口
+            if device.device_ip and device.device_port:
+                db_check_msg = f"该设备已配置无线信息（IP：{device.device_ip}，端口：{device.device_port}）"
+                need_save = False
+            # 3.2 检查其他设备是否占用该IP+端口（避免唯一约束冲突）
+            elif ADBDevice.objects.filter(device_ip=wifi_ip, device_port=5555).exclude(id=device.id).exists():
+                db_check_msg = f"IP：{wifi_ip} 端口：5555 已被其他设备占用"
+                need_save = False
+
+            # 4. 执行tcpip命令开启无线ADB（无论是否保存数据库，都执行端口操作）
+            cmd = [adb_path, "-s", connect_id, "tcpip", "5555"]
+            logger.info(f"执行开启无线ADB命令：{' '.join(cmd)}")
+            result = subprocess.run(
+                cmd,
+                shell=True,
+                capture_output=True,
+                encoding="utf-8",
+                timeout=15
+            )
+
+            # 5. 验证tcpip命令执行结果
+            success_keywords = ["restarting in TCP mode port: 5555", "already in TCP mode", "restarting TCP port 5555"]
+            if any(kw in result.stdout for kw in success_keywords) or result.returncode == 0:
+                # 更新Redis状态
+                r.set(f"adb:device:{connect_id}:stdout", result.stdout or f"设备{connect_id}开启无线ADB成功")
+                r.set(f"adb:device:{connect_id}:stderr", "")
+
+                # 6. 根据数据库检查结果决定是否保存
+                if need_save:
+                    # 无冲突，保存到数据库
+                    device.device_ip = wifi_ip
+                    device.device_port = 5555
+                    device.save()
+                    success_msg = quote(
+                        f"设备{connect_id}已成功开启无线ADB！IP地址：{wifi_ip}，可通过 {wifi_ip}:5555 连接"
+                    )
+                else:
+                    # 已有信息，仅提示不保存
+                    success_msg = quote(
+                        f"设备{connect_id}已成功开启无线ADB！{db_check_msg}，本次未更新数据库，可通过 {wifi_ip}:5555 连接"
+                    )
+            else:
+                # 端口操作失败
+                r.set(f"adb:device:{connect_id}:stderr", result.stderr or result.stdout or "开启无线ADB失败")
+                success_msg = quote(f"设备{connect_id}开启无线ADB失败：{result.stderr or result.stdout}")
+
+            return redirect(f"{reverse('adb_manager:index')}?msg={success_msg}")
+
+        except Exception as e:
+            logger.error(f"开启无线ADB失败：{str(e)}", exc_info=True)
+            error_msg = quote(f"开启无线ADB失败：{str(e)}")
+            return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
+
+    def _get_wifi_ip(self, adb_path, connect_id):
+        """封装IP获取逻辑（复用详情页解析规则，增加备选命令）"""
+        # 定义多套IP获取命令（兼容不同安卓版本）
+        ip_commands = [
+            [adb_path, "-s", connect_id, "shell", "ip", "addr", "show", "wlan0"],  # 优先
+            [adb_path, "-s", connect_id, "shell", "getprop", "dhcp.wlan0.ipaddress"],  # 备选1
+            [adb_path, "-s", connect_id, "shell", "getprop", "wifi.ip.address"],  # 备选2
+            [adb_path, "-s", connect_id, "shell", "ifconfig", "wlan0"],  # 备选3（旧安卓）
+        ]
+
+        for cmd in ip_commands:
+            try:
+                logger.info(f"执行IP获取命令：{' '.join(cmd)}")
+                result = subprocess.run(
+                    cmd,
+                    shell=True,
+                    capture_output=True,
+                    encoding="utf-8",
+                    timeout=15
+                )
+
+                if result.returncode == 0 and result.stdout:
+                    # 复用详情页的IP解析逻辑（确保和详情页结果一致）
+                    ip_lines = result.stdout.splitlines()
+                    for line in ip_lines:
+                        line = line.strip()
+                        if "inet " in line and not "127.0.0.1" in line and not "::" in line:
+                            ip_part = line.split("inet ")[1].split("/")[0].strip()
+                            if ip_part and "." in ip_part:  # 验证是IPv4地址
+                                logger.info(f"成功获取IP：{ip_part}")
+                                return ip_part
+                        # 兼容getprop直接返回IP的情况
+                        elif "." in line and len(line.split(".")) == 4:
+                            logger.info(f"成功获取IP（getprop）：{line.strip()}")
+                            return line.strip()
+            except Exception as e:
+                logger.warning(f"IP获取命令执行失败：{str(e)}")
+                continue
+
+        logger.warning(f"所有IP获取命令均失败，设备：{connect_id}")
+        return "获取IP失败"

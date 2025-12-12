@@ -122,6 +122,17 @@
         margin-bottom: 10px;
         color: #1989fa;
     }
+
+    /* 在原有样式基础上添加 */
+.btn-purple {
+    background-color: #9b59b6;
+    color: white;
+    border: none;
+}
+
+.btn-purple:hover {
+    background-color: #8e44ad;
+}
 </style>
 {% endblock %}
 
@@ -197,6 +208,14 @@
                                 <input type="hidden" name="device_id" value="{{ device.id }}">
                                 <button type="submit" class="btn btn-danger action-btn">断开</button>
                             </form>
+                            <!-- 新增：转换无线按钮 -->
+                            {% if device.status == 'online' %}
+                            <form method="POST" action="{% url 'adb_manager:enable_wireless' %}" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="device_id" value="{{ device.id }}">
+                                <button type="submit" class="btn btn-purple action-btn">转换无线</button>
+                            </form>
+                            {% endif %}
                             <a href="{% url 'adb_manager:edit_device' device.id %}" class="btn btn-primary action-btn">编辑</a>
                             <form method="POST" action="{% url 'adb_manager:delete_device' device.id %}" style="display: inline;" onsubmit="return confirm('确定删除该设备吗？');">
                                 {% csrf_token %}
