@@ -11,25 +11,33 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# 加载.env文件（项目根目录，与manage.py同级）
+# 先定位.env文件路径，确保加载成功
 BASE_DIR = Path(__file__).resolve().parent.parent
+env_path = BASE_DIR / ".env"
+load_dotenv(dotenv_path=env_path)  # 显式指定.env路径，避免加载失败
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ry=y%_$0lp97sc0e9gv27p-6dxs*wu8#$$d7xss+m37zk-jl%#'
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# 转换为布尔值（.env中是字符串，需手动转换）
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']  # 补充，避免Django启动警告
+# 处理ALLOWED_HOSTS（逗号分隔转列表）
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+# 过滤空值（避免配置为空时出现''）
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS if host.strip()]
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -83,7 +91,8 @@ WSGI_APPLICATION = 'EasyADB.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'easy_adb_db.sqlite3',  # 数据库文件名为easy_adb_db
+        # 从.env读取数据库文件名，结合BASE_DIR拼接路径
+        'NAME': BASE_DIR / os.getenv("DB_FILENAME"),
     }
 }
 
@@ -107,42 +116,44 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
-LANGUAGE_CODE = 'zh-hans'  # 可选：改为中文，方便开发
-TIME_ZONE = 'Asia/Shanghai'  # 关键：和Celery时区一致
+LANGUAGE_CODE = os.getenv("LANGUAGE_CODE")
+TIME_ZONE = os.getenv("TIME_ZONE")
 USE_I18N = True
-USE_TZ = False  # 关键：关闭UTC，避免时区冲突（Celery已关闭enable_utc）
+USE_TZ = os.getenv("USE_TZ", "False").lower() == "true"
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']  # 补充：指定静态文件目录（如果有）
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Redis配置
-REDIS_HOST = "127.0.0.1"  # 用IP而非localhost，避免DNS解析问题
-REDIS_PORT = 6379
-REDIS_DB = 0
+# Redis配置（从.env读取）
+REDIS_HOST = os.getenv("REDIS_HOST")
+REDIS_PORT = int(os.getenv("REDIS_PORT"))  # 转换为整数
+REDIS_DB = int(os.getenv("REDIS_DB"))      # 转换为整数
 
 # Celery核心配置（强制Celery读取Django的配置）
 CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
 CELERY_RESULT_BACKEND = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
 CELERY_TIMEZONE = TIME_ZONE  # 和Django时区绑定
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True  # 启动时重试连接
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_RESULT_EXPIRES = 3600
+CELERY_TASK_SERIALIZER = os.getenv("CELERY_TASK_SERIALIZER")
+CELERY_RESULT_SERIALIZER = os.getenv("CELERY_RESULT_SERIALIZER")
+CELERY_ACCEPT_CONTENT = [os.getenv("CELERY_TASK_SERIALIZER")]
+CELERY_RESULT_EXPIRES = int(os.getenv("CELERY_RESULT_EXPIRES"))
 
+# 自定义用户模型
 AUTH_USER_MODEL = 'user_auth.CustomUser'
 
 # CORS配置（开发环境）
-CORS_ALLOW_ALL_ORIGINS = True  # 生产环境需改为CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:8000"]
+CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS").lower() == "true"
 
+# ASGI配置（Channels）
 ASGI_APPLICATION = 'EasyADB.asgi.application'
 
 # WebSocket通道层配置（使用Redis）
@@ -150,7 +161,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],  # 与现有Redis配置一致
+            "hosts": [(REDIS_HOST, REDIS_PORT)],  # 使用从.env读取的Redis配置
         },
     },
 }
