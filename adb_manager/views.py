@@ -1,3 +1,10 @@
+"""
+ADB设备管理视图
+重构说明：
+1. 移除所有硬编码配置，统一从.env读取
+2. 提取公共方法，减少重复代码
+3. 保持原有业务逻辑完全不变
+"""
 from django.conf import settings
 import redis
 from django.shortcuts import render, redirect, get_object_or_404
@@ -11,33 +18,121 @@ from .forms import ADBDeviceForm
 import logging
 import subprocess
 import os
+import re
 
+# 初始化日志
 logger = logging.getLogger(__name__)
 
-# 初始化Redis
-try:
-    r = redis.Redis(
-        host=settings.REDIS_HOST,
-        port=settings.REDIS_PORT,
-        db=settings.REDIS_DB,
-        decode_responses=True,
-        socket_timeout=2,
-        retry_on_timeout=True
-    )
-    r.ping()
-    logger.info("Redis连接成功")
-except Exception as e:
-    logger.error(f"Redis连接失败：{e}")
-    class EmptyRedis:
-        def get(self, key, *args, **kwargs):
-            return None
-        def set(self, key, value, *args, **kwargs):
-            return None
-        def delete(self, key, *args, **kwargs):
-            return None
-    r = EmptyRedis()
+
+# ===================== 公共配置与工具函数 =====================
+def get_adb_path():
+    """获取ADB路径（从环境变量读取，不存在则使用系统默认）"""
+    adb_path = os.getenv("ADB_PATH", "adb")
+    if os.path.exists(adb_path):
+        return adb_path
+    return "adb"
 
 
+def get_redis_client():
+    """获取Redis客户端（封装初始化逻辑，避免重复代码）"""
+    try:
+        r = redis.Redis(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            db=settings.REDIS_DB,
+            decode_responses=True,
+            socket_timeout=2,
+            retry_on_timeout=True
+        )
+        r.ping()
+        logger.info("Redis连接成功")
+        return r
+    except Exception as e:
+        logger.error(f"Redis连接失败：{e}")
+
+        # 空实现，保证代码不报错
+        class EmptyRedis:
+            def get(self, key, *args, **kwargs):
+                return None
+
+            def set(self, key, value, *args, **kwargs):
+                return None
+
+            def delete(self, key, *args, **kwargs):
+                return None
+
+        return EmptyRedis()
+
+
+def execute_adb_command(cmd, timeout=None):
+    """
+    执行ADB命令的公共方法
+    :param cmd: 命令列表
+    :param timeout: 超时时间（默认从环境变量读取）
+    :return: subprocess.CompletedProcess对象
+    """
+    if timeout is None:
+        timeout = int(os.getenv("ADB_COMMAND_TIMEOUT", 10))
+
+    logger.info(f"执行ADB命令：{' '.join(cmd)}")
+    try:
+        result = subprocess.run(
+            cmd,
+            shell=True,
+            capture_output=True,
+            encoding="utf-8",
+            timeout=timeout
+        )
+        return result
+    except subprocess.TimeoutExpired:
+        logger.error(f"ADB命令执行超时：{' '.join(cmd)}")
+        raise
+    except Exception as e:
+        logger.error(f"ADB命令执行失败：{str(e)}", exc_info=True)
+        raise
+
+
+def get_wifi_ip(connect_id):
+    """封装WiFi IP获取逻辑（公共方法）"""
+    adb_path = get_adb_path()
+    # 定义多套IP获取命令（兼容不同安卓版本）
+    ip_commands = [
+        [adb_path, "-s", connect_id, "shell", "ip", "addr", "show", "wlan0"],  # 优先
+        [adb_path, "-s", connect_id, "shell", "getprop", "dhcp.wlan0.ipaddress"],  # 备选1
+        [adb_path, "-s", connect_id, "shell", "getprop", "wifi.ip.address"],  # 备选2
+        [adb_path, "-s", connect_id, "shell", "ifconfig", "wlan0"],  # 备选3（旧安卓）
+    ]
+
+    for cmd in ip_commands:
+        try:
+            result = execute_adb_command(cmd)
+            if result.returncode == 0 and result.stdout:
+                # 解析IP地址
+                ip_lines = result.stdout.splitlines()
+                for line in ip_lines:
+                    line = line.strip()
+                    if "inet " in line and not "127.0.0.1" in line and not "::" in line:
+                        ip_part = line.split("inet ")[1].split("/")[0].strip()
+                        if ip_part and "." in ip_part:  # 验证是IPv4地址
+                            logger.info(f"成功获取IP：{ip_part}")
+                            return ip_part
+                    # 兼容getprop直接返回IP的情况
+                    elif "." in line and len(line.split(".")) == 4:
+                        logger.info(f"成功获取IP（getprop）：{line.strip()}")
+                        return line.strip()
+        except Exception as e:
+            logger.warning(f"IP获取命令执行失败：{str(e)}")
+            continue
+
+    logger.warning(f"所有IP获取命令均失败，设备：{connect_id}")
+    return "获取IP失败"
+
+
+# 初始化Redis客户端
+r = get_redis_client()
+
+
+# ===================== 视图函数/类 =====================
 def index(request):
     """易控ADB首页"""
     devices = ADBDevice.objects.all()
@@ -82,6 +177,7 @@ def index(request):
 
 class ADBDeviceStatusView(View):
     """获取所有设备状态接口"""
+
     def get(self, request):
         try:
             devices = ADBDevice.objects.all()
@@ -119,6 +215,7 @@ class ADBDeviceStatusView(View):
 
 class ADBDeviceConnectView(View):
     """手动连接指定设备（支持序列号/IP+端口）"""
+
     def post(self, request):
         try:
             device_id = request.POST.get("device_id")
@@ -132,10 +229,8 @@ class ADBDeviceConnectView(View):
                 error_msg = quote("设备未配置序列号/IP+端口，无法连接")
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
-            # ADB路径配置
-            adb_path = r"C:\Users\谭振捷\AppData\Local\Android\Sdk\platform-tools\adb.exe"
-            if not os.path.exists(adb_path):
-                adb_path = "adb"
+            # 从环境变量获取ADB路径
+            adb_path = get_adb_path()
 
             # 核心：支持序列号连接的ADB命令
             if ":" in connect_id:
@@ -145,14 +240,7 @@ class ADBDeviceConnectView(View):
                 # 纯序列号格式 - 先检查设备是否在线，再连接（USB/无线）
                 cmd = [adb_path, "-s", connect_id, "wait-for-device", "shell", "echo", "connected"]
 
-            logger.info(f"执行ADB连接命令：{' '.join(cmd)}")
-            result = subprocess.run(
-                cmd,
-                shell=True,
-                capture_output=True,
-                encoding="utf-8",
-                timeout=10
-            )
+            result = execute_adb_command(cmd)
 
             # 结果判断
             success_keywords = ["connected to", "connected", "echo connected"]
@@ -176,6 +264,7 @@ class ADBDeviceConnectView(View):
 
 class ADBDeviceDisconnectView(View):
     """手动断开ADB设备（支持序列号）"""
+
     def post(self, request):
         try:
             device_id = request.POST.get("device_id")
@@ -189,9 +278,7 @@ class ADBDeviceDisconnectView(View):
                 error_msg = quote("设备未配置序列号/IP+端口，无法断开")
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
-            adb_path = r"C:\Users\谭振捷\AppData\Local\Android\Sdk\platform-tools\adb.exe"
-            if not os.path.exists(adb_path):
-                adb_path = "adb"
+            adb_path = get_adb_path()
 
             # 断开命令（兼容序列号/IP+端口）
             if ":" in connect_id:
@@ -199,13 +286,7 @@ class ADBDeviceDisconnectView(View):
             else:
                 cmd = [adb_path, "-s", connect_id, "disconnect"]
 
-            result = subprocess.run(
-                cmd,
-                shell=True,
-                capture_output=True,
-                encoding="utf-8",
-                timeout=10
-            )
+            result = execute_adb_command(cmd)
 
             # 更新状态
             if "disconnected" in result.stdout or result.returncode == 0:
@@ -228,6 +309,7 @@ class ADBDeviceDisconnectView(View):
 
 class RefreshAllDevicesView(View):
     """刷新所有设备状态（支持序列号）"""
+
     def post(self, request):
         try:
             devices = ADBDevice.objects.filter(is_active=True)
@@ -235,19 +317,11 @@ class RefreshAllDevicesView(View):
                 error_msg = quote("暂无启用的设备，无需刷新！")
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
-            adb_path = r"C:\Users\谭振捷\AppData\Local\Android\Sdk\platform-tools\adb.exe"
-            if not os.path.exists(adb_path):
-                adb_path = "adb"
+            adb_path = get_adb_path()
 
             # 获取已连接的设备列表
             devices_cmd = [adb_path, "devices"]
-            devices_result = subprocess.run(
-                devices_cmd,
-                shell=True,
-                capture_output=True,
-                encoding="utf-8",
-                timeout=10
-            )
+            devices_result = execute_adb_command(devices_cmd)
             connected_devices = []
             for line in devices_result.stdout.splitlines():
                 line = line.strip()
@@ -278,15 +352,10 @@ class RefreshAllDevicesView(View):
                         else:
                             cmd = [adb_path, "-s", connect_id, "wait-for-device", "shell", "echo", "connected"]
 
-                        result = subprocess.run(
-                            cmd,
-                            shell=True,
-                            capture_output=True,
-                            encoding="utf-8",
-                            timeout=10
-                        )
+                        result = execute_adb_command(cmd)
 
-                        if any(kw in result.stdout for kw in ["connected to", "connected", "echo connected"]) or result.returncode == 0:
+                        if any(kw in result.stdout for kw in
+                               ["connected to", "connected", "echo connected"]) or result.returncode == 0:
                             r.set(f"adb:device:{connect_id}", "online")
                             r.set(f"adb:device:{connect_id}:stdout", result.stdout)
                             r.set(f"adb:device:{connect_id}:stderr", "")
@@ -312,6 +381,7 @@ class RefreshAllDevicesView(View):
 
 class AddDeviceView(View):
     """添加ADB设备（支持序列号）"""
+
     def get(self, request):
         form = ADBDeviceForm()
         if request.user.is_authenticated:
@@ -346,6 +416,7 @@ class AddDeviceView(View):
 
 class EditDeviceView(View):
     """编辑ADB设备（支持序列号）"""
+
     def get(self, request, device_id):
         device = get_object_or_404(ADBDevice, id=device_id)
         form = ADBDeviceForm(instance=device)
@@ -397,6 +468,7 @@ class EditDeviceView(View):
 
 class DeleteDeviceView(View):
     """删除ADB设备"""
+
     def post(self, request, device_id):
         try:
             device = get_object_or_404(ADBDevice, id=device_id)
@@ -404,16 +476,14 @@ class DeleteDeviceView(View):
             connect_id = device.connect_identifier
 
             # 断开设备
-            adb_path = r"C:\Users\谭振捷\AppData\Local\Android\Sdk\platform-tools\adb.exe"
-            if not os.path.exists(adb_path):
-                adb_path = "adb"
+            adb_path = get_adb_path()
 
             if connect_id:
                 if ":" in connect_id:
                     cmd = [adb_path, "disconnect", connect_id]
                 else:
                     cmd = [adb_path, "-s", connect_id, "disconnect"]
-                subprocess.run(cmd, shell=True, capture_output=True, timeout=5)
+                execute_adb_command(cmd, timeout=5)
 
                 # 删除Redis状态
                 r.delete(f"adb:device:{connect_id}")
@@ -434,6 +504,7 @@ class DeleteDeviceView(View):
 
 class ConnectAllDevicesView(View):
     """一键连接所有设备（支持序列号）"""
+
     def post(self, request):
         try:
             devices = ADBDevice.objects.filter(is_active=True)
@@ -441,9 +512,7 @@ class ConnectAllDevicesView(View):
                 error_msg = quote("暂无启用的设备，无需连接！")
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
-            adb_path = r"C:\Users\谭振捷\AppData\Local\Android\Sdk\platform-tools\adb.exe"
-            if not os.path.exists(adb_path):
-                adb_path = "adb"
+            adb_path = get_adb_path()
 
             success_count = 0
             fail_count = 0
@@ -462,15 +531,10 @@ class ConnectAllDevicesView(View):
                     else:
                         cmd = [adb_path, "-s", connect_id, "wait-for-device", "shell", "echo", "connected"]
 
-                    result = subprocess.run(
-                        cmd,
-                        shell=True,
-                        capture_output=True,
-                        encoding="utf-8",
-                        timeout=10
-                    )
+                    result = execute_adb_command(cmd)
 
-                    if any(kw in result.stdout for kw in ["connected to", "connected", "echo connected"]) or result.returncode == 0:
+                    if any(kw in result.stdout for kw in
+                           ["connected to", "connected", "echo connected"]) or result.returncode == 0:
                         r.set(f"adb:device:{connect_id}", "online")
                         r.set(f"adb:device:{connect_id}:stdout", result.stdout)
                         r.set(f"adb:device:{connect_id}:stderr", "")
@@ -500,6 +564,7 @@ class ConnectAllDevicesView(View):
 
 class DisconnectAllDevicesView(View):
     """一键断开所有设备（支持序列号）"""
+
     def post(self, request):
         try:
             devices = ADBDevice.objects.all()
@@ -507,9 +572,7 @@ class DisconnectAllDevicesView(View):
                 error_msg = quote("暂无设备，无需断开！")
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
-            adb_path = r"C:\Users\TanZhenJie\AppData\Local\Android\Sdk\platform-tools\adb.exe"
-            if not os.path.exists(adb_path):
-                adb_path = "adb"
+            adb_path = get_adb_path()
 
             success_count = 0
             fail_count = 0
@@ -528,13 +591,7 @@ class DisconnectAllDevicesView(View):
                     else:
                         cmd = [adb_path, "-s", connect_id, "disconnect"]
 
-                    result = subprocess.run(
-                        cmd,
-                        shell=True,
-                        capture_output=True,
-                        encoding="utf-8",
-                        timeout=10
-                    )
+                    result = execute_adb_command(cmd)
 
                     if "disconnected" in result.stdout or result.returncode == 0:
                         r.set(f"adb:device:{connect_id}", "offline")
@@ -566,6 +623,7 @@ class DisconnectAllDevicesView(View):
 
 class CSRFTokenView(View):
     """获取CSRF Token接口"""
+
     def get(self, request):
         return JsonResponse({
             "code": 200,
@@ -573,27 +631,16 @@ class CSRFTokenView(View):
         })
 
 
-# 原有代码...（保持不变）
-
 class ADBDevicesListView(View):
     """执行adb devices命令，返回所有已连接设备"""
+
     def get(self, request):
         try:
-            # 复用现有ADB路径配置
-            adb_path = r"C:\Users\TanZhenJie\AppData\Local\Android\Sdk\platform-tools\adb.exe"
-            if not os.path.exists(adb_path):
-                adb_path = "adb"
+            adb_path = get_adb_path()
 
             # 执行adb devices命令
             cmd = [adb_path, "devices", "-l"]  # -l参数显示详细信息
-            logger.info(f"执行命令：{' '.join(cmd)}")
-            result = subprocess.run(
-                cmd,
-                shell=True,
-                capture_output=True,
-                encoding="utf-8",
-                timeout=10
-            )
+            result = execute_adb_command(cmd)
 
             # 解析命令结果
             output = result.stdout.strip()
@@ -612,7 +659,7 @@ class ADBDevicesListView(View):
                             device_info = {
                                 "serial": parts[0].strip(),
                                 "status": parts[1].strip(),
-                                "details": parts[2].strip() if len(parts) >=3 else ""
+                                "details": parts[2].strip() if len(parts) >= 3 else ""
                             }
                             connected_devices.append(device_info)
 
@@ -644,11 +691,6 @@ class ADBDevicesListView(View):
             })
 
 
-import re  # 确保已导入re模块
-
-
-# 原有代码保留，仅替换电池解析部分
-
 class ADBDeviceDetailView(View):
     """获取指定设备的详细信息（厂商、型号、系统版本、电量、WiFi IP等）"""
 
@@ -672,10 +714,8 @@ class ADBDeviceDetailView(View):
                     "data": {}
                 })
 
-            # ADB路径配置（复用现有配置）
-            adb_path = r"C:\Users\TanZhenJie\AppData\Local\Android\Sdk\platform-tools\adb.exe"
-            if not os.path.exists(adb_path):
-                adb_path = "adb"
+            adb_path = get_adb_path()
+            default_timeout = int(os.getenv("ADB_COMMAND_TIMEOUT", 15))
 
             # 定义需要执行的ADB命令列表（新增电池备用命令）
             commands = {
@@ -711,14 +751,7 @@ class ADBDeviceDetailView(View):
             # 执行每个命令
             for cmd_key, cmd in commands.items():
                 try:
-                    logger.info(f"执行设备详情命令：{' '.join(cmd)}")
-                    result = subprocess.run(
-                        cmd,
-                        shell=True,
-                        capture_output=True,
-                        encoding="utf-8",
-                        timeout=15  # 延长超时时间（部分命令执行较慢）
-                    )
+                    result = execute_adb_command(cmd, timeout=default_timeout)
                     stdout = result.stdout.strip()
                     stderr = result.stderr.strip()
                     result_data["raw_commands"][cmd_key] = {"stdout": stdout, "stderr": stderr}
@@ -885,23 +918,17 @@ class ADBDeviceEnableWirelessView(View):
 
             # 检查是否已经是无线连接（通过IP:端口形式判断）
             if ":" in connect_id:
-                adb_path = r"C:\Users\谭振捷\AppData\Local\Android\Sdk\platform-tools\adb.exe"
-                if not os.path.exists(adb_path):
-                    adb_path = "adb"
-
-                # 先获取WiFi IP（统一路径+兼容解析）
-                wifi_ip = self._get_wifi_ip(adb_path, connect_id)
+                # 获取WiFi IP
+                wifi_ip = get_wifi_ip(connect_id)
                 success_msg = quote(f"设备{connect_id}已是无线连接状态，IP地址：{wifi_ip}")
                 return redirect(f"{reverse('adb_manager:index')}?msg={success_msg}")
 
             # ========== 核心调整：先获取IP，再查数据库，最后执行tcpip命令 ==========
-            # 1. 统一ADB路径（使用正确的"谭振捷"路径）
-            adb_path = r"C:\Users\谭振捷\AppData\Local\Android\Sdk\platform-tools\adb.exe"
-            if not os.path.exists(adb_path):
-                adb_path = "adb"
+            # 1. 获取ADB路径
+            adb_path = get_adb_path()
 
             # 2. 先获取设备WiFi IP（提前获取，失败则直接提示）
-            wifi_ip = self._get_wifi_ip(adb_path, connect_id)
+            wifi_ip = get_wifi_ip(connect_id)
             if wifi_ip == "获取IP失败":
                 error_msg = quote(f"设备{connect_id}获取WiFi IP失败，无法开启无线ADB，请检查设备网络连接！")
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
@@ -909,29 +936,27 @@ class ADBDeviceEnableWirelessView(View):
             # 3. 【关键】先查数据库：检查当前设备/其他设备是否已有该无线信息
             db_check_msg = ""
             need_save = True  # 是否需要保存数据库的标记
+            default_port = int(os.getenv("ADB_DEFAULT_WIRELESS_PORT", 5555))
 
             # 3.1 检查当前设备是否已有IP+端口
             if device.device_ip and device.device_port:
                 db_check_msg = f"该设备已配置无线信息（IP：{device.device_ip}，端口：{device.device_port}）"
                 need_save = False
             # 3.2 检查其他设备是否占用该IP+端口（避免唯一约束冲突）
-            elif ADBDevice.objects.filter(device_ip=wifi_ip, device_port=5555).exclude(id=device.id).exists():
-                db_check_msg = f"IP：{wifi_ip} 端口：5555 已被其他设备占用"
+            elif ADBDevice.objects.filter(device_ip=wifi_ip, device_port=default_port).exclude(id=device.id).exists():
+                db_check_msg = f"IP：{wifi_ip} 端口：{default_port} 已被其他设备占用"
                 need_save = False
 
             # 4. 执行tcpip命令开启无线ADB（无论是否保存数据库，都执行端口操作）
-            cmd = [adb_path, "-s", connect_id, "tcpip", "5555"]
-            logger.info(f"执行开启无线ADB命令：{' '.join(cmd)}")
-            result = subprocess.run(
-                cmd,
-                shell=True,
-                capture_output=True,
-                encoding="utf-8",
-                timeout=15
-            )
+            cmd = [adb_path, "-s", connect_id, "tcpip", str(default_port)]
+            result = execute_adb_command(cmd)
 
             # 5. 验证tcpip命令执行结果
-            success_keywords = ["restarting in TCP mode port: 5555", "already in TCP mode", "restarting TCP port 5555"]
+            success_keywords = [
+                f"restarting in TCP mode port: {default_port}",
+                "already in TCP mode",
+                f"restarting TCP port {default_port}"
+            ]
             if any(kw in result.stdout for kw in success_keywords) or result.returncode == 0:
                 # 更新Redis状态
                 r.set(f"adb:device:{connect_id}:stdout", result.stdout or f"设备{connect_id}开启无线ADB成功")
@@ -941,15 +966,15 @@ class ADBDeviceEnableWirelessView(View):
                 if need_save:
                     # 无冲突，保存到数据库
                     device.device_ip = wifi_ip
-                    device.device_port = 5555
+                    device.device_port = default_port
                     device.save()
                     success_msg = quote(
-                        f"设备{connect_id}已成功开启无线ADB！IP地址：{wifi_ip}，可通过 {wifi_ip}:5555 连接"
+                        f"设备{connect_id}已成功开启无线ADB！IP地址：{wifi_ip}，可通过 {wifi_ip}:{default_port} 连接"
                     )
                 else:
                     # 已有信息，仅提示不保存
                     success_msg = quote(
-                        f"设备{connect_id}已成功开启无线ADB！{db_check_msg}，本次未更新数据库，可通过 {wifi_ip}:5555 连接"
+                        f"设备{connect_id}已成功开启无线ADB！{db_check_msg}，本次未更新数据库，可通过 {wifi_ip}:{default_port} 连接"
                     )
             else:
                 # 端口操作失败
@@ -962,45 +987,3 @@ class ADBDeviceEnableWirelessView(View):
             logger.error(f"开启无线ADB失败：{str(e)}", exc_info=True)
             error_msg = quote(f"开启无线ADB失败：{str(e)}")
             return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
-
-    def _get_wifi_ip(self, adb_path, connect_id):
-        """封装IP获取逻辑（复用详情页解析规则，增加备选命令）"""
-        # 定义多套IP获取命令（兼容不同安卓版本）
-        ip_commands = [
-            [adb_path, "-s", connect_id, "shell", "ip", "addr", "show", "wlan0"],  # 优先
-            [adb_path, "-s", connect_id, "shell", "getprop", "dhcp.wlan0.ipaddress"],  # 备选1
-            [adb_path, "-s", connect_id, "shell", "getprop", "wifi.ip.address"],  # 备选2
-            [adb_path, "-s", connect_id, "shell", "ifconfig", "wlan0"],  # 备选3（旧安卓）
-        ]
-
-        for cmd in ip_commands:
-            try:
-                logger.info(f"执行IP获取命令：{' '.join(cmd)}")
-                result = subprocess.run(
-                    cmd,
-                    shell=True,
-                    capture_output=True,
-                    encoding="utf-8",
-                    timeout=15
-                )
-
-                if result.returncode == 0 and result.stdout:
-                    # 复用详情页的IP解析逻辑（确保和详情页结果一致）
-                    ip_lines = result.stdout.splitlines()
-                    for line in ip_lines:
-                        line = line.strip()
-                        if "inet " in line and not "127.0.0.1" in line and not "::" in line:
-                            ip_part = line.split("inet ")[1].split("/")[0].strip()
-                            if ip_part and "." in ip_part:  # 验证是IPv4地址
-                                logger.info(f"成功获取IP：{ip_part}")
-                                return ip_part
-                        # 兼容getprop直接返回IP的情况
-                        elif "." in line and len(line.split(".")) == 4:
-                            logger.info(f"成功获取IP（getprop）：{line.strip()}")
-                            return line.strip()
-            except Exception as e:
-                logger.warning(f"IP获取命令执行失败：{str(e)}")
-                continue
-
-        logger.warning(f"所有IP获取命令均失败，设备：{connect_id}")
-        return "获取IP失败"
