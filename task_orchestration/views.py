@@ -1,3 +1,10 @@
+"""
+编排任务管理视图
+重构说明：
+1. 移除所有硬编码配置，统一从.env读取
+2. 提取公共工具函数，减少重复代码
+3. 保持原有业务逻辑、接口格式完全兼容
+"""
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.urls import reverse
@@ -15,13 +22,50 @@ import redis
 import json
 from celery.result import AsyncResult
 
+# 导入模型、表单和Celery任务
+from adb_manager.models import ADBDevice
+from .models import OrchestrationTask, TaskStep, OrchestrationLog, StepExecutionLog
+from .forms import OrchestrationTaskForm, TaskStepForm, TaskStepEditForm
+from script_center.models import ScriptTask, TaskExecutionLog
+from .tasks import execute_step_task
+
+
+# ===================== 公共工具函数 =====================
+def get_env_config(key, default=None, cast_type=str):
+    """
+    统一读取环境变量配置
+    :param key: 配置键名
+    :param default: 默认值
+    :param cast_type: 类型转换（str/int/bool等）
+    :return: 转换后的配置值
+    """
+    value = os.getenv(key, default)
+    if value is None:
+        return default
+
+    # 类型转换
+    try:
+        if cast_type == int:
+            return int(value)
+        elif cast_type == bool:
+            return value.lower() == "true"
+        return cast_type(value)
+    except (ValueError, TypeError):
+        logger.error(f"配置 {key} 转换失败，使用默认值 {default}")
+        return default
+
+
+# ===================== 日志配置 =====================
+# 从环境变量读取日志配置
+LOG_FILE = get_env_config("ORCH_LOG_FILE", "orchestration_execution.log")
+
 # 配置日志
 logger = logging.getLogger(__name__)
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('orchestration_execution.log', encoding='utf-8'),
+        logging.FileHandler(LOG_FILE, encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
@@ -30,6 +74,20 @@ logging.basicConfig(
 os.environ['PYTHONIOENCODING'] = 'utf-8'
 os.environ['PYTHONLEGACYWINDOWSSTDIO'] = 'utf-8'
 
+# ===================== 全局配置（从.env读取） =====================
+# 最近日志展示数量
+RECENT_LOGS_LIMIT = get_env_config("ORCH_RECENT_LOGS_LIMIT", 10, int)
+# 步骤超时缓冲时间（秒）
+STEP_TIMEOUT_BUFFER = get_env_config("ORCH_STEP_TIMEOUT_BUFFER", 10, int)
+# 进程终止等待时间（秒）
+PROCESS_TERMINATE_WAIT = get_env_config("ORCH_PROCESS_TERMINATE_WAIT", 1, int)
+# Redis哈希表名称
+REDIS_PROCESS_HASH = get_env_config("ORCH_REDIS_PROCESS_HASH", "orch_running_processes")
+# Celery任务终止方式
+CELERY_TERMINATE_FORCE = get_env_config("ORCH_CELERY_TERMINATE_FORCE", True, bool)
+# 手机号校验位数
+MOBILE_VALID_LENGTH = get_env_config("ORCH_MOBILE_VALID_LENGTH", 11, int)
+
 # 全局存储（兼容原有+新增Celery任务跟踪）
 running_processes = {}  # 保留原有进程存储（兼容历史逻辑）
 process_lock = threading.Lock()
@@ -37,13 +95,14 @@ running_tasks = {}  # 新增：记录Celery任务ID
 task_lock = threading.Lock()
 
 
-# ===================== Redis进程存储函数（和tasks保持一致，避免循环导入） =====================
+# ===================== Redis操作工具函数（重构版） =====================
 def get_redis_conn():
+    """获取Redis连接（从.env读取配置）"""
     try:
         r = redis.Redis(
-            host="127.0.0.1",
-            port=6379,
-            db=0,
+            host=get_env_config("REDIS_HOST", "127.0.0.1"),
+            port=get_env_config("REDIS_PORT", 6379, int),
+            db=get_env_config("REDIS_DB", 0, int),
             decode_responses=True,
             socket_timeout=5
         )
@@ -55,21 +114,21 @@ def get_redis_conn():
 
 
 def save_running_process(process_key, process_info):
-    """保存进程信息到Redis"""
+    """保存进程信息到Redis（从.env读取哈希表名称）"""
     r = get_redis_conn()
     if r:
         try:
-            r.hset("orch_running_processes", process_key, json.dumps(process_info))
+            r.hset(REDIS_PROCESS_HASH, process_key, json.dumps(process_info))
         except Exception as e:
             logger.error(f"Redis保存进程信息失败：{str(e)}")
 
 
 def get_running_process(process_key):
-    """从Redis获取进程信息"""
+    """从Redis获取进程信息（从.env读取哈希表名称）"""
     r = get_redis_conn()
     if r:
         try:
-            data = r.hget("orch_running_processes", process_key)
+            data = r.hget(REDIS_PROCESS_HASH, process_key)
             return json.loads(data) if data else None
         except Exception as e:
             logger.error(f"Redis获取进程信息失败：{str(e)}")
@@ -77,28 +136,40 @@ def get_running_process(process_key):
 
 
 def remove_running_process(process_key):
-    """从Redis删除进程信息"""
+    """从Redis删除进程信息（从.env读取哈希表名称）"""
     r = get_redis_conn()
     if r:
         try:
-            r.hdel("orch_running_processes", process_key)
+            r.hdel(REDIS_PROCESS_HASH, process_key)
             logger.info(f"Redis中进程信息已删除，KEY={process_key}")
         except Exception as e:
             logger.error(f"Redis删除进程信息失败：{str(e)}")
 
 
-# ===================== Redis进程存储函数结束 =====================
+def kill_redis_process(process_key):
+    """从Redis获取进程并终止（公共函数，避免代码重复）"""
+    process_info = get_running_process(process_key)
+    if not process_info or not process_info.get("pid"):
+        logger.warning(f"Redis中无进程信息，KEY={process_key}")
+        return
+    try:
+        pid = process_info["pid"]
+        parent = psutil.Process(pid)
+        for child in parent.children(recursive=True):
+            child.terminate()
+        parent.terminate()
+        time.sleep(PROCESS_TERMINATE_WAIT)  # 从.env读取等待时间
+        if parent.is_running():
+            parent.kill()
+        logger.info(f"已终止Redis中记录的进程{pid}（KEY：{process_key}）")
+    except Exception as e:
+        logger.error(f"终止Redis进程失败（KEY：{process_key}）：{str(e)}")
 
-# 模型和表单导入
-from adb_manager.models import ADBDevice
-from .models import OrchestrationTask, TaskStep, OrchestrationLog, StepExecutionLog
-from .forms import OrchestrationTaskForm, TaskStepForm, TaskStepEditForm
-from script_center.models import ScriptTask, TaskExecutionLog
-from .tasks import execute_step_task  # 导入Celery任务
 
-
-# 编排任务列表（完全保留原有代码）
+# ===================== 编排任务核心视图 =====================
 class OrchestrationListView(View):
+    """编排任务列表（完全保留原有逻辑）"""
+
     def get(self, request):
         tasks = OrchestrationTask.objects.all()
         return render(request, "task_orchestration/list.html", {
@@ -107,8 +178,9 @@ class OrchestrationListView(View):
         })
 
 
-# 创建编排任务（完全保留原有代码）
 class OrchestrationCreateView(View):
+    """创建编排任务（完全保留原有逻辑）"""
+
     def get(self, request):
         form = OrchestrationTaskForm()
         return render(request, "task_orchestration/form.html", {
@@ -124,8 +196,9 @@ class OrchestrationCreateView(View):
         return render(request, "task_orchestration/form.html", {"form": form})
 
 
-# 编辑子任务步骤（合并后完整版本，包含编辑超时时间功能）
 class StepEditView(View):
+    """编辑子任务步骤（合并后完整版本，配置从.env读取）"""
+
     def get(self, request, task_id):
         orchestration = get_object_or_404(OrchestrationTask, id=task_id)
         steps = orchestration.steps.all().order_by("execution_order")
@@ -139,7 +212,7 @@ class StepEditView(View):
             "steps": steps,
             "task_form": task_form,
             "step_form": step_form,
-            "edit_forms": edit_forms,  # 传递编辑表单到模板
+            "edit_forms": edit_forms,
             "page_title": f"编辑步骤 - {orchestration.name}"
         })
 
@@ -198,8 +271,9 @@ class StepEditView(View):
         })
 
 
-# 旧版执行接口（修改为Celery异步执行，保留原有入参和返回格式）
 class ExecuteOrchestrationAPIView(View):
+    """旧版执行接口（修改为Celery异步执行，配置从.env读取）"""
+
     def post(self, request, task_id):
         orchestration = get_object_or_404(OrchestrationTask, id=task_id, status="active")
         steps = orchestration.steps.order_by("execution_order").all()
@@ -250,7 +324,7 @@ class ExecuteOrchestrationAPIView(View):
         })
 
     def _run_orchestration(self, orch_log, steps, device):
-        """执行编排任务核心逻辑（改为Celery异步执行，支持超时停止+异常捕获）"""
+        """执行编排任务核心逻辑（配置从.env读取）"""
         start_total_time = time.time()
         orch_log_stdout = [orch_log.stdout]
         orch_log_stderr = []
@@ -320,8 +394,8 @@ class ExecuteOrchestrationAPIView(View):
                 orch_log.stdout = "\n".join(orch_log_stdout)
                 orch_log.save(update_fields=['stdout'])
 
-                # 等待任务完成或超时（额外+10秒缓冲，确保超时后能及时处理）
-                max_wait_time = step.run_duration + 10
+                # 等待任务完成或超时（从.env读取缓冲时间）
+                max_wait_time = step.run_duration + STEP_TIMEOUT_BUFFER
                 start_time = time.time()
                 task_completed = False
 
@@ -358,7 +432,8 @@ class ExecuteOrchestrationAPIView(View):
                 # 处理任务超时未完成的情况
                 if not task_completed:
                     orch_log_stdout.append(f"步骤{step.execution_order}任务未在规定时间内响应，标记为超时")
-                    orch_log_stderr.append(f"步骤{step.execution_order}超时未响应：{step.run_duration + 10}秒内未完成")
+                    orch_log_stderr.append(
+                        f"步骤{step.execution_order}超时未响应：{step.run_duration + STEP_TIMEOUT_BUFFER}秒内未完成")
 
                     # 强制标记步骤为超时
                     step_log = StepExecutionLog.objects.filter(
@@ -367,9 +442,9 @@ class ExecuteOrchestrationAPIView(View):
                     ).first()
                     if step_log:
                         step_log.exec_status = "timeout"
-                        step_log.error_msg = f"任务未在规定时间内完成（{step.run_duration}秒+10秒缓冲）"
+                        step_log.error_msg = f"任务未在规定时间内完成（{step.run_duration}秒+{STEP_TIMEOUT_BUFFER}秒缓冲）"
                         step_log.end_time = timezone.now()
-                        step_log.exec_duration = step.run_duration + 10
+                        step_log.exec_duration = step.run_duration + STEP_TIMEOUT_BUFFER
                         step_log.save()
                     else:
                         # 兼容步骤日志未创建的情况
@@ -377,20 +452,20 @@ class ExecuteOrchestrationAPIView(View):
                             orchestration_log=orch_log,
                             step=step,
                             exec_status="timeout",
-                            error_msg=f"任务未在规定时间内完成（{step.run_duration}秒+10秒缓冲）",
+                            error_msg=f"任务未在规定时间内完成（{step.run_duration}秒+{STEP_TIMEOUT_BUFFER}秒缓冲）",
                             start_time=timezone.now(),
                             end_time=timezone.now(),
-                            exec_duration=step.run_duration + 10
+                            exec_duration=step.run_duration + STEP_TIMEOUT_BUFFER
                         )
 
-                    # 终止超时的Celery任务
+                    # 终止超时的Celery任务（从.env读取终止方式）
                     with task_lock:
                         process_key = f"{orch_log.id}_{step.execution_order}"
                         if process_key in running_tasks:
                             try:
-                                AsyncResult(running_tasks[process_key]).revoke(terminate=True)
+                                AsyncResult(running_tasks[process_key]).revoke(terminate=CELERY_TERMINATE_FORCE)
                                 # 从Redis终止进程并删除记录
-                                self._kill_redis_process(process_key)
+                                kill_redis_process(process_key)
                                 remove_running_process(process_key)
                             except Exception as revoke_e:
                                 logger.error(f"终止Celery任务失败：{str(revoke_e)}")
@@ -433,28 +508,10 @@ class ExecuteOrchestrationAPIView(View):
             orch_log.stderr = "\n".join(orch_log_stderr)
             orch_log.save()
 
-    def _kill_redis_process(self, process_key):
-        """从Redis获取进程并终止"""
-        process_info = get_running_process(process_key)
-        if not process_info or not process_info.get("pid"):
-            logger.warning(f"Redis中无进程信息，KEY={process_key}")
-            return
-        try:
-            pid = process_info["pid"]
-            parent = psutil.Process(pid)
-            for child in parent.children(recursive=True):
-                child.terminate()
-            parent.terminate()
-            time.sleep(1)
-            if parent.is_running():
-                parent.kill()
-            logger.info(f"已终止Redis中记录的进程{pid}（KEY：{process_key}）")
-        except Exception as e:
-            logger.error(f"终止Redis进程失败（KEY：{process_key}）：{str(e)}")
 
-
-# 新版执行页面（完全保留原有代码，仅修改_run_orchestration调用）
 class OrchestrationExecuteView(View):
+    """新版执行页面（配置从.env读取）"""
+
     def get(self, request):
         devices = ADBDevice.objects.filter(is_active=True)
         device_list = []
@@ -462,7 +519,8 @@ class OrchestrationExecuteView(View):
             dev.status = dev.device_status
             device_list.append(dev)
 
-        recent_logs = OrchestrationLog.objects.all().order_by("-id")[:10]
+        # 从.env读取最近日志数量
+        recent_logs = OrchestrationLog.objects.all().order_by("-id")[:RECENT_LOGS_LIMIT]
         for log in recent_logs:
             log.is_running = log.exec_status == "running"
 
@@ -537,8 +595,9 @@ class OrchestrationExecuteView(View):
         ExecuteOrchestrationAPIView()._run_orchestration(orch_log, steps, device)
 
 
-# 停止编排任务（增强版：支持Celery+Redis进程双终止）
 class StopOrchestrationView(View):
+    """停止编排任务（增强版：配置从.env读取）"""
+
     def get(self, request, log_id):
         try:
             orch_log = get_object_or_404(OrchestrationLog, id=log_id)
@@ -546,13 +605,13 @@ class StopOrchestrationView(View):
                 error_msg = quote(f"编排任务未在运行中！当前状态：{orch_log.exec_status}")
                 return redirect(f"{reverse('task_orchestration:execute_orchestration')}?msg={error_msg}")
 
-            # 1. 停止所有相关Celery任务
+            # 1. 停止所有相关Celery任务（从.env读取终止方式）
             with task_lock:
                 for key in list(running_tasks.keys()):
                     if key.startswith(f"{log_id}_"):
                         task_id = running_tasks[key]
                         try:
-                            AsyncResult(task_id).revoke(terminate=True)  # 强制终止Celery任务
+                            AsyncResult(task_id).revoke(terminate=CELERY_TERMINATE_FORCE)
                             logger.info(f"已终止Celery任务{task_id}（编排日志{log_id}，步骤{key.split('_')[1]}）")
                         except Exception as e:
                             logger.error(f"终止Celery任务{task_id}失败：{str(e)}")
@@ -561,9 +620,9 @@ class StopOrchestrationView(View):
             # 2. 终止Redis中记录的进程（核心：解决异步进程无法终止问题）
             r = get_redis_conn()
             if r:
-                for key in r.hkeys("orch_running_processes"):
+                for key in r.hkeys(REDIS_PROCESS_HASH):
                     if key.startswith(f"{log_id}_"):
-                        self._kill_redis_process(key)
+                        kill_redis_process(key)
                         remove_running_process(key)
 
             # 3. 清理原有本地进程（兼容历史逻辑）
@@ -580,7 +639,7 @@ class StopOrchestrationView(View):
                             for child in parent.children(recursive=True):
                                 child.terminate()
                             parent.terminate()
-                            time.sleep(1)
+                            time.sleep(PROCESS_TERMINATE_WAIT)  # 从.env读取等待时间
                             if parent.is_running():
                                 parent.kill()
                             logger.info(f"已终止本地进程{pid}（编排日志{log_id}，步骤{key.split('_')[1]}）")
@@ -614,28 +673,10 @@ class StopOrchestrationView(View):
             error_msg = quote(f"停止失败：{str(e)}")
             return redirect(f"{reverse('task_orchestration:execute_orchestration')}?msg={error_msg}")
 
-    def _kill_redis_process(self, process_key):
-        """从Redis获取进程并终止"""
-        process_info = get_running_process(process_key)
-        if not process_info or not process_info.get("pid"):
-            logger.warning(f"Redis中无进程信息，KEY={process_key}")
-            return
-        try:
-            pid = process_info["pid"]
-            parent = psutil.Process(pid)
-            for child in parent.children(recursive=True):
-                child.terminate()
-            parent.terminate()
-            time.sleep(1)
-            if parent.is_running():
-                parent.kill()
-            logger.info(f"已终止Redis中记录的进程{pid}（KEY：{process_key}）")
-        except Exception as e:
-            logger.error(f"终止Redis进程失败（KEY：{process_key}）：{str(e)}")
 
-
-# 删除步骤（完全保留原有代码）
 class StepDeleteView(View):
+    """删除步骤（完全保留原有逻辑）"""
+
     def get(self, request, step_id):
         step = get_object_or_404(TaskStep, id=step_id)
         task_id = step.orchestration.id
@@ -643,8 +684,9 @@ class StepDeleteView(View):
         return redirect(reverse("task_orchestration:edit_steps", args=[task_id]))
 
 
-# 编排日志详情（完全保留原有代码）
 class OrchestrationLogDetailView(View):
+    """编排日志详情（完全保留原有逻辑）"""
+
     def get(self, request, log_id):
         orch_log = get_object_or_404(OrchestrationLog, id=log_id)
         step_logs = orch_log.step_logs.all().order_by("step__execution_order")
@@ -663,9 +705,9 @@ class OrchestrationLogDetailView(View):
         return render(request, "task_orchestration/log_detail.html", context)
 
 
-# AJAX获取日志状态（完全保留原有代码）
-# AJAX获取日志状态（修改step_data返回结构）
 class OrchestrationLogStatusView(View):
+    """AJAX获取日志状态（修改step_data返回结构，配置从.env读取）"""
+
     def get(self, request, log_id):
         try:
             orch_log = get_object_or_404(OrchestrationLog, id=log_id)
@@ -697,72 +739,9 @@ class OrchestrationLogStatusView(View):
             })
 
 
-# 以下为原有测试相关代码（保留）
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from mycelery.email.tasks import send_email, send_email2
-from mycelery.main import app
-
-
-def send_sms(request):
-    return render(request, 'sms_send.html')
-
-
-# 修正：兼容JSON和表单请求，加固参数校验
-def send_sms_view(request):
-    if request.method == 'POST':
-        # 第一步：优先解析JSON请求体（axios发送的格式）
-        try:
-            # 解析JSON请求体
-            request_data = json.loads(request.body)
-            mobile = request_data.get('mobile', '').strip()
-        except json.JSONDecodeError:
-            # 解析失败则用表单格式
-            mobile = request.POST.get('mobile', '').strip()
-
-        # 加固：手机号校验
-        if not mobile:
-            return JsonResponse({'code': 400, 'msg': '手机号不能为空'})
-        if not mobile.isdigit() or len(mobile) != 11:  # 新增11位校验
-            return JsonResponse({'code': 400, 'msg': '手机号格式错误（需11位数字）'})
-
-        # 异步调用任务（确保任务正常生成ID）
-        try:
-            task1 = send_email.delay(mobile)
-            task2 = send_email2.delay(mobile)
-        except Exception as e:
-            return JsonResponse({'code': 500, 'msg': f'任务提交失败：{str(e)}'})
-
-        # 确保返回的JSON包含task1_id/task2_id
-        return JsonResponse({
-            'code': 200,
-            'msg': '任务已提交',
-            'task1_id': task1.id,  # 明确返回task1_id
-            'task2_id': task2.id,
-            'mobile': mobile  # 新增：返回手机号，方便前端验证
-        })
-    return JsonResponse({'code': 405, 'msg': '仅支持POST请求'})
-
-
-# 保持查询接口不变
-@api_view(['GET'])
-def check_task_result(request):
-    task_id = request.GET.get('task_id')
-    if not task_id:
-        return Response({'code': 400, 'msg': '缺少task_id'}, status=400)
-
-    task = AsyncResult(task_id, app=app)
-
-    return Response({
-        'task_id': task_id,
-        'status': task.status,
-        'result': task.result if task.status == 'SUCCESS' else None,
-        'error': str(task.result) if task.status == 'FAILURE' else None
-    })
-
-
-# 在现有视图下方添加
 class OrchestrationCloneView(View):
+    """克隆编排任务（完全保留原有逻辑）"""
+
     def get(self, request, task_id):
         """显示克隆任务确认页面"""
         original_task = get_object_or_404(OrchestrationTask, id=task_id)
@@ -814,3 +793,67 @@ class OrchestrationCloneView(View):
 
         # 克隆成功后跳转到编辑页面
         return redirect(reverse("task_orchestration:edit_steps", args=[new_task.id]) + "?msg=任务克隆成功")
+
+
+# ===================== 原有测试相关代码（重构配置读取） =====================
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from mycelery.email.tasks import send_email, send_email2
+from mycelery.main import app
+
+
+def send_sms(request):
+    return render(request, 'sms_send.html')
+
+
+# 修正：兼容JSON和表单请求，加固参数校验（配置从.env读取）
+def send_sms_view(request):
+    if request.method == 'POST':
+        # 第一步：优先解析JSON请求体（axios发送的格式）
+        try:
+            # 解析JSON请求体
+            request_data = json.loads(request.body)
+            mobile = request_data.get('mobile', '').strip()
+        except json.JSONDecodeError:
+            # 解析失败则用表单格式
+            mobile = request.POST.get('mobile', '').strip()
+
+        # 加固：手机号校验（从.env读取校验位数）
+        if not mobile:
+            return JsonResponse({'code': 400, 'msg': '手机号不能为空'})
+        if not mobile.isdigit() or len(mobile) != MOBILE_VALID_LENGTH:
+            return JsonResponse({'code': 400, 'msg': f'手机号格式错误（需{MOBILE_VALID_LENGTH}位数字）'})
+
+        # 异步调用任务（确保任务正常生成ID）
+        try:
+            task1 = send_email.delay(mobile)
+            task2 = send_email2.delay(mobile)
+        except Exception as e:
+            return JsonResponse({'code': 500, 'msg': f'任务提交失败：{str(e)}'})
+
+        # 确保返回的JSON包含task1_id/task2_id
+        return JsonResponse({
+            'code': 200,
+            'msg': '任务已提交',
+            'task1_id': task1.id,  # 明确返回task1_id
+            'task2_id': task2.id,
+            'mobile': mobile  # 新增：返回手机号，方便前端验证
+        })
+    return JsonResponse({'code': 405, 'msg': '仅支持POST请求'})
+
+
+# 保持查询接口不变
+@api_view(['GET'])
+def check_task_result(request):
+    task_id = request.GET.get('task_id')
+    if not task_id:
+        return Response({'code': 400, 'msg': '缺少task_id'}, status=400)
+
+    task = AsyncResult(task_id, app=app)
+
+    return Response({
+        'task_id': task_id,
+        'status': task.status,
+        'result': task.result if task.status == 'SUCCESS' else None,
+        'error': str(task.result) if task.status == 'FAILURE' else None
+    })
