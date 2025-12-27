@@ -1,3 +1,10 @@
+"""
+脚本任务管理视图
+重构说明：
+1. 移除所有硬编码配置，统一从.env读取
+2. 提取公共方法，减少重复代码
+3. 保持原有业务逻辑完全不变
+"""
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.urls import reverse
@@ -18,11 +25,41 @@ from datetime import datetime
 from django.utils import timezone
 from celery.result import AsyncResult
 
-# 导入Celery任务
-from .tasks import execute_script_task, _graceful_terminate_process  # 替换为新的优雅终止函数
+# 导入Celery任务和模型
+from .tasks import execute_script_task, _graceful_terminate_process
 from .models import ScriptTask, TaskExecutionLog
 from .forms import ScriptTaskForm
 from adb_manager.models import ADBDevice
+
+
+# ===================== 配置读取工具函数 =====================
+def get_env_config(key, default=None, cast_type=str):
+    """
+    统一读取环境变量配置
+    :param key: 配置键名
+    :param default: 默认值
+    :param cast_type: 类型转换（str/int/bool等）
+    :return: 转换后的配置值
+    """
+    value = os.getenv(key, default)
+    if value is None:
+        return default
+
+    # 类型转换
+    try:
+        if cast_type == int:
+            return int(value)
+        elif cast_type == bool:
+            return value.lower() == "true"
+        return cast_type(value)
+    except (ValueError, TypeError):
+        logger.error(f"配置 {key} 转换失败，使用默认值 {default}")
+        return default
+
+
+# ===================== 日志配置 =====================
+# 从环境变量读取日志配置
+LOG_FILE = get_env_config("SCRIPT_LOG_FILE", "script_execution.log")
 
 # 配置详细日志
 logger = logging.getLogger(__name__)
@@ -30,7 +67,7 @@ logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('script_execution.log', encoding='utf-8'),
+        logging.FileHandler(LOG_FILE, encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
@@ -42,12 +79,12 @@ os.environ['PYTHONLEGACYWINDOWSSTDIO'] = 'utf-8'
 
 # ===================== Redis连接及任务ID操作函数 =====================
 def get_redis_conn():
-    """获取Redis连接"""
+    """获取Redis连接（从.env读取配置）"""
     try:
         r = redis.Redis(
-            host="127.0.0.1",
-            port=6379,
-            db=0,
+            host=get_env_config("REDIS_HOST", "127.0.0.1"),
+            port=get_env_config("REDIS_PORT", 6379, int),
+            db=get_env_config("REDIS_DB", 0, int),
             decode_responses=True,
             socket_timeout=5
         )
@@ -89,6 +126,40 @@ def delete_celery_task(log_id):
             logger.info(f"已删除Redis中的Celery任务ID - 日志ID：{log_id}")
         except Exception as e:
             logger.error(f"删除Celery任务ID失败：{str(e)}")
+
+
+def send_redis_stop_signal(device_serial, log_id):
+    """发送Redis停止信号（从.env读取有效期）"""
+    r = get_redis_conn()
+    if r and device_serial:
+        expire_seconds = get_env_config("SCRIPT_REDIS_STOP_FLAG_EXPIRE", 60, int)
+        try:
+            r.set(f"airtest_stop_flag_{device_serial}", "True", ex=expire_seconds)
+            logger.info(f"已发送Redis停止信号 - 设备：{device_serial}，日志ID：{log_id}，有效期：{expire_seconds}秒")
+        except Exception as e:
+            logger.error(f"发送Redis停止信号失败：{str(e)}")
+
+
+# ===================== 公共业务函数 =====================
+def format_duration(duration):
+    """格式化执行耗时"""
+    if duration:
+        return f"{duration:.2f}秒"
+    return "未知"
+
+
+def get_python_warning(python_path):
+    """获取Python路径警告信息（从.env读取关键词）"""
+    warning_keyword = get_env_config("SCRIPT_PYTHON_WARNING_KEYWORD", "WindowsApps")
+    if warning_keyword in python_path:
+        return "（注意：Python路径为WindowsApps快捷方式，已自动替换为真实路径）"
+    return ""
+
+
+def get_recent_logs():
+    """获取最近的执行日志（从.env读取数量限制）"""
+    limit = get_env_config("SCRIPT_RECENT_LOGS_LIMIT", 10, int)
+    return TaskExecutionLog.objects.all().order_by("-id")[:limit]
 
 
 # ===================== 任务管理视图 =====================
@@ -140,7 +211,6 @@ class TaskAddView(View):
 
 class TaskEditView(View):
     """编辑任务"""
-
     def get(self, request, task_id):
         task = get_object_or_404(ScriptTask, id=task_id)
         form = ScriptTaskForm(instance=task)
@@ -169,7 +239,6 @@ class TaskEditView(View):
 
 class TaskDeleteView(View):
     """删除任务"""
-
     def post(self, request, task_id):
         try:
             task = get_object_or_404(ScriptTask, id=task_id)
@@ -185,7 +254,6 @@ class TaskDeleteView(View):
 # ===================== 任务执行/停止核心逻辑 =====================
 class ExecuteTaskView(View):
     """执行任务页面 + Celery异步执行逻辑（新增搜索功能）"""
-
     def get(self, request):
         # 获取搜索关键词
         search_query = request.GET.get('search', '').strip()
@@ -197,8 +265,8 @@ class ExecuteTaskView(View):
             dev.status = dev.device_status
             device_list.append(dev)
 
-        # 按创建时间倒序获取日志
-        recent_logs = TaskExecutionLog.objects.all().order_by("-id")[:10]
+        # 按创建时间倒序获取日志（从.env读取数量限制）
+        recent_logs = get_recent_logs()
         logger.info(f"最近执行日志数量：{recent_logs.count()}")
 
         # 构建任务查询集，添加搜索过滤
@@ -261,9 +329,7 @@ class ExecuteTaskView(View):
                 return redirect(f"{reverse('script_center:execute_task')}?msg={error_msg}")
 
             # 4. 为每个有效设备创建日志并提交Celery任务
-            python_warning = ""
-            if "WindowsApps" in task.python_path:
-                python_warning = "（注意：Python路径为WindowsApps快捷方式，已自动替换为真实路径）"
+            python_warning = get_python_warning(task.python_path)
 
             for device_id in valid_device_ids:
                 device = get_object_or_404(ADBDevice, id=device_id)
@@ -307,7 +373,6 @@ class ExecuteTaskView(View):
 
 class StopTaskView(View):
     """停止Celery异步任务（兼容Redis进程终止）"""
-
     def get(self, request, log_id):
         try:
             logger.info(f"接收到停止任务请求 - 日志ID：{log_id}")
@@ -334,17 +399,17 @@ class StopTaskView(View):
                 if process_info_str:
                     process_info = json.loads(process_info_str)
                     device_serial = process_info.get("device_serial")
-                    # 发送停止信号（有效期60秒）
-                    r.set(f"airtest_stop_flag_{device_serial}", "True", ex=60)
-                    logger.info(f"已发送Redis停止信号 - 设备：{device_serial}，日志ID：{log_id}")
+                    # 发送停止信号（有效期从.env读取）
+                    send_redis_stop_signal(device_serial, log_id)
 
             # 温柔终止Celery任务（不立即kill，给脚本响应时间）
             AsyncResult(celery_task_id).revoke(terminate=False)  # 关键：terminate=False 不立即终止
             delete_celery_task(log_id)
             logger.info(f"已发送Celery停止信号 - ID：{celery_task_id}，日志ID：{log_id}")
 
-            # 延长等待时间至8秒，确保脚本输出优雅退出日志
-            time.sleep(8)
+            # 延长等待时间（从.env读取），确保脚本输出优雅退出日志
+            stop_wait_time = get_env_config("SCRIPT_STOP_WAIT_TIME", 8, int)
+            time.sleep(stop_wait_time)
 
             # 3. 从Redis获取进程并优雅终止（如果仍在运行）
             if r and process_info_str:
@@ -354,8 +419,9 @@ class StopTaskView(View):
                     try:
                         # 检查进程是否仍在运行，再终止
                         if psutil.pid_exists(pid):
-                            _graceful_terminate_process(pid, wait_time=3)
-                            logger.info(f"已优雅终止进程{pid} - 设备：{device_serial}")
+                            terminate_wait = get_env_config("SCRIPT_PROCESS_TERMINATE_WAIT", 3, int)
+                            _graceful_terminate_process(pid, wait_time=terminate_wait)
+                            logger.info(f"已优雅终止进程{pid} - 设备：{device_serial}，等待时间：{terminate_wait}秒")
                         else:
                             logger.info(f"进程{pid}已自行退出（优雅退出成功）")
                     except Exception as e:
@@ -363,7 +429,8 @@ class StopTaskView(View):
 
                     # 清理Redis
                     r.hdel("script_running_processes", log_id)
-                    r.delete(f"airtest_stop_flag_{device_serial}")
+                    if device_serial:
+                        r.delete(f"airtest_stop_flag_{device_serial}")
 
             # 4. 更新日志状态（修复：标记为stopped，而非error）
             log.exec_status = "stopped"
@@ -372,7 +439,7 @@ class StopTaskView(View):
 - 设备序列号：{device_serial or '未知'}
 - Celery任务ID：{celery_task_id}
 - 终止日志ID：{log_id}
-- 已等待8秒让脚本完成清理和日志输出"""
+- 已等待{stop_wait_time}秒让脚本完成清理和日志输出"""
             log.end_time = timezone.now()
             log.save()
 
@@ -388,14 +455,10 @@ class StopTaskView(View):
 
 class LogDetailView(View):
     """查看执行日志详情"""
-
     def get(self, request, log_id):
         log = get_object_or_404(TaskExecutionLog, id=log_id)
         # 格式化耗时
-        if log.exec_duration:
-            log.exec_duration_str = f"{log.exec_duration:.2f}秒"
-        else:
-            log.exec_duration_str = "未知"
+        log.exec_duration_str = format_duration(log.exec_duration)
         context = {
             "page_title": f"执行日志 - {log.task.task_name}",
             "log": log
@@ -405,7 +468,6 @@ class LogDetailView(View):
 
 class LogStatusView(View):
     """获取日志执行状态（AJAX用）"""
-
     def get(self, request, log_id):
         try:
             log = get_object_or_404(TaskExecutionLog, id=log_id)
