@@ -1,11 +1,64 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<!-- 新增自定义样式 -->
+<style>
+/* 操作列按钮样式优化 */
+.operation-btn-group {
+    display: flex;
+    gap: 4px !important; /* 合理的按钮间距 */
+    flex-wrap: nowrap;   /* 强制不换行 */
+    align-items: center;
+    overflow-x: auto;    /* 空间不足时横向滚动（避免换行） */
+    padding: 2px 0;
+    /* 隐藏滚动条（可选，美化效果） */
+    scrollbar-width: thin;
+    scrollbar-color: #ddd #f5f5f5;
+}
+
+/* 自定义滚动条样式（可选） */
+.operation-btn-group::-webkit-scrollbar {
+    height: 4px;
+}
+.operation-btn-group::-webkit-scrollbar-thumb {
+    background-color: #ddd;
+    border-radius: 2px;
+}
+
+.operation-btn-group .btn-sm {
+    /* 恢复btn-sm默认样式，保证文字清晰显示 */
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    min-width: 60px;             /* 保证按钮最小宽度，文字不挤 */
+    white-space: nowrap;         /* 按钮内文字不换行 */
+}
+
+/* 管理日志按钮自定义样式 */
+.log-management-btn {
+    background-color: #56AB73 !important;
+    border-color: #DFE1E5 !important;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.log-management-btn:hover {
+    background-color: #1e506d !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.log-management-btn i {
+    margin-right: 6px;
+}
+</style>
+
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>{{ page_title }}</h1>
         <div class="d-flex gap-2">
-            <a href="{% url 'task_scheduler:management_log' %}" class="btn btn-info">
+            <!-- 给管理日志按钮添加自定义样式类 -->
+            <a href="{% url 'task_scheduler:management_log' %}" class="btn btn-info log-management-btn">
                 <i class="bi bi-journal-text"></i> 管理日志
             </a>
             <a href="{% url 'task_scheduler:create' %}" class="btn btn-primary">
@@ -25,13 +78,14 @@
             <table class="table table-hover mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th style="width: 15%;">名称</th>
-                        <th style="width: 18%;">关联编排任务</th>
-                        <th style="width: 15%;">执行设备</th>
-                        <th style="width: 20%;">Cron表达式</th>
-                        <th style="width: 12%;">下次执行</th>
-                        <th style="width: 8%;">状态</th>
-                        <th style="width: 12%;">操作</th>
+                        <!-- 重新分配列宽，操作列加宽到35%（核心） -->
+                        <th style="width: 10%;">名称</th>
+                        <th style="width: 15%;">关联编排任务</th>
+                        <th style="width: 12%;">执行设备</th>
+                        <th style="width: 18%;">Cron表达式</th>
+                        <th style="width: 8%;">下次执行</th>
+                        <th style="width: 6%;">状态</th>
+                        <th style="width: 35%;">操作</th> <!-- 关键：大幅增加操作列宽度 -->
                     </tr>
                 </thead>
                 <tbody>
@@ -62,17 +116,18 @@
                             {% endif %}
                         </td>
                         <td>
-                            <div class="d-flex gap-1">
+                            <!-- 添加自定义类名 operation-btn-group 优化布局 -->
+                            <div class="operation-btn-group">
                                 <!-- 查看按钮 -->
                                 <a href="{% url 'task_scheduler:detail' schedule.id %}"
-                                   class="btn btn-info btn-sm d-flex align-items-center"
+                                   class="btn btn-info btn-sm d-flex align-items-center justify-content-center"
                                    title="查看详情">
                                     <i class="bi bi-eye me-1"></i>
                                     <span>查看</span>
                                 </a>
                                 <!-- 编辑按钮 -->
                                 <a href="{% url 'task_scheduler:edit' schedule.id %}"
-                                   class="btn btn-warning btn-sm d-flex align-items-center"
+                                   class="btn btn-warning btn-sm d-flex align-items-center justify-content-center"
                                    title="编辑任务">
                                     <i class="bi bi-pencil me-1"></i>
                                     <span>编辑</span>
@@ -81,7 +136,7 @@
                                 <form method="post" action="{% url 'task_scheduler:toggle' schedule.id %}" class="m-0">
                                     {% csrf_token %}
                                     <button type="submit"
-                                            class="btn {% if schedule.is_active %}btn-danger{% else %}btn-success{% endif %} btn-sm d-flex align-items-center"
+                                            class="btn {% if schedule.is_active %}btn-danger{% else %}btn-success{% endif %} btn-sm d-flex align-items-center justify-content-center"
                                             title="{% if schedule.is_active %}禁用任务{% else %}启用任务{% endif %}">
                                         <i class="bi {% if schedule.is_active %}bi-power{% else %}bi-play{% endif %} me-1"></i>
                                         <span>{% if schedule.is_active %}禁用{% else %}启用{% endif %}</span>
@@ -91,17 +146,17 @@
                                 <form method="post" action="{% url 'task_scheduler:execute' schedule.id %}" class="m-0">
                                     {% csrf_token %}
                                     <button type="submit"
-                                            class="btn btn-primary btn-sm d-flex align-items-center"
+                                            class="btn btn-primary btn-sm d-flex align-items-center justify-content-center"
                                             title="立即执行">
                                         <i class="bi bi-play-circle me-1"></i>
                                         <span>执行</span>
                                     </button>
                                 </form>
-                                <!-- 删除按钮（新增） -->
+                                <!-- 删除按钮 -->
                                 <form method="post" action="{% url 'task_scheduler:delete' schedule.id %}" class="m-0">
                                     {% csrf_token %}
                                     <button type="submit"
-                                            class="btn btn-dark btn-sm d-flex align-items-center"
+                                            class="btn btn-dark btn-sm d-flex align-items-center justify-content-center"
                                             title="删除任务"
                                             onclick="return confirm('确认删除定时任务【{{ schedule.name }}】吗？此操作不可恢复！')">
                                         <i class="bi bi-trash me-1"></i>
@@ -131,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const toggleButtons = document.querySelectorAll('button[title*="禁用任务"], button[title*="启用任务"]');
     toggleButtons.forEach(btn => {
         btn.addEventListener('click', function(e) {
-            const action = this.textContent.trim();
+            const action = this.title.includes('禁用') ? '禁用' : '启用';
             if (!confirm(`确认${action}该定时任务吗？`)) {
                 e.preventDefault();
             }
