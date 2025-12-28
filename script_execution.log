@@ -11141,3 +11141,294 @@ def chain(*args, **kwargs):
 2025-12-28 18:30:26,323 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
 2025-12-28 18:30:26,324 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
 2025-12-28 18:30:26,324 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:38:51,613 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-28 18:38:51,614 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-28 18:38:51,614 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-28 18:38:51,616 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.204:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-28 18:38:51,616 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-28 18:38:51,618 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.198:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-28 18:38:51,618 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-28 18:38:51,619 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:38:51,619 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-28 18:38:51,620 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:38:56,600 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-28 18:38:56,601 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-28 18:38:56,601 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-28 18:38:56,603 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.204:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-28 18:38:56,603 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-28 18:38:56,605 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.198:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-28 18:38:56,605 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-28 18:38:56,606 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:38:56,606 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-28 18:38:56,607 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:39:03,754 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-28 18:39:03,755 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-28 18:39:03,755 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-28 18:39:03,757 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.204:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-28 18:39:03,757 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-28 18:39:03,758 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.198:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-28 18:39:03,758 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-28 18:39:03,760 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:39:03,760 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-28 18:39:03,761 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:40:24,017 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-28 18:40:24,019 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-28 18:40:24,019 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-28 18:40:24,020 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.204:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-28 18:40:24,021 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-28 18:40:24,022 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.198:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-28 18:40:24,022 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-28 18:40:24,023 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:40:24,023 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-28 18:40:24,024 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:40:49,422 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-28 18:40:49,423 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-28 18:40:49,423 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-28 18:40:49,424 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.204:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-28 18:40:49,425 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-28 18:40:49,426 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.198:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-28 18:40:49,426 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-28 18:40:49,427 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:40:49,427 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-28 18:40:49,428 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:41:06,636 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-28 18:41:06,638 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-28 18:41:06,638 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-28 18:41:06,640 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.204:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-28 18:41:06,640 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-28 18:41:06,642 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.198:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-28 18:41:06,642 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-28 18:41:06,643 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:41:06,643 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-28 18:41:06,644 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:41:14,263 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-28 18:41:14,268 - script_center.views - INFO - 日志ID：177，状态：success，是否运行中：False
+2025-12-28 18:41:14,296 - script_center.views - INFO - 日志ID：176，状态：failed，是否运行中：False
+2025-12-28 18:41:14,310 - script_center.views - INFO - 日志ID：175，状态：success，是否运行中：False
+2025-12-28 18:41:14,325 - script_center.views - INFO - 日志ID：174，状态：stopped，是否运行中：False
+2025-12-28 18:41:14,341 - script_center.views - INFO - 日志ID：173，状态：success，是否运行中：False
+2025-12-28 18:41:14,357 - script_center.views - INFO - 日志ID：172，状态：success，是否运行中：False
+2025-12-28 18:41:14,359 - script_center.views - INFO - 日志ID：171，状态：stopped，是否运行中：False
+2025-12-28 18:41:14,373 - script_center.views - INFO - 日志ID：170，状态：success，是否运行中：False
+2025-12-28 18:41:14,387 - script_center.views - INFO - 日志ID：169，状态：stopped，是否运行中：False
+2025-12-28 18:41:14,403 - script_center.views - INFO - 日志ID：168，状态：stopped，是否运行中：False
+2025-12-28 18:41:35,386 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-28 18:41:35,387 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-28 18:41:35,387 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-28 18:41:35,388 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.204:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-28 18:41:35,388 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-28 18:41:35,390 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.198:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-28 18:41:35,390 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-28 18:41:35,391 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:41:35,391 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-28 18:41:35,392 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 19:06:18,589 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\models.py changed, reloading.
+2025-12-28 19:07:57,591 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:08:05,827 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:08:50,780 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:10:42,951 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:12:33,227 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:12:47,842 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\urls.py changed, reloading.
+2025-12-28 19:22:46,988 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\models.py changed, reloading.
+2025-12-28 19:23:12,031 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:24:07,600 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:24:56,067 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:25:54,618 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:26:52,165 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:27:04,559 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:27:19,858 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\urls.py changed, reloading.
+2025-12-28 19:27:38,636 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:28:42,341 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\models.py changed, reloading.
+2025-12-28 19:29:55,936 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:30:48,751 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:31:59,437 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:33:00,779 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:34:42,009 - django.request - ERROR - Internal Server Error: /task_orchestration/management_logs/global/
+Traceback (most recent call last):
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\views\generic\base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\views\generic\base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\django_projects\EasyADB\task_orchestration\views.py", line 354, in get
+    return render(request, "task_orchestration/global_management_logs.html", {
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+           ^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\loader_tags.py", line 295, in do_extends
+    nodelist = parser.parse()
+               ^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+                    ^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\defaulttags.py", line 976, in do_if
+    nodelist = parser.parse(("endif",))
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 489, in parse
+    raise self.error(token, e)
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 605, in compile_filter
+    return FilterExpression(token, self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 701, in __init__
+    filter_func = parser.find_filter(filter_name)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\谭振捷\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\django\template\base.py", line 611, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'regex_replace'
+2025-12-28 19:37:10,698 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\models.py changed, reloading.
+2025-12-28 19:38:10,902 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:38:37,543 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:44:07,068 - django.utils.autoreload - INFO - E:\django_projects\EasyADB\task_orchestration\views.py changed, reloading.
+2025-12-28 19:49:49,192 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-28 19:49:49,194 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-28 19:49:49,195 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-28 19:49:49,196 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.204:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-28 19:49:49,196 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-28 19:49:49,198 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.198:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-28 19:49:49,198 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-28 19:49:49,199 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 19:49:49,199 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-28 19:49:49,200 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 19:49:59,470 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-28 19:49:59,472 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-28 19:49:59,472 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-28 19:49:59,473 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.204:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-28 19:49:59,473 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-28 19:49:59,474 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.198:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-28 19:49:59,474 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-28 19:49:59,475 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 19:49:59,475 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-28 19:49:59,476 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 19:51:44,259 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-28 19:51:44,261 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-28 19:51:44,261 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-28 19:51:44,263 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.204:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-28 19:51:44,263 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-28 19:51:44,264 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.198:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-28 19:51:44,264 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-28 19:51:44,266 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 19:51:44,266 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-28 19:51:44,267 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 19:53:02,410 - django.channels.worker - INFO - Running worker for channels ['default']
+2025-12-28 19:53:02,442 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-12-28 19:53:03,079 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-28 19:53:03,080 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-28 19:53:03,080 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-28 19:53:03,081 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-28 19:53:03,081 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-28 19:53:03,082 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-28 19:53:03,083 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-28 19:53:03,083 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-28 19:53:03,084 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-28 19:53:03,084 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-28 19:53:03,085 - celery.utils.functional - DEBUG - 
+def check_and_execute_schedules():
+    return 1
+
+2025-12-28 19:53:03,085 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-28 19:53:03,086 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-28 19:53:03,086 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-28 19:53:03,087 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+

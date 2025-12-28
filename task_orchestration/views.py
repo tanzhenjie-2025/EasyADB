@@ -24,11 +24,10 @@ from celery.result import AsyncResult
 
 # 导入模型、表单和Celery任务
 from adb_manager.models import ADBDevice
-from .models import OrchestrationTask, TaskStep, OrchestrationLog, StepExecutionLog
+from .models import OrchestrationTask, TaskStep, OrchestrationLog, StepExecutionLog, OrchestrationManagementLog
 from .forms import OrchestrationTaskForm, TaskStepForm, TaskStepEditForm
 from script_center.models import ScriptTask, TaskExecutionLog
 from .tasks import execute_step_task
-
 
 # ===================== 公共工具函数 =====================
 def get_env_config(key, default=None, cast_type=str):
@@ -54,21 +53,21 @@ def get_env_config(key, default=None, cast_type=str):
         logger.error(f"配置 {key} 转换失败，使用默认值 {default}")
         return default
 
-
 # ===================== 日志配置 =====================
 # 从环境变量读取日志配置
 LOG_FILE = get_env_config("ORCH_LOG_FILE", "orchestration_execution.log")
 
 # 配置日志
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler(LOG_FILE, encoding='utf-8'),
-        logging.StreamHandler()
-    ]
-)
+if not logger.handlers:  # 避免重复添加处理器
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(LOG_FILE, encoding='utf-8'),
+            logging.StreamHandler()
+        ]
+    )
 
 # 修复Windows编码
 os.environ['PYTHONIOENCODING'] = 'utf-8'
@@ -88,12 +87,11 @@ CELERY_TERMINATE_FORCE = get_env_config("ORCH_CELERY_TERMINATE_FORCE", True, boo
 # 手机号校验位数
 MOBILE_VALID_LENGTH = get_env_config("ORCH_MOBILE_VALID_LENGTH", 11, int)
 
-# 全局存储（兼容原有+新增Celery任务跟踪）
+# 全局存储（兼容原有+Celery任务跟踪）
 running_processes = {}  # 保留原有进程存储（兼容历史逻辑）
 process_lock = threading.Lock()
-running_tasks = {}  # 新增：记录Celery任务ID
+running_tasks = {}
 task_lock = threading.Lock()
-
 
 # ===================== Redis操作工具函数（重构版） =====================
 def get_redis_conn():
@@ -112,7 +110,6 @@ def get_redis_conn():
         logger.error(f"Redis连接失败：{str(e)}")
         return None
 
-
 def save_running_process(process_key, process_info):
     """保存进程信息到Redis（从.env读取哈希表名称）"""
     r = get_redis_conn()
@@ -121,7 +118,6 @@ def save_running_process(process_key, process_info):
             r.hset(REDIS_PROCESS_HASH, process_key, json.dumps(process_info))
         except Exception as e:
             logger.error(f"Redis保存进程信息失败：{str(e)}")
-
 
 def get_running_process(process_key):
     """从Redis获取进程信息（从.env读取哈希表名称）"""
@@ -134,7 +130,6 @@ def get_running_process(process_key):
             logger.error(f"Redis获取进程信息失败：{str(e)}")
     return None
 
-
 def remove_running_process(process_key):
     """从Redis删除进程信息（从.env读取哈希表名称）"""
     r = get_redis_conn()
@@ -144,7 +139,6 @@ def remove_running_process(process_key):
             logger.info(f"Redis中进程信息已删除，KEY={process_key}")
         except Exception as e:
             logger.error(f"Redis删除进程信息失败：{str(e)}")
-
 
 def kill_redis_process(process_key):
     """从Redis获取进程并终止（公共函数，避免代码重复）"""
@@ -165,11 +159,9 @@ def kill_redis_process(process_key):
     except Exception as e:
         logger.error(f"终止Redis进程失败（KEY：{process_key}）：{str(e)}")
 
-
 # ===================== 编排任务核心视图 =====================
 class OrchestrationListView(View):
-    """编排任务列表（完全保留原有逻辑）"""
-
+    """编排任务列表"""
     def get(self, request):
         tasks = OrchestrationTask.objects.all()
         return render(request, "task_orchestration/list.html", {
@@ -177,10 +169,8 @@ class OrchestrationListView(View):
             "page_title": "编排任务管理"
         })
 
-
 class OrchestrationCreateView(View):
-    """创建编排任务（完全保留原有逻辑）"""
-
+    """创建编排任务（自动记录日志）"""
     def get(self, request):
         form = OrchestrationTaskForm()
         return render(request, "task_orchestration/form.html", {
@@ -192,19 +182,53 @@ class OrchestrationCreateView(View):
         form = OrchestrationTaskForm(request.POST)
         if form.is_valid():
             task = form.save()
+
+            # ========== 记录日志 ==========
+            operator = request.user.username if request.user.is_authenticated else "匿名用户"
+            details = f"创建新编排任务【{task.name}（ID：{task.id}）】，状态：{task.get_status_display()}，描述：{task.description or '无'}"
+            OrchestrationManagementLog.objects.create(
+                orchestration=task,
+                original_task_name=task.name,
+                original_task_id=task.id,
+                operation_type="create",
+                operator=operator,
+                details=details
+            )
+
             return redirect(reverse("task_orchestration:edit_steps", args=[task.id]))
         return render(request, "task_orchestration/form.html", {"form": form})
 
+class OrchestrationDeleteView(View):
+    """删除编排任务（自动记录日志）"""
+    def get(self, request, task_id):
+        task = get_object_or_404(OrchestrationTask, id=task_id)
+
+        # ========== 记录日志（先记录再删除） ==========
+        operator = request.user.username if request.user.is_authenticated else "匿名用户"
+        details = f"删除编排任务【{task.name}（ID：{task.id}）】，删除前状态：{task.get_status_display()}，包含{task.steps.count()}个子任务步骤"
+        OrchestrationManagementLog.objects.create(
+            orchestration=task,
+            original_task_name=task.name,
+            original_task_id=task.id,
+            operation_type="delete",
+            operator=operator,
+            details=details
+        )
+
+        # 执行删除操作
+        task_name = task.name
+        task.delete()
+
+        success_msg = quote(f"编排任务【{task_name}】已成功删除！")
+        return redirect(f"{reverse('task_orchestration:list')}?msg={success_msg}")
 
 class StepEditView(View):
-    """编辑子任务步骤（合并后完整版本，配置从.env读取）"""
-
+    """编辑子任务步骤（整合编辑日志自动记录）"""
     def get(self, request, task_id):
         orchestration = get_object_or_404(OrchestrationTask, id=task_id)
         steps = orchestration.steps.all().order_by("execution_order")
         task_form = OrchestrationTaskForm(instance=orchestration)
         step_form = TaskStepForm()
-        # 初始化编辑表单（每个步骤对应一个编辑表单）
         edit_forms = {step.id: TaskStepEditForm(instance=step) for step in steps}
 
         return render(request, "task_orchestration/edit_steps.html", {
@@ -220,12 +244,37 @@ class StepEditView(View):
         orchestration = get_object_or_404(OrchestrationTask, id=task_id)
         steps = orchestration.steps.all().order_by("execution_order")
 
-        # 处理任务信息更新（如名称、状态、描述）
+        # 处理任务信息更新（名称/状态/描述）
         if "action" in request.POST and request.POST["action"] == "update_task":
+            old_name = orchestration.name
+            old_status = orchestration.status
+            old_desc = orchestration.description
+
             task_form = OrchestrationTaskForm(request.POST, instance=orchestration)
             step_form = TaskStepForm()
             if task_form.is_valid():
-                task_form.save()
+                updated_task = task_form.save()
+
+                # ========== 记录编辑日志 ==========
+                operator = request.user.username if request.user.is_authenticated else "匿名用户"
+                change_details = []
+                if old_name != updated_task.name:
+                    change_details.append(f"名称：{old_name} → {updated_task.name}")
+                if old_status != updated_task.status:
+                    change_details.append(f"状态：{old_status} → {updated_task.status}")
+                if old_desc != updated_task.description:
+                    change_details.append(
+                        f"描述：{'无' if not old_desc else old_desc} → {'无' if not updated_task.description else updated_task.description}")
+                details = f"编辑编排任务【{updated_task.name}（ID：{updated_task.id}）】，变更内容：{'; '.join(change_details)}"
+                OrchestrationManagementLog.objects.create(
+                    orchestration=updated_task,
+                    original_task_name=updated_task.name,
+                    original_task_id=updated_task.id,
+                    operation_type="edit",
+                    operator=operator,
+                    details=details
+                )
+
                 return redirect(f"{reverse('task_orchestration:edit_steps', args=[task_id])}?msg=状态修改成功")
 
         # 处理步骤添加
@@ -238,7 +287,7 @@ class StepEditView(View):
                 step.save()
                 return redirect(f"{reverse('task_orchestration:edit_steps', args=[task_id])}?msg=步骤添加成功")
 
-        # 处理步骤编辑（超时时间）
+        # 处理步骤编辑
         elif "action" in request.POST and request.POST["action"] == "edit_step":
             step_id = request.POST.get("step_id")
             step = get_object_or_404(TaskStep, id=step_id, orchestration=orchestration)
@@ -248,7 +297,6 @@ class StepEditView(View):
                 form.save()
                 return redirect(f"{reverse('task_orchestration:edit_steps', args=[task_id])}?msg=步骤更新成功")
             else:
-                # 表单验证失败，返回错误
                 return render(request, "task_orchestration/edit_steps.html", {
                     "orchestration": orchestration,
                     "steps": steps,
@@ -259,7 +307,7 @@ class StepEditView(View):
                     "error_msg": "表单填写有误，请检查（运行时长最小10秒）"
                 })
 
-        # 表单验证失败的默认返回
+        # 表单验证失败
         return render(request, "task_orchestration/edit_steps.html", {
             "orchestration": orchestration,
             "steps": steps,
@@ -270,10 +318,39 @@ class StepEditView(View):
             "error_msg": "表单填写有误，请检查"
         })
 
+class OrchestrationGlobalManagementLogView(View):
+    """全局编排任务管理日志（查看所有操作记录）"""
+    def get(self, request):
+        # 查询所有操作日志，按时间倒序
+        logs = OrchestrationManagementLog.objects.all().order_by("-operation_time")
+
+        # 筛选功能（支持已删除任务的名称筛选）
+        operation_type = request.GET.get("operation_type")
+        task_name = request.GET.get("task_name")
+        operator = request.GET.get("operator")
+
+        if operation_type:
+            logs = logs.filter(operation_type=operation_type)
+        if task_name:
+            # 同时筛选关联任务名称和原始任务名称（兼容已删除任务）
+            logs = logs.filter(
+                models.Q(orchestration__name__icontains=task_name) |
+                models.Q(original_task_name__icontains=task_name)
+            )
+        if operator:
+            logs = logs.filter(operator__icontains=operator)
+
+        return render(request, "task_orchestration/global_management_logs.html", {
+            "page_title": "全局编排任务管理日志",
+            "logs": logs,
+            "operation_types": OrchestrationManagementLog.OPERATION_TYPES,
+            "current_operation_type": operation_type,
+            "current_task_name": task_name,
+            "current_operator": operator
+        })
 
 class ExecuteOrchestrationAPIView(View):
     """旧版执行接口（修改为Celery异步执行，配置从.env读取）"""
-
     def post(self, request, task_id):
         orchestration = get_object_or_404(OrchestrationTask, id=task_id, status="active")
         steps = orchestration.steps.order_by("execution_order").all()
@@ -291,7 +368,6 @@ class ExecuteOrchestrationAPIView(View):
             if dev.device_status == "online":  # 这里用实例属性判断，不是ORM过滤
                 device = dev
                 break
-        # ========== 核心修复结束 ==========
 
         if not device:
             return JsonResponse({
@@ -388,7 +464,7 @@ class ExecuteOrchestrationAPIView(View):
                 orch_log_stdout.append(f"开始时间：{timezone.now()}")
                 orch_log_stdout.append(f"Celery任务ID：{task_id}")
                 orch_log_stdout.append(f"超时设置：{step.run_duration}秒")
-                orch_log_stdout.append(f"Redis进程KEY：{process_key}")  # 新增：便于调试
+                orch_log_stdout.append(f"Redis进程KEY：{process_key}")
 
                 # 实时更新编排日志
                 orch_log.stdout = "\n".join(orch_log_stdout)
@@ -508,10 +584,8 @@ class ExecuteOrchestrationAPIView(View):
             orch_log.stderr = "\n".join(orch_log_stderr)
             orch_log.save()
 
-
 class OrchestrationExecuteView(View):
     """新版执行页面（配置从.env读取）"""
-
     def get(self, request):
         devices = ADBDevice.objects.filter(is_active=True)
         device_list = []
@@ -594,10 +668,8 @@ class OrchestrationExecuteView(View):
         """复用修改后的执行逻辑（Celery异步+异常捕获）"""
         ExecuteOrchestrationAPIView()._run_orchestration(orch_log, steps, device)
 
-
 class StopOrchestrationView(View):
     """停止编排任务（增强版：配置从.env读取）"""
-
     def get(self, request, log_id):
         try:
             orch_log = get_object_or_404(OrchestrationLog, id=log_id)
@@ -673,20 +745,16 @@ class StopOrchestrationView(View):
             error_msg = quote(f"停止失败：{str(e)}")
             return redirect(f"{reverse('task_orchestration:execute_orchestration')}?msg={error_msg}")
 
-
 class StepDeleteView(View):
     """删除步骤（完全保留原有逻辑）"""
-
     def get(self, request, step_id):
         step = get_object_or_404(TaskStep, id=step_id)
         task_id = step.orchestration.id
         step.delete()
         return redirect(reverse("task_orchestration:edit_steps", args=[task_id]))
 
-
 class OrchestrationLogDetailView(View):
     """编排日志详情（完全保留原有逻辑）"""
-
     def get(self, request, log_id):
         orch_log = get_object_or_404(OrchestrationLog, id=log_id)
         step_logs = orch_log.step_logs.all().order_by("step__execution_order")
@@ -704,10 +772,8 @@ class OrchestrationLogDetailView(View):
         }
         return render(request, "task_orchestration/log_detail.html", context)
 
-
 class OrchestrationLogStatusView(View):
     """AJAX获取日志状态（修改step_data返回结构，配置从.env读取）"""
-
     def get(self, request, log_id):
         try:
             orch_log = get_object_or_404(OrchestrationLog, id=log_id)
@@ -715,7 +781,7 @@ class OrchestrationLogStatusView(View):
             step_data = []
             for sl in step_logs:
                 step_data.append({
-                    "step_log_id": sl.id,  # 新增：步骤日志ID（匹配前端元素ID）
+                    "step_log_id": sl.id,
                     "order": sl.step.execution_order,
                     "status": sl.exec_status,
                     "stdout": sl.stdout,
@@ -738,10 +804,8 @@ class OrchestrationLogStatusView(View):
                 "msg": str(e)
             })
 
-
 class OrchestrationCloneView(View):
-    """克隆编排任务（完全保留原有逻辑）"""
-
+    """克隆编排任务（整合日志自动记录）"""
     def get(self, request, task_id):
         """显示克隆任务确认页面"""
         original_task = get_object_or_404(OrchestrationTask, id=task_id)
@@ -751,7 +815,7 @@ class OrchestrationCloneView(View):
         })
 
     def post(self, request, task_id):
-        """执行任务克隆操作"""
+        """执行任务克隆操作（自动记录日志）"""
         original_task = get_object_or_404(OrchestrationTask, id=task_id)
 
         # 获取新任务名称
@@ -791,9 +855,20 @@ class OrchestrationCloneView(View):
                 create_time=timezone.now()
             )
 
+        # ========== 核心：自动记录克隆操作日志 ==========
+        operator = request.user.username if request.user.is_authenticated else "匿名用户"
+        details = f"从原任务【{original_task.name}（ID：{original_task.id}）】克隆生成新任务【{new_task.name}（ID：{new_task.id}）】，复制了{original_steps.count()}个子任务步骤"
+        OrchestrationManagementLog.objects.create(
+            orchestration=new_task,
+            original_task_name=new_task.name,
+            original_task_id=new_task.id,  # 补充缺失的original_task_id
+            operation_type="clone",
+            operator=operator,
+            details=details
+        )
+
         # 克隆成功后跳转到编辑页面
         return redirect(reverse("task_orchestration:edit_steps", args=[new_task.id]) + "?msg=任务克隆成功")
-
 
 # ===================== 原有测试相关代码（重构配置读取） =====================
 from rest_framework.decorators import api_view
@@ -801,10 +876,8 @@ from rest_framework.response import Response
 from mycelery.email.tasks import send_email, send_email2
 from mycelery.main import app
 
-
 def send_sms(request):
     return render(request, 'sms_send.html')
-
 
 # 修正：兼容JSON和表单请求，加固参数校验（配置从.env读取）
 def send_sms_view(request):
@@ -837,10 +910,9 @@ def send_sms_view(request):
             'msg': '任务已提交',
             'task1_id': task1.id,  # 明确返回task1_id
             'task2_id': task2.id,
-            'mobile': mobile  # 新增：返回手机号，方便前端验证
+            'mobile': mobile
         })
     return JsonResponse({'code': 405, 'msg': '仅支持POST请求'})
-
 
 # 保持查询接口不变
 @api_view(['GET'])

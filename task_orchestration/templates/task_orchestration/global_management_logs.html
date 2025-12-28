@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-form {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 5px;
+    }
+    .log-table th, .log-table td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #dee2e6;
+    }
+    .log-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .operation-tag {
+        padding: 2px 8px;
+        border-radius: 3px;
+        color: white;
+    }
+    .tag-create { background: #28a745; }
+    .tag-edit { background: #17a2b8; }
+    .tag-delete { background: #dc3545; }
+    .tag-clone { background: #ffc107; color: #212529; }
+</style>
+{% endblock %}
+
+{% block page_header %}
+<div class="page-header">
+    <h1>{{ page_title }}</h1>
+    <div class="btn-group">
+        <a href="{% url 'task_orchestration:list' %}" class="btn btn-primary">返回任务列表</a>
+        <a href="{% url 'task_orchestration:create' %}" class="btn btn-success">创建新任务</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- 筛选表单 -->
+<div class="filter-form">
+    <form method="get">
+        <div class="row">
+            <div class="col-md-3">
+                <label>操作类型</label>
+                <select name="operation_type" class="form-control">
+                    <option value="">全部</option>
+                    {% for type_key, type_name in operation_types %}
+                    <option value="{{ type_key }}" {% if current_operation_type == type_key %}selected{% endif %}>
+                        {{ type_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>任务名称</label>
+                <input type="text" name="task_name" class="form-control" value="{{ current_task_name|default:'' }}" placeholder="输入任务名称关键词">
+            </div>
+            <div class="col-md-3">
+                <label>操作人</label>
+                <input type="text" name="operator" class="form-control" value="{{ current_operator|default:'' }}" placeholder="输入操作人关键词">
+            </div>
+            <div class="col-md-3" style="margin-top: 24px;">
+                <button type="submit" class="btn btn-primary">筛选</button>
+                <a href="{% url 'task_orchestration:global_management_logs' %}" class="btn btn-default">重置</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- 日志列表 -->
+<div class="card">
+    <table class="log-table">
+        <thead>
+        <tr>
+            <th>操作时间</th>
+            <th>操作类型</th>
+            <th>关联任务</th>
+            <th>操作人</th>
+            <th>操作详情</th>
+        </tr>
+        </thead>
+        <tbody>
+{% for log in logs %}
+    <tr>
+        <td>{{ log.operation_time|date:"Y-m-d H:i:s" }}</td>
+        <td>
+            <span class="operation-tag tag-{{ log.operation_type }}">
+                {{ log.get_operation_type_display }}
+            </span>
+        </td>
+        <td>
+            {% if log.orchestration %}
+                {{ log.orchestration.name }}（ID：{{ log.orchestration.id }}）
+            {% else %}
+                <span style="color: #999;">已删除任务：{{ log.original_task_name|default:"未知名称" }}（ID：{{ log.original_task_id|default:"未知ID" }}）</span>
+            {% endif %}
+        </td>
+        <td>{{ log.operator }}</td>
+        <td>{{ log.details|default:"无" }}</td>
+    </tr>
+{% empty %}
+    <tr>
+        <td colspan="5" class="text-center">暂无管理操作日志</td>
+    </tr>
+{% endfor %}
+</tbody>
+    </table>
+</div>
+{% endblock %}

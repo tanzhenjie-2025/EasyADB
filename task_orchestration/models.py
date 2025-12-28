@@ -72,10 +72,10 @@ class OrchestrationLog(models.Model):
         default=1
     )
     exec_status = models.CharField("执行状态", max_length=20, choices=EXEC_STATUS, default="running")
-    exec_command = models.TextField("执行命令", blank=True, null=True)  # 新增
-    stdout = models.TextField("标准输出", blank=True, null=True)  # 新增
-    stderr = models.TextField("错误输出", blank=True, null=True)  # 新增
-    exec_duration = models.FloatField("执行耗时(秒)", blank=True, null=True)  # 新增
+    exec_command = models.TextField("执行命令", blank=True, null=True)
+    stdout = models.TextField("标准输出", blank=True, null=True)
+    stderr = models.TextField("错误输出", blank=True, null=True)
+    exec_duration = models.FloatField("执行耗时(秒)", blank=True, null=True)
     total_steps = models.PositiveIntegerField("总步骤数")
     completed_steps = models.PositiveIntegerField("已完成步骤数", default=0)
     error_msg = models.TextField("错误信息", blank=True, null=True)
@@ -113,11 +113,11 @@ class StepExecutionLog(models.Model):
         verbose_name="关联步骤"
     )
     exec_status = models.CharField("执行状态", max_length=20, choices=EXEC_STATUS, default="pending")
-    exec_command = models.TextField("执行命令", blank=True, null=True)  # 新增
-    stdout = models.TextField("标准输出", blank=True, null=True)  # 新增
-    stderr = models.TextField("错误输出", blank=True, null=True)  # 新增
-    return_code = models.IntegerField("返回码", blank=True, null=True)  # 新增
-    exec_duration = models.FloatField("执行耗时(秒)", blank=True, null=True)  # 新增
+    exec_command = models.TextField("执行命令", blank=True, null=True)
+    stdout = models.TextField("标准输出", blank=True, null=True)
+    stderr = models.TextField("错误输出", blank=True, null=True)
+    return_code = models.IntegerField("返回码", blank=True, null=True)
+    exec_duration = models.FloatField("执行耗时(秒)", blank=True, null=True)
     error_msg = models.TextField("步骤错误信息", blank=True, null=True)
     start_time = models.DateTimeField("开始时间", default=timezone.now)
     end_time = models.DateTimeField("结束时间", blank=True, null=True)
@@ -129,3 +129,38 @@ class StepExecutionLog(models.Model):
 
     def __str__(self):
         return f"{self.orchestration_log.orchestration.name} - 步骤{self.step.execution_order} - {self.exec_status}"
+
+
+class OrchestrationManagementLog(models.Model):
+    """编排任务全局管理操作日志（记录所有任务的增删改克隆）"""
+    OPERATION_TYPES = (
+        ("create", "新增"),
+        ("edit", "编辑"),
+        ("delete", "删除"),
+        ("clone", "克隆"),
+    )
+
+    orchestration = models.ForeignKey(
+        OrchestrationTask,
+        on_delete=models.SET_NULL,  # 任务删除后字段设为NULL
+        null=True,
+        blank=True,
+        related_name="management_logs",
+        verbose_name="关联编排任务"
+    )
+    original_task_name = models.CharField("原任务名称", max_length=100, blank=True, null=True)
+    original_task_id = models.IntegerField("原任务ID", blank=True, null=True)  # 新增：记录任务ID
+    operation_type = models.CharField("操作类型", max_length=20, choices=OPERATION_TYPES)
+    operator = models.CharField("操作人", max_length=100)
+    operation_time = models.DateTimeField("操作时间", default=timezone.now)
+    details = models.TextField("操作详情", blank=True, null=True)
+
+    class Meta:
+        verbose_name = "编排任务管理日志"
+        verbose_name_plural = "编排任务管理日志"
+        ordering = ["-operation_time"]
+
+    def __str__(self):
+        task_name = self.original_task_name or "已删除任务"
+        task_id = self.original_task_id or "未知ID"
+        return f"{self.get_operation_type_display()} - {task_name}（{task_id}） - {self.operation_time.strftime('%Y-%m-%d %H:%M:%S')}"

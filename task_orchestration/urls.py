@@ -18,4 +18,7 @@ urlpatterns = [
     path('',views.send_sms,name='send_sms_index'),
     path('send/', views.send_sms_view, name='send_sms'),  # 普通视图
     path('task-result/', views.check_task_result, name='check_task'),  # 查询任务结果
+    path('delete/<int:task_id>/', views.OrchestrationDeleteView.as_view(), name='delete'),  # 删除任务
+    path('management_logs/global/', views.OrchestrationGlobalManagementLogView.as_view(),
+         name='global_management_logs'),  # 全局日志
 ]
