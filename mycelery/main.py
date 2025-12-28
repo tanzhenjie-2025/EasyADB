@@ -2,7 +2,9 @@
 import os
 from celery import Celery
 import django
+from django.apps import apps
 
+installed_apps = [app.name for app in apps.get_app_configs()]
 # 1. 强制设置Django环境变量（优先级最高）
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'EasyADB.settings')
 
@@ -16,7 +18,8 @@ app = Celery("EasyADB")
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # 5. 自动发现所有已安装APP中的tasks.py
-app.autodiscover_tasks(["mycelery.sms","mycelery.email","task_orchestration","script_center","task_scheduler"])
+# app.autodiscover_tasks(["mycelery.sms","mycelery.email","task_orchestration","script_center","task_scheduler"])
+app.autodiscover_tasks(installed_apps)
 
 app.conf.beat_schedule = {
     'check-scheduled-tasks-every-minute': {
