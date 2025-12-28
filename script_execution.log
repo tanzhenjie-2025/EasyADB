@@ -11089,3 +11089,55 @@ def accumulate(self, *args, **kwargs):
 def chain(*args, **kwargs):
     return 1
 
+2025-12-28 11:54:58,951 - asgiref.server - INFO - Exiting due to Ctrl-C/interrupt
+2025-12-28 11:59:34,230 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-28 11:59:34,233 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-28 11:59:34,234 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-28 11:59:34,235 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.204:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-28 11:59:34,235 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-28 11:59:34,237 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.198:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-28 11:59:34,237 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-28 11:59:34,238 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 11:59:34,238 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-28 11:59:34,239 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 12:00:52,819 - script_center.views - INFO - 最近执行日志数量：10
+2025-12-28 12:00:52,842 - script_center.views - INFO - 日志ID：177，状态：success，是否运行中：False
+2025-12-28 12:00:52,844 - script_center.views - INFO - 日志ID：176，状态：failed，是否运行中：False
+2025-12-28 12:00:52,846 - script_center.views - INFO - 日志ID：175，状态：success，是否运行中：False
+2025-12-28 12:00:52,873 - script_center.views - INFO - 日志ID：174，状态：stopped，是否运行中：False
+2025-12-28 12:00:52,889 - script_center.views - INFO - 日志ID：173，状态：success，是否运行中：False
+2025-12-28 12:00:52,904 - script_center.views - INFO - 日志ID：172，状态：success，是否运行中：False
+2025-12-28 12:00:52,906 - script_center.views - INFO - 日志ID：171，状态：stopped，是否运行中：False
+2025-12-28 12:00:52,919 - script_center.views - INFO - 日志ID：170，状态：success，是否运行中：False
+2025-12-28 12:00:52,935 - script_center.views - INFO - 日志ID：169，状态：stopped，是否运行中：False
+2025-12-28 12:00:52,950 - script_center.views - INFO - 日志ID：168，状态：stopped，是否运行中：False
+2025-12-28 12:01:12,391 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-28 12:01:12,392 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-28 12:01:12,393 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-28 12:01:12,395 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.204:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-28 12:01:12,395 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-28 12:01:12,397 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.198:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-28 12:01:12,397 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-28 12:01:12,398 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 12:01:12,398 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-28 12:01:12,399 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 12:01:20,908 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-28 12:01:20,909 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-28 12:01:20,909 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-28 12:01:20,911 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.204:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-28 12:01:20,911 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-28 12:01:20,913 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.198:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-28 12:01:20,913 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-28 12:01:20,914 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 12:01:20,914 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-28 12:01:20,915 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:30:26,304 - adb_manager.views - INFO - 数据库查询到的设备数量：4
+2025-12-28 18:30:26,319 - adb_manager.views - INFO - 数据库设备详情：['192.168.33.204 (192.168.33.204:5555)', '华为 (192.168.33.198:5555)', '10AF5E1AKU003NR (10AF5E1AKU003NR)', 'GYH9X20325K00306 (GYH9X20325K00306)']
+2025-12-28 18:30:26,319 - adb_manager.views - INFO - 处理设备：192.168.33.204:5555
+2025-12-28 18:30:26,320 - adb_manager.views - INFO - 设备192.168.33.204:5555组装后数据：{'id': 1, 'name': '192.168.33.204', 'ip': '192.168.33.204', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.204:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.204:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.204:5555'\n"}
+2025-12-28 18:30:26,321 - adb_manager.views - INFO - 处理设备：192.168.33.198:5555
+2025-12-28 18:30:26,323 - adb_manager.views - INFO - 设备192.168.33.198:5555组装后数据：{'id': 2, 'name': '华为', 'ip': '192.168.33.198', 'port': 5555, 'serial': None, 'connect_id': '192.168.33.198:5555', 'is_active': True, 'status': 'error', 'stdout': 'cannot connect to 192.168.33.198:5555: 套接字操作尝试一个无法连接的主机。 (10065)\n', 'stderr': "error: no such device '192.168.33.198:5555'\n"}
+2025-12-28 18:30:26,323 - adb_manager.views - INFO - 处理设备：10AF5E1AKU003NR
+2025-12-28 18:30:26,323 - adb_manager.views - INFO - 设备10AF5E1AKU003NR组装后数据：{'id': 3, 'name': '10AF5E1AKU003NR', 'ip': None, 'port': 5555, 'serial': '10AF5E1AKU003NR', 'connect_id': '10AF5E1AKU003NR', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}
+2025-12-28 18:30:26,324 - adb_manager.views - INFO - 处理设备：GYH9X20325K00306
+2025-12-28 18:30:26,324 - adb_manager.views - INFO - 设备GYH9X20325K00306组装后数据：{'id': 5, 'name': 'GYH9X20325K00306', 'ip': None, 'port': 5555, 'serial': 'GYH9X20325K00306', 'connect_id': 'GYH9X20325K00306', 'is_active': True, 'status': 'offline', 'stdout': 'disconnected everything\n', 'stderr': ''}

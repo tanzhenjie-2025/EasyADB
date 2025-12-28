@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-container {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .search-input {
+        flex: 1;
+        max-width: 500px;
+        padding: 8px 12px;
+        border: 1px solid #dcdfe6;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .operation-create { color: #67c23a; }
+    .operation-edit { color: #409eff; }
+    .operation-delete { color: #f56c6c; }
+
+    .empty-data-cell {
+        text-align: center;
+        color: #909399;
+    }
+</style>
+{% endblock %}
+
+{% block page_header %}
+<div class="page-header">
+    <h1>{{ page_title }}</h1>
+    <div>
+        <a href="{% url 'script_center:task_list' %}" class="btn btn-primary">返回任务列表</a>
+    </div>
+</div>
+
+<div class="search-container">
+    <form method="get" action="{% url 'script_center:management_log' %}" style="width: 100%; display: flex; gap: 10px;">
+        <input type="text"
+               name="search"
+               class="search-input"
+               placeholder="搜索任务名称、操作人或详情..."
+               value="{{ search_query|default:'' }}">
+        <button type="submit" class="btn btn-primary">搜索</button>
+        {% if search_query %}
+            <a href="{% url 'script_center:management_log' %}" class="btn btn-default">清除</a>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}
+
+{% block content %}
+    {% if request.GET.msg %}
+        <div class="alert {% if '成功' in request.GET.msg|urlencode %}alert-success{% else %}alert-error{% endif %}">
+            {{ request.GET.msg|urlencode }}
+        </div>
+    {% endif %}
+
+    {% if search_query %}
+        <div class="alert alert-success">
+            搜索关键词: "{{ search_query }}", 找到 {{ logs.count }} 个结果
+        </div>
+    {% endif %}
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>操作时间</th>
+                    <th>操作人</th>
+                    <th>操作类型</th>
+                    <th>任务名称</th>
+                    <th>操作详情</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.operation_time|date:"Y-m-d H:i:s" }}</td>
+                    <td>{{ log.operator }}</td>
+                    <td>
+                        {% if log.operation == 'create' %}
+                            <span class="operation-create">新增</span>
+                        {% elif log.operation == 'edit' %}
+                            <span class="operation-edit">编辑</span>
+                        {% else %}
+                            <span class="operation-delete">删除</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.task %}
+                            {{ log.task.task_name }}
+                        {% else %}
+                            <span style="color: #909399;">已删除任务</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ log.details }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="empty-data-cell">暂无管理日志记录</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block extra_js %}{% endblock %}

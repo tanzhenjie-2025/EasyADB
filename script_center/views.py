@@ -1,10 +1,3 @@
-"""
-脚本任务管理视图
-重构说明：
-1. 移除所有硬编码配置，统一从.env读取
-2. 提取公共方法，减少重复代码
-3. 保持原有业务逻辑完全不变
-"""
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.urls import reverse
@@ -24,10 +17,11 @@ import json
 from datetime import datetime
 from django.utils import timezone
 from celery.result import AsyncResult
+import django.db.models as models  # 新增：用于管理日志的搜索过滤
 
-# 导入Celery任务和模型
+# 导入Celery任务和模型（新增ScriptTaskManagementLog）
 from .tasks import execute_script_task, _graceful_terminate_process
-from .models import ScriptTask, TaskExecutionLog
+from .models import ScriptTask, TaskExecutionLog, ScriptTaskManagementLog
 from .forms import ScriptTaskForm
 from adb_manager.models import ADBDevice
 
@@ -199,6 +193,13 @@ class TaskAddView(View):
         form = ScriptTaskForm(request.POST)
         if form.is_valid():
             task = form.save()
+            # 记录新增任务的管理日志
+            ScriptTaskManagementLog.objects.create(
+                task=task,
+                operation="create",
+                operator=request.user.username if request.user.is_authenticated else "匿名用户",
+                details=f"创建了任务：{task.task_name}，Python路径：{task.python_path}，脚本路径：{task.script_path}，任务状态：{task.status}"
+            )
             success_msg = quote(f"任务【{task.task_name}】创建成功！")
             return redirect(f"{reverse('script_center:task_list')}?msg={success_msg}")
         context = {
@@ -223,10 +224,34 @@ class TaskEditView(View):
 
     def post(self, request, task_id):
         task = get_object_or_404(ScriptTask, id=task_id)
+        # 记录编辑前的关键信息
+        old_task_name = task.task_name
+        old_script_path = task.script_path
+        old_python_path = task.python_path
+        old_status = task.status
+
         form = ScriptTaskForm(request.POST, instance=task)
         if form.is_valid():
-            task = form.save()
-            success_msg = quote(f"任务【{task.task_name}】修改成功！")
+            updated_task = form.save()
+            # 构建编辑详情
+            details = []
+            if old_task_name != updated_task.task_name:
+                details.append(f"任务名称从 '{old_task_name}' 修改为 '{updated_task.task_name}'")
+            if old_script_path != updated_task.script_path:
+                details.append(f"脚本路径从 '{old_script_path}' 修改为 '{updated_task.script_path}'")
+            if old_python_path != updated_task.python_path:
+                details.append(f"Python路径从 '{old_python_path}' 修改为 '{updated_task.python_path}'")
+            if old_status != updated_task.status:
+                details.append(f"任务状态从 '{old_status}' 修改为 '{updated_task.status}'")
+
+            # 记录编辑任务的管理日志
+            ScriptTaskManagementLog.objects.create(
+                task=updated_task,
+                operation="edit",
+                operator=request.user.username if request.user.is_authenticated else "匿名用户",
+                details="；".join(details) if details else f"编辑了任务 '{updated_task.task_name}'，未修改关键信息"
+            )
+            success_msg = quote(f"任务【{updated_task.task_name}】修改成功！")
             return redirect(f"{reverse('script_center:task_list')}?msg={success_msg}")
         context = {
             "page_title": f"编辑任务 - {task.task_name}",
@@ -243,12 +268,45 @@ class TaskDeleteView(View):
         try:
             task = get_object_or_404(ScriptTask, id=task_id)
             task_name = task.task_name
+            # 先记录删除日志再删除任务
+            ScriptTaskManagementLog.objects.create(
+                task=task,
+                operation="delete",
+                operator=request.user.username if request.user.is_authenticated else "匿名用户",
+                details=f"删除了任务：{task_name}，脚本路径：{task.script_path}，Python路径：{task.python_path}"
+            )
             task.delete()
             success_msg = quote(f"任务【{task_name}】删除成功！")
         except Exception as e:
             logger.error(f"删除任务失败：{str(e)}")
             success_msg = quote(f"删除失败：{str(e)}")
         return redirect(f"{reverse('script_center:task_list')}?msg={success_msg}")
+
+
+class TaskManagementLogView(View):
+    """查看脚本任务管理日志"""
+    def get(self, request):
+        # 获取搜索关键词
+        search_query = request.GET.get('search', '').strip()
+
+        # 基础查询集，按操作时间倒序
+        logs_query = ScriptTaskManagementLog.objects.all().order_by("-operation_time")
+
+        # 搜索过滤：支持任务名称、操作人、操作详情、操作类型
+        if search_query:
+            logs_query = logs_query.filter(
+                models.Q(task__task_name__icontains=search_query) |
+                models.Q(operator__icontains=search_query) |
+                models.Q(details__icontains=search_query) |
+                models.Q(operation__icontains=search_query)
+            )
+
+        context = {
+            "page_title": "脚本任务管理日志",
+            "logs": logs_query,
+            "search_query": search_query
+        }
+        return render(request, "script_center/management_log.html", context)
 
 
 # ===================== 任务执行/停止核心逻辑 =====================

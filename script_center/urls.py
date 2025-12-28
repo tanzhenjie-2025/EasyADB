@@ -22,4 +22,6 @@ urlpatterns = [
     path("log/<int:log_id>/", views.LogDetailView.as_view(), name="log_detail"),
     # 日志状态（AJAX）
     path("log/status/<int:log_id>/", views.LogStatusView.as_view(), name="log_status"),
+    # 管理日志
+    path("management_log/", views.TaskManagementLogView.as_view(), name="management_log"),
 ]
