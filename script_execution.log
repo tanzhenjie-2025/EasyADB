@@ -10901,3 +10901,191 @@ def debug_task(self):
     return 1
 
 2025-12-27 11:51:02,809 - asgiref.server - INFO - Exiting due to Ctrl-C/interrupt
+2025-12-27 11:53:47,580 - django.channels.worker - INFO - Running worker for channels ['default']
+2025-12-27 11:53:47,599 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-12-27 11:53:47,980 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-27 11:53:47,980 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-27 11:53:47,981 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-27 11:53:47,981 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-27 11:53:47,982 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-27 11:53:47,982 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-27 11:53:47,982 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-27 11:53:47,982 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-27 11:53:47,983 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-27 11:53:47,983 - celery.utils.functional - DEBUG - 
+def check_and_execute_schedules():
+    return 1
+
+2025-12-27 11:53:47,983 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-27 11:53:47,983 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-27 11:53:47,984 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-27 11:53:47,984 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-27 11:53:47,984 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-27 11:54:34,803 - asgiref.server - INFO - Exiting due to Ctrl-C/interrupt
+2025-12-28 10:41:58,492 - django.channels.worker - INFO - Running worker for channels ['default']
+2025-12-28 10:41:58,518 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-12-28 10:41:58,828 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-28 10:41:58,829 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-28 10:41:58,829 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-28 10:41:58,829 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-28 10:41:58,830 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-28 10:41:58,830 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-28 10:41:58,830 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-28 10:41:58,831 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-28 10:41:58,831 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-28 10:41:58,831 - celery.utils.functional - DEBUG - 
+def check_and_execute_schedules():
+    return 1
+
+2025-12-28 10:41:58,832 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-28 10:41:58,832 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+
+2025-12-28 10:41:58,832 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-28 10:41:58,833 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-28 10:41:58,833 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-28 10:52:32,525 - asgiref.server - INFO - Exiting due to Ctrl-C/interrupt
+2025-12-28 10:58:54,872 - django.channels.worker - INFO - Running worker for channels ['default']
+2025-12-28 10:58:54,892 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-12-28 10:58:55,340 - celery.utils.functional - DEBUG - 
+def unlock_chord(self, group_id, callback, interval=0, max_retries=1, result=2, Result=3, GroupResult=4, result_from_tuple=5, **kwargs):
+    return 1
+
+2025-12-28 10:58:55,341 - celery.utils.functional - DEBUG - 
+def chord(self, header, body, partial_args=0, interval=1, countdown=2, max_retries=3, eager=4, **kwargs):
+    return 1
+
+2025-12-28 10:58:55,341 - celery.utils.functional - DEBUG - 
+def chunks(task, it, n):
+    return 1
+
+2025-12-28 10:58:55,342 - celery.utils.functional - DEBUG - 
+def execute_script_task(self, task_id, device_id, log_id):
+    return 1
+
+2025-12-28 10:58:55,342 - celery.utils.functional - DEBUG - 
+def execute_step_task(self, step_id, orch_log_id, device_data):
+    return 1
+
+2025-12-28 10:58:55,343 - celery.utils.functional - DEBUG - 
+def send_email(mobile):
+    return 1
+
+2025-12-28 10:58:55,343 - celery.utils.functional - DEBUG - 
+def check_and_execute_schedules():
+    return 1
+
+2025-12-28 10:58:55,344 - celery.utils.functional - DEBUG - 
+def debug_task(self):
+    return 1
+
+2025-12-28 10:58:55,344 - celery.utils.functional - DEBUG - 
+def xmap(task, it):
+    return 1
+
+2025-12-28 10:58:55,345 - celery.utils.functional - DEBUG - 
+def send_email2(mobile):
+    return 1
+
+2025-12-28 10:58:55,345 - celery.utils.functional - DEBUG - 
+def backend_cleanup():
+    return 1
+
+2025-12-28 10:58:55,345 - celery.utils.functional - DEBUG - 
+def group(self, tasks, result, group_id, partial_args, add_to_parent=0):
+    return 1
+
+2025-12-28 10:58:55,347 - celery.utils.functional - DEBUG - 
+def xstarmap(task, it):
+    return 1
+
+2025-12-28 10:58:55,347 - celery.utils.functional - DEBUG - 
+def accumulate(self, *args, **kwargs):
+    return 1
+
+2025-12-28 10:58:55,348 - celery.utils.functional - DEBUG - 
+def chain(*args, **kwargs):
+    return 1
+

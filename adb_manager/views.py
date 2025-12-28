@@ -1,10 +1,4 @@
-"""
-ADB设备管理视图
-重构说明：
-1. 移除所有硬编码配置，统一从.env读取
-2. 提取公共方法，减少重复代码
-3. 保持原有业务逻辑完全不变
-"""
+"""ADB设备管理视图（添加日志记录功能）"""
 from django.conf import settings
 import redis
 from django.shortcuts import render, redirect, get_object_or_404
@@ -13,7 +7,7 @@ from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.urls import reverse
 from urllib.parse import quote
-from .models import ADBDevice
+from .models import ADBDevice, ADBDeviceOperationLog  # 导入新模型
 from .forms import ADBDeviceForm
 import logging
 import subprocess
@@ -34,7 +28,7 @@ def get_adb_path():
 
 
 def get_redis_client():
-    """获取Redis客户端（封装初始化逻辑，避免重复代码）"""
+    """获取Redis客户端"""
     try:
         r = redis.Redis(
             host=settings.REDIS_HOST,
@@ -65,12 +59,7 @@ def get_redis_client():
 
 
 def execute_adb_command(cmd, timeout=None):
-    """
-    执行ADB命令的公共方法
-    :param cmd: 命令列表
-    :param timeout: 超时时间（默认从环境变量读取）
-    :return: subprocess.CompletedProcess对象
-    """
+    """执行ADB命令的公共方法"""
     if timeout is None:
         timeout = int(os.getenv("ADB_COMMAND_TIMEOUT", 10))
 
@@ -93,7 +82,7 @@ def execute_adb_command(cmd, timeout=None):
 
 
 def get_wifi_ip(connect_id):
-    """封装WiFi IP获取逻辑（公共方法）"""
+    """封装WiFi IP获取逻辑"""
     adb_path = get_adb_path()
     # 定义多套IP获取命令（兼容不同安卓版本）
     ip_commands = [
@@ -128,13 +117,39 @@ def get_wifi_ip(connect_id):
     return "获取IP失败"
 
 
+# 新增：日志记录辅助函数
+def log_device_operation(request, device, operation_type, result=True, details=""):
+    """
+    记录设备操作日志
+    :param request: 请求对象
+    :param device: 操作的设备对象，可为None（如一键操作）
+    :param operation_type: 操作类型
+    :param result: 操作结果，布尔值
+    :param details: 操作详情
+    """
+    user = request.user if request.user.is_authenticated else None
+
+    ADBDeviceOperationLog.objects.create(
+        device=device,
+        operation_type=operation_type,
+        user=user,
+        operation_result=result,
+        operation_details=details
+    )
+
+    # 同时记录到系统日志
+    username = user.username if user else "匿名用户"
+    device_name = device.device_name if device else "无特定设备"
+    logger.info(f"{username} {operation_type} {device_name} {'成功' if result else '失败'}: {details}")
+
+
 # 初始化Redis客户端
 r = get_redis_client()
 
 
 # ===================== 视图函数/类 =====================
 def index(request):
-    """易控ADB首页"""
+    """易控ADB首页（保持不变）"""
     devices = ADBDevice.objects.all()
     logger.info(f"数据库查询到的设备数量：{devices.count()}")
     logger.info(f"数据库设备详情：{[str(dev) for dev in devices]}")
@@ -176,8 +191,7 @@ def index(request):
 
 
 class ADBDeviceStatusView(View):
-    """获取所有设备状态接口"""
-
+    """获取所有设备状态接口（保持不变）"""
     def get(self, request):
         try:
             devices = ADBDevice.objects.all()
@@ -214,8 +228,7 @@ class ADBDeviceStatusView(View):
 
 
 class ADBDeviceConnectView(View):
-    """手动连接指定设备（支持序列号/IP+端口）"""
-
+    """手动连接指定设备（添加日志记录）"""
     def post(self, request):
         try:
             device_id = request.POST.get("device_id")
@@ -227,6 +240,10 @@ class ADBDeviceConnectView(View):
             connect_id = device.connect_identifier
             if not connect_id:
                 error_msg = quote("设备未配置序列号/IP+端口，无法连接")
+                log_device_operation(
+                    request, device, 'connect', False,
+                    f"连接失败：{error_msg}"
+                )
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
             # 从环境变量获取ADB路径
@@ -248,23 +265,39 @@ class ADBDeviceConnectView(View):
                 r.set(f"adb:device:{connect_id}", "online")
                 r.set(f"adb:device:{connect_id}:stdout", result.stdout or f"设备{connect_id}连接成功")
                 r.set(f"adb:device:{connect_id}:stderr", "")
-                success_msg = quote(f"设备{connect_id}连接成功！")
+                success_msg = f"设备{connect_id}连接成功！"
+                log_device_operation(
+                    request, device, 'connect', True,
+                    success_msg + f" 输出: {result.stdout[:100]}"
+                )
             else:
                 r.set(f"adb:device:{connect_id}", "offline")
                 r.set(f"adb:device:{connect_id}:stderr", result.stderr or result.stdout or "连接失败")
-                success_msg = quote(f"设备{connect_id}连接失败：{result.stderr or result.stdout}")
+                success_msg = f"设备{connect_id}连接失败：{result.stderr or result.stdout}"
+                log_device_operation(
+                    request, device, 'connect', False,
+                    success_msg
+                )
 
-            return redirect(f"{reverse('adb_manager:index')}?msg={success_msg}")
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(success_msg)}")
 
         except Exception as e:
             logger.error(f"连接设备失败：{str(e)}", exc_info=True)
-            error_msg = quote(f"连接失败：{str(e)}")
-            return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
+            error_msg = f"连接失败：{str(e)}"
+            # 尝试获取设备对象用于日志记录
+            try:
+                device = ADBDevice.objects.get(id=device_id) if device_id else None
+            except:
+                device = None
+            log_device_operation(
+                request, device, 'connect', False,
+                error_msg
+            )
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(error_msg)}")
 
 
 class ADBDeviceDisconnectView(View):
-    """手动断开ADB设备（支持序列号）"""
-
+    """手动断开ADB设备（添加日志记录）"""
     def post(self, request):
         try:
             device_id = request.POST.get("device_id")
@@ -276,6 +309,10 @@ class ADBDeviceDisconnectView(View):
             connect_id = device.connect_identifier
             if not connect_id:
                 error_msg = quote("设备未配置序列号/IP+端口，无法断开")
+                log_device_operation(
+                    request, device, 'disconnect', False,
+                    f"断开失败：{error_msg}"
+                )
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
             adb_path = get_adb_path()
@@ -293,28 +330,48 @@ class ADBDeviceDisconnectView(View):
                 r.set(f"adb:device:{connect_id}", "offline")
                 r.set(f"adb:device:{connect_id}:stdout", result.stdout)
                 r.set(f"adb:device:{connect_id}:stderr", "")
-                success_msg = quote(f"设备{connect_id}断开连接成功！")
+                success_msg = f"设备{connect_id}断开连接成功！"
+                log_device_operation(
+                    request, device, 'disconnect', True,
+                    success_msg + f" 输出: {result.stdout[:100]}"
+                )
             else:
                 r.set(f"adb:device:{connect_id}", "error")
                 r.set(f"adb:device:{connect_id}:stderr", result.stderr or result.stdout)
-                success_msg = quote(f"设备{connect_id}断开连接失败：{result.stderr or result.stdout}")
+                success_msg = f"设备{connect_id}断开连接失败：{result.stderr or result.stdout}"
+                log_device_operation(
+                    request, device, 'disconnect', False,
+                    success_msg
+                )
 
-            return redirect(f"{reverse('adb_manager:index')}?msg={success_msg}")
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(success_msg)}")
 
         except Exception as e:
             logger.error(f"断开设备失败：{str(e)}", exc_info=True)
-            error_msg = quote(f"断开连接失败：{str(e)}")
-            return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
+            error_msg = f"断开连接失败：{str(e)}"
+            # 尝试获取设备对象用于日志记录
+            try:
+                device = ADBDevice.objects.get(id=device_id) if device_id else None
+            except:
+                device = None
+            log_device_operation(
+                request, device, 'disconnect', False,
+                error_msg
+            )
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(error_msg)}")
 
 
 class RefreshAllDevicesView(View):
-    """刷新所有设备状态（支持序列号）"""
-
+    """刷新所有设备状态（添加日志记录）"""
     def post(self, request):
         try:
             devices = ADBDevice.objects.filter(is_active=True)
             if not devices.exists():
                 error_msg = quote("暂无启用的设备，无需刷新！")
+                log_device_operation(
+                    request, None, 'refresh_all', True,
+                    "刷新所有设备：暂无启用的设备"
+                )
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
             adb_path = get_adb_path()
@@ -370,18 +427,25 @@ class RefreshAllDevicesView(View):
                     r.set(f"adb:device:{connect_id}:stderr", str(dev_err))
                     fail_count += 1
 
-            success_msg = quote(f"刷新完成！成功更新{success_count}台设备，失败{fail_count}台设备")
-            return redirect(f"{reverse('adb_manager:index')}?msg={success_msg}")
+            success_msg = f"刷新完成！成功更新{success_count}台设备，失败{fail_count}台设备"
+            log_device_operation(
+                request, None, 'refresh_all', True,
+                success_msg
+            )
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(success_msg)}")
 
         except Exception as e:
             logger.error(f"刷新所有设备状态失败：{str(e)}", exc_info=True)
-            error_msg = quote(f"刷新失败：{str(e)}")
-            return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
+            error_msg = f"刷新失败：{str(e)}"
+            log_device_operation(
+                request, None, 'refresh_all', False,
+                error_msg
+            )
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(error_msg)}")
 
 
 class AddDeviceView(View):
-    """添加ADB设备（支持序列号）"""
-
+    """添加ADB设备（添加日志记录）"""
     def get(self, request):
         form = ADBDeviceForm()
         if request.user.is_authenticated:
@@ -402,9 +466,18 @@ class AddDeviceView(View):
                 device.user = request.user
             device.save()
 
-            success_msg = quote(f"设备【{device.device_name}】添加成功！")
-            return redirect(f"{reverse('adb_manager:index')}?msg={success_msg}")
+            success_msg = f"设备【{device.device_name}】添加成功！"
+            log_device_operation(
+                request, device, 'add', True,
+                f"{success_msg} 序列号: {device.device_serial}, IP: {device.device_ip}, 端口: {device.device_port}"
+            )
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(success_msg)}")
         else:
+            error_details = "; ".join([f"{field}: {', '.join(errors)}" for field, errors in form.errors.items()])
+            log_device_operation(
+                request, None, 'add', False,
+                f"添加设备失败：{error_details}"
+            )
             context = {
                 "page_title": "添加ADB设备 - 易控ADB",
                 "form": form,
@@ -415,8 +488,7 @@ class AddDeviceView(View):
 
 
 class EditDeviceView(View):
-    """编辑ADB设备（支持序列号）"""
-
+    """编辑ADB设备（添加日志记录）"""
     def get(self, request, device_id):
         device = get_object_or_404(ADBDevice, id=device_id)
         form = ADBDeviceForm(instance=device)
@@ -453,9 +525,18 @@ class EditDeviceView(View):
                 r.delete(f"adb:device:{old_connect_id}:stdout")
                 r.delete(f"adb:device:{old_connect_id}:stderr")
 
-            success_msg = quote(f"设备【{updated_device.device_name}】修改成功！")
-            return redirect(f"{reverse('adb_manager:index')}?msg={success_msg}")
+            success_msg = f"设备【{updated_device.device_name}】修改成功！"
+            log_device_operation(
+                request, updated_device, 'edit', True,
+                f"{success_msg} 旧标识: {old_connect_id}, 新标识: {new_connect_id}"
+            )
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(success_msg)}")
         else:
+            error_details = "; ".join([f"{field}: {', '.join(errors)}" for field, errors in form.errors.items()])
+            log_device_operation(
+                request, device, 'edit', False,
+                f"编辑设备失败：{error_details}"
+            )
             context = {
                 "page_title": f"编辑设备 - {device.device_name}",
                 "form": form,
@@ -467,13 +548,13 @@ class EditDeviceView(View):
 
 
 class DeleteDeviceView(View):
-    """删除ADB设备"""
-
+    """删除ADB设备（添加日志记录）"""
     def post(self, request, device_id):
         try:
             device = get_object_or_404(ADBDevice, id=device_id)
             device_name = device.device_name
             connect_id = device.connect_identifier
+            device_details = f"名称: {device_name}, 标识: {connect_id}"
 
             # 断开设备
             adb_path = get_adb_path()
@@ -493,23 +574,42 @@ class DeleteDeviceView(View):
             # 删除数据库记录
             device.delete()
 
-            success_msg = quote(f"设备【{device_name}】删除成功！")
-            return redirect(f"{reverse('adb_manager:index')}?msg={success_msg}")
+            success_msg = f"设备【{device_name}】删除成功！"
+            log_device_operation(
+                request, None, 'delete', True,
+                f"{success_msg} {device_details}"
+            )
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(success_msg)}")
 
         except Exception as e:
             logger.error(f"删除设备失败：{str(e)}", exc_info=True)
-            error_msg = quote(f"删除失败：{str(e)}")
-            return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
+            error_msg = f"删除失败：{str(e)}"
+            # 尝试获取设备对象用于日志记录
+            try:
+                device = ADBDevice.objects.get(id=device_id) if device_id else None
+                device_name = device.device_name if device else "未知设备"
+            except:
+                device = None
+                device_name = "未知设备"
+
+            log_device_operation(
+                request, device, 'delete', False,
+                f"删除设备【{device_name}】失败：{error_msg}"
+            )
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(error_msg)}")
 
 
 class ConnectAllDevicesView(View):
-    """一键连接所有设备（支持序列号）"""
-
+    """一键连接所有设备（添加日志记录）"""
     def post(self, request):
         try:
             devices = ADBDevice.objects.filter(is_active=True)
             if not devices.exists():
                 error_msg = quote("暂无启用的设备，无需连接！")
+                log_device_operation(
+                    request, None, 'connect_all', True,
+                    "一键连接所有设备：暂无启用的设备"
+                )
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
             adb_path = get_adb_path()
@@ -553,23 +653,34 @@ class ConnectAllDevicesView(View):
                     fail_count += 1
                     result_logs.append(f"⚠️ {connect_id}：操作异常 - {str(e)}")
 
-            success_msg = quote(f"一键连接完成！成功{success_count}台，失败{fail_count}台。详情：{' | '.join(result_logs)}")
-            return redirect(f"{reverse('adb_manager:index')}?msg={success_msg}")
+            success_msg = f"一键连接完成！成功{success_count}台，失败{fail_count}台。详情：{' | '.join(result_logs)}"
+            log_device_operation(
+                request, None, 'connect_all', True,
+                success_msg
+            )
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(success_msg)}")
 
         except Exception as e:
             logger.error(f"一键连接全部设备失败：{str(e)}", exc_info=True)
-            error_msg = quote(f"一键连接失败：{str(e)}")
-            return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
+            error_msg = f"一键连接失败：{str(e)}"
+            log_device_operation(
+                request, None, 'connect_all', False,
+                error_msg
+            )
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(error_msg)}")
 
 
 class DisconnectAllDevicesView(View):
-    """一键断开所有设备（支持序列号）"""
-
+    """一键断开所有设备（添加日志记录）"""
     def post(self, request):
         try:
             devices = ADBDevice.objects.all()
             if not devices.exists():
                 error_msg = quote("暂无设备，无需断开！")
+                log_device_operation(
+                    request, None, 'disconnect_all', True,
+                    "一键断开所有设备：暂无设备"
+                )
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
             adb_path = get_adb_path()
@@ -612,18 +723,25 @@ class DisconnectAllDevicesView(View):
                     fail_count += 1
                     result_logs.append(f"⚠️ {connect_id}：操作异常 - {str(e)}")
 
-            success_msg = quote(f"一键断开完成！成功{success_count}台，失败{fail_count}台。详情：{' | '.join(result_logs)}")
-            return redirect(f"{reverse('adb_manager:index')}?msg={success_msg}")
+            success_msg = f"一键断开完成！成功{success_count}台，失败{fail_count}台。详情：{' | '.join(result_logs)}"
+            log_device_operation(
+                request, None, 'disconnect_all', True,
+                success_msg
+            )
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(success_msg)}")
 
         except Exception as e:
             logger.error(f"一键断开全部设备失败：{str(e)}", exc_info=True)
-            error_msg = quote(f"一键断开失败：{str(e)}")
-            return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
+            error_msg = f"一键断开失败：{str(e)}"
+            log_device_operation(
+                request, None, 'disconnect_all', False,
+                error_msg
+            )
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(error_msg)}")
 
 
 class CSRFTokenView(View):
-    """获取CSRF Token接口"""
-
+    """获取CSRF Token接口（保持不变）"""
     def get(self, request):
         return JsonResponse({
             "code": 200,
@@ -632,8 +750,7 @@ class CSRFTokenView(View):
 
 
 class ADBDevicesListView(View):
-    """执行adb devices命令，返回所有已连接设备"""
-
+    """执行adb devices命令（保持不变）"""
     def get(self, request):
         try:
             adb_path = get_adb_path()
@@ -692,8 +809,7 @@ class ADBDevicesListView(View):
 
 
 class ADBDeviceDetailView(View):
-    """获取指定设备的详细信息（厂商、型号、系统版本、电量、WiFi IP等）"""
-
+    """获取指定设备的详细信息（保持不变）"""
     def get(self, request):
         try:
             device_id = request.GET.get("device_id")
@@ -717,7 +833,7 @@ class ADBDeviceDetailView(View):
             adb_path = get_adb_path()
             default_timeout = int(os.getenv("ADB_COMMAND_TIMEOUT", 15))
 
-            # 定义需要执行的ADB命令列表（新增电池备用命令）
+            # 定义需要执行的ADB命令列表
             commands = {
                 "brand": [adb_path, "-s", connect_id, "shell", "getprop", "ro.product.brand"],  # 厂商
                 "model": [adb_path, "-s", connect_id, "shell", "getprop", "ro.product.model"],  # 型号
@@ -725,11 +841,8 @@ class ADBDeviceDetailView(View):
                 "serial": [adb_path, "-s", connect_id, "get-serialno"],  # 设备序列号
                 "battery": [adb_path, "-s", connect_id, "shell", "dumpsys", "battery"],  # 电池信息
                 "battery_level_backup": [adb_path, "-s", connect_id, "shell", "getprop", "status.battery.level"],
-                # 电量备用命令
                 "battery_health_backup": [adb_path, "-s", connect_id, "shell", "getprop", "status.battery.health"],
-                # 健康度备用
                 "battery_status_backup": [adb_path, "-s", connect_id, "shell", "getprop", "status.battery.state"],
-                # 状态备用
                 "wifi_ip": [adb_path, "-s", connect_id, "shell", "ip", "addr", "show", "wlan0"]  # WiFi IP
             }
 
@@ -766,7 +879,7 @@ class ADBDeviceDetailView(View):
                     elif cmd_key == "serial":
                         result_data["serial"] = stdout or "未知"
                     elif cmd_key == "battery":
-                        # 解析电池信息（适配数字/字符串两种格式）
+                        # 解析电池信息
                         battery_info = stdout
                         if not battery_info:
                             result_data["battery_level"] = "未知"
@@ -775,10 +888,10 @@ class ADBDeviceDetailView(View):
                             continue
 
                         try:
-                            # 正则匹配（兼容数字/字符串格式）
+                            # 正则匹配
                             level_match = re.search(r"level:\s*(\d+)", battery_info, re.IGNORECASE)
-                            health_match = re.search(r"health:\s*(\d+|\w+)", battery_info, re.IGNORECASE)  # 匹配数字或字符串
-                            status_match = re.search(r"status:\s*(\d+|\w+)", battery_info, re.IGNORECASE)  # 匹配数字或字符串
+                            health_match = re.search(r"health:\s*(\d+|\w+)", battery_info, re.IGNORECASE)
+                            status_match = re.search(r"status:\s*(\d+|\w+)", battery_info, re.IGNORECASE)
 
                             # 电量解析
                             if level_match and level_match.group(1):
@@ -786,54 +899,31 @@ class ADBDeviceDetailView(View):
                             else:
                                 result_data["battery_level"] = "未知"
 
-                            # 健康度解析（同时兼容数字/字符串）
-                            health_val = health_match.group(1).upper() if (
-                                        health_match and health_match.group(1)) else ""
-                            # 数字映射表（优先）
+                            # 健康度解析
+                            health_val = health_match.group(1).upper() if (health_match and health_match.group(1)) else ""
                             health_num_map = {
-                                "1": "未知",
-                                "2": "良好",
-                                "3": "过热",
-                                "4": "损坏",
-                                "5": "过压",
-                                "6": "未知故障",
-                                "7": "过冷"
+                                "1": "未知", "2": "良好", "3": "过热", "4": "损坏",
+                                "5": "过压", "6": "未知故障", "7": "过冷"
                             }
-                            # 字符串映射表（兼容其他设备）
                             health_str_map = {
-                                "GOOD": "良好",
-                                "OVERHEAT": "过热",
-                                "DEAD": "损坏",
-                                "OVER_VOLTAGE": "过压",
-                                "UNSPECIFIED_FAILURE": "未知故障",
-                                "COLD": "过冷",
-                                "UNKNOWN": "未知"
+                                "GOOD": "良好", "OVERHEAT": "过热", "DEAD": "损坏",
+                                "OVER_VOLTAGE": "过压", "UNSPECIFIED_FAILURE": "未知故障",
+                                "COLD": "过冷", "UNKNOWN": "未知"
                             }
-                            # 优先按数字匹配，再按字符串匹配
                             result_data["battery_health"] = health_num_map.get(health_val,
                                                                                health_str_map.get(health_val, "未知"))
 
-                            # 状态解析（同时兼容数字/字符串）
-                            status_val = status_match.group(1).upper() if (
-                                        status_match and status_match.group(1)) else ""
-                            # 数字映射表（优先）
+                            # 状态解析
+                            status_val = status_match.group(1).upper() if (status_match and status_match.group(1)) else ""
                             status_num_map = {
-                                "1": "未知",
-                                "2": "充电中",
-                                "3": "放电中",
-                                "4": "未充电",
-                                "5": "已充满"
+                                "1": "未知", "2": "充电中", "3": "放电中",
+                                "4": "未充电", "5": "已充满"
                             }
-                            # 字符串映射表（兼容其他设备）
                             status_str_map = {
-                                "CHARGING": "充电中",
-                                "DISCHARGING": "放电中",
-                                "NOT_CHARGING": "未充电",
-                                "FULL": "已充满",
-                                "UNKNOWN": "未知",
-                                "CONNECTED": "已连接电源（未充电）"
+                                "CHARGING": "充电中", "DISCHARGING": "放电中",
+                                "NOT_CHARGING": "未充电", "FULL": "已充满",
+                                "UNKNOWN": "未知", "CONNECTED": "已连接电源（未充电）"
                             }
-                            # 优先按数字匹配，再按字符串匹配
                             result_data["battery_status"] = status_num_map.get(status_val,
                                                                                status_str_map.get(status_val, "未知"))
 
@@ -842,7 +932,7 @@ class ADBDeviceDetailView(View):
                             result_data["battery_level"] = "未知"
                             result_data["battery_health"] = "未知"
                             result_data["battery_status"] = "未知"
-                    # 备用电池信息解析（主命令失败时生效）
+                    # 备用电池信息解析
                     elif cmd_key == "battery_level_backup":
                         if not result_data["battery_level"] or result_data["battery_level"] == "未知":
                             result_data["battery_level"] = f"{stdout}%" if stdout else "未知"
@@ -856,7 +946,7 @@ class ADBDeviceDetailView(View):
                                           "not_charging": "未充电"}
                             result_data["battery_status"] = status_map.get(stdout.lower(), stdout or "未知")
                     elif cmd_key == "wifi_ip":
-                        # 解析WiFi IP（安卓10+）
+                        # 解析WiFi IP
                         ip_lines = stdout.splitlines()
                         for line in ip_lines:
                             if "inet " in line and not "127.0.0.1" in line:
@@ -895,8 +985,7 @@ class ADBDeviceDetailView(View):
 
 
 class ADBDeviceEnableWirelessView(View):
-    """开启设备无线ADB功能（先查IP→查数据库→再执行端口操作，已有信息则提示不保存）"""
-
+    """开启设备无线ADB功能（添加日志记录）"""
     def post(self, request):
         try:
             device_id = request.POST.get("device_id")
@@ -908,50 +997,65 @@ class ADBDeviceEnableWirelessView(View):
             connect_id = device.connect_identifier
             if not connect_id:
                 error_msg = quote("设备未配置序列号/IP+端口，无法操作")
+                log_device_operation(
+                    request, device, 'enable_wireless', False,
+                    f"开启无线ADB失败：{error_msg}"
+                )
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
             # 检查设备是否在线
             status = r.get(f"adb:device:{connect_id}") or "offline"
             if status != "online":
                 error_msg = quote(f"设备{connect_id}当前不在线，无法开启无线ADB")
+                log_device_operation(
+                    request, device, 'enable_wireless', False,
+                    error_msg
+                )
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
-            # 检查是否已经是无线连接（通过IP:端口形式判断）
+            # 检查是否已经是无线连接
             if ":" in connect_id:
                 # 获取WiFi IP
                 wifi_ip = get_wifi_ip(connect_id)
-                success_msg = quote(f"设备{connect_id}已是无线连接状态，IP地址：{wifi_ip}")
-                return redirect(f"{reverse('adb_manager:index')}?msg={success_msg}")
+                success_msg = f"设备{connect_id}已是无线连接状态，IP地址：{wifi_ip}"
+                log_device_operation(
+                    request, device, 'enable_wireless', True,
+                    success_msg
+                )
+                return redirect(f"{reverse('adb_manager:index')}?msg={quote(success_msg)}")
 
-            # ========== 核心调整：先获取IP，再查数据库，最后执行tcpip命令 ==========
-            # 1. 获取ADB路径
+            # 获取ADB路径
             adb_path = get_adb_path()
 
-            # 2. 先获取设备WiFi IP（提前获取，失败则直接提示）
+            # 获取设备WiFi IP
             wifi_ip = get_wifi_ip(connect_id)
             if wifi_ip == "获取IP失败":
                 error_msg = quote(f"设备{connect_id}获取WiFi IP失败，无法开启无线ADB，请检查设备网络连接！")
+                log_device_operation(
+                    request, device, 'enable_wireless', False,
+                    error_msg
+                )
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
-            # 3. 【关键】先查数据库：检查当前设备/其他设备是否已有该无线信息
+            # 检查数据库中是否已有该无线信息
             db_check_msg = ""
-            need_save = True  # 是否需要保存数据库的标记
+            need_save = True
             default_port = int(os.getenv("ADB_DEFAULT_WIRELESS_PORT", 5555))
 
-            # 3.1 检查当前设备是否已有IP+端口
+            # 检查当前设备是否已有IP+端口
             if device.device_ip and device.device_port:
                 db_check_msg = f"该设备已配置无线信息（IP：{device.device_ip}，端口：{device.device_port}）"
                 need_save = False
-            # 3.2 检查其他设备是否占用该IP+端口（避免唯一约束冲突）
+            # 检查其他设备是否占用该IP+端口
             elif ADBDevice.objects.filter(device_ip=wifi_ip, device_port=default_port).exclude(id=device.id).exists():
                 db_check_msg = f"IP：{wifi_ip} 端口：{default_port} 已被其他设备占用"
                 need_save = False
 
-            # 4. 执行tcpip命令开启无线ADB（无论是否保存数据库，都执行端口操作）
+            # 执行tcpip命令开启无线ADB
             cmd = [adb_path, "-s", connect_id, "tcpip", str(default_port)]
             result = execute_adb_command(cmd)
 
-            # 5. 验证tcpip命令执行结果
+            # 验证tcpip命令执行结果
             success_keywords = [
                 f"restarting in TCP mode port: {default_port}",
                 "already in TCP mode",
@@ -962,28 +1066,110 @@ class ADBDeviceEnableWirelessView(View):
                 r.set(f"adb:device:{connect_id}:stdout", result.stdout or f"设备{connect_id}开启无线ADB成功")
                 r.set(f"adb:device:{connect_id}:stderr", "")
 
-                # 6. 根据数据库检查结果决定是否保存
+                # 根据数据库检查结果决定是否保存
                 if need_save:
                     # 无冲突，保存到数据库
                     device.device_ip = wifi_ip
                     device.device_port = default_port
                     device.save()
-                    success_msg = quote(
-                        f"设备{connect_id}已成功开启无线ADB！IP地址：{wifi_ip}，可通过 {wifi_ip}:{default_port} 连接"
-                    )
+                    success_msg = f"设备{connect_id}已成功开启无线ADB！IP地址：{wifi_ip}，可通过 {wifi_ip}:{default_port} 连接"
                 else:
                     # 已有信息，仅提示不保存
-                    success_msg = quote(
-                        f"设备{connect_id}已成功开启无线ADB！{db_check_msg}，本次未更新数据库，可通过 {wifi_ip}:{default_port} 连接"
-                    )
+                    success_msg = f"设备{connect_id}已成功开启无线ADB！{db_check_msg}，本次未更新数据库，可通过 {wifi_ip}:{default_port} 连接"
+
+                log_device_operation(
+                    request, device, 'enable_wireless', True,
+                    success_msg + f" 输出: {result.stdout[:100]}"
+                )
             else:
                 # 端口操作失败
                 r.set(f"adb:device:{connect_id}:stderr", result.stderr or result.stdout or "开启无线ADB失败")
-                success_msg = quote(f"设备{connect_id}开启无线ADB失败：{result.stderr or result.stdout}")
+                success_msg = f"设备{connect_id}开启无线ADB失败：{result.stderr or result.stdout}"
+                log_device_operation(
+                    request, device, 'enable_wireless', False,
+                    success_msg
+                )
 
-            return redirect(f"{reverse('adb_manager:index')}?msg={success_msg}")
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(success_msg)}")
 
         except Exception as e:
             logger.error(f"开启无线ADB失败：{str(e)}", exc_info=True)
-            error_msg = quote(f"开启无线ADB失败：{str(e)}")
-            return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
+            error_msg = f"开启无线ADB失败：{str(e)}"
+            # 尝试获取设备对象用于日志记录
+            try:
+                device = ADBDevice.objects.get(id=device_id) if device_id else None
+            except:
+                device = None
+            log_device_operation(
+                request, device, 'enable_wireless', False,
+                error_msg
+            )
+            return redirect(f"{reverse('adb_manager:index')}?msg={quote(error_msg)}")
+
+class ADBOperationLogView(View):
+    """设备操作日志列表视图（支持筛选、分页）"""
+    def get(self, request):
+        try:
+            # 获取筛选/分页参数
+            device_id = request.GET.get("device_id")
+            operation_type = request.GET.get("operation_type")
+            start_date = request.GET.get("start_date")
+            end_date = request.GET.get("end_date")
+            page = int(request.GET.get("page", 1))
+            page_size = int(request.GET.get("page_size", 20))
+
+            # 构建查询条件
+            queryset = ADBDeviceOperationLog.objects.all().order_by("-created_at")
+
+            # 设备筛选
+            if device_id and device_id.isdigit():
+                queryset = queryset.filter(device_id=device_id)
+            # 操作类型筛选
+            if operation_type:
+                queryset = queryset.filter(operation_type=operation_type)
+            # 时间范围筛选
+            if start_date:
+                queryset = queryset.filter(created_at__gte=start_date)
+            if end_date:
+                queryset = queryset.filter(created_at__lte=end_date)
+
+            # 分页计算
+            total = queryset.count()
+            total_pages = (total + page_size - 1) // page_size
+            logs = queryset[(page-1)*page_size : page*page_size]
+
+            # 格式化日志数据
+            log_list = []
+            for log in logs:
+                log_list.append({
+                    "id": log.id,
+                    "device_name": log.device.device_name if log.device else "无特定设备",
+                    "device_id": log.device.id if log.device else "",
+                    "operation_type": log.operation_type,
+                    "operation_type_display": log.get_operation_type_display(),
+                    "username": log.user.username if log.user else "未知用户",
+                    "operation_result": log.operation_result,
+                    "operation_result_display": "成功" if log.operation_result else "失败",
+                    "operation_details": log.operation_details,
+                    "created_at": log.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                })
+
+            return JsonResponse({
+                "code": 200,
+                "msg": "获取日志成功",
+                "data": {
+                    "logs": log_list,
+                    "total": total,
+                    "page": page,
+                    "page_size": page_size,
+                    "total_pages": total_pages,
+                }
+            })
+
+        except Exception as e:
+            logger.error(f"获取操作日志失败：{str(e)}", exc_info=True)
+            return JsonResponse({
+                "code": 500,
+                "msg": f"获取日志失败：{str(e)}",
+                "data": {}
+            })

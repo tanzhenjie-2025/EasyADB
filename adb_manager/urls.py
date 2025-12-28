@@ -19,5 +19,6 @@ urlpatterns = [
     path("csrf-token/", views.CSRFTokenView.as_view(), name="csrf_token"),
     path("list-devices/", views.ADBDevicesListView.as_view(), name="list_devices"),
     path("detail-device/", views.ADBDeviceDetailView.as_view(), name="detail_device"),
-path("enable-wireless/", views.ADBDeviceEnableWirelessView.as_view(), name="enable_wireless"),
+    path("enable-wireless/", views.ADBDeviceEnableWirelessView.as_view(), name="enable_wireless"),
+    path('logs/', views.ADBOperationLogView.as_view(), name='operation_logs'),
 ]

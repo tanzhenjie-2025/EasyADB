@@ -2,11 +2,10 @@
 from common.models import BaseModel
 from user_auth.models import CustomUser
 from django.db import models
-# 新增Redis导入（和adb_manager/views.py保持一致）
 from django.conf import settings
 import redis
 
-# 初始化Redis（和views.py保持一致）
+# 初始化Redis（保持不变）
 try:
     r = redis.Redis(
         host=settings.REDIS_HOST,
@@ -21,10 +20,14 @@ except Exception as e:
     class EmptyRedis:
         def get(self, key, *args, **kwargs):
             return None
+
+
     r = EmptyRedis()
 
+
 class ADBDevice(BaseModel):
-    """ADB设备配置表（支持IP+端口/序列号两种连接方式）"""
+    """ADB设备配置表（保持不变）"""
+    # 原有代码保持不变
     device_name = models.CharField(
         "设备名称",
         max_length=50,
@@ -72,27 +75,71 @@ class ADBDevice(BaseModel):
 
     @property
     def connect_identifier(self):
-        """获取连接标识（优先序列号，其次IP:端口）"""
         if self.device_serial and self.device_serial.strip():
             return self.device_serial.strip()
         if self.device_ip and self.device_port:
             return f"{self.device_ip}:{self.device_port}"
-        return ""  # 修复：返回空字符串而非None
+        return ""
 
     @property
     def adb_connect_str(self):
-        """兼容旧逻辑的连接字符串（IP:端口/序列号）"""
-        # 优先用序列号，无则用IP+端口，避免返回None
         if self.device_serial and self.device_serial.strip():
             return self.device_serial.strip()
         if self.device_ip and self.device_port:
             return f"{self.device_ip}:{self.device_port}"
-        return ""  # 修复：返回空字符串而非None
+        return ""
 
     @property
     def device_status(self):
-        """统一获取设备连接状态（从Redis）"""
         connect_id = self.connect_identifier
         if not connect_id:
-            return "invalid"  # 配置无效
-        return r.get(f"adb:device:{connect_id}") or "offline"  # 兼容Redis未初始化的情况
+            return "invalid"
+        return r.get(f"adb:device:{connect_id}") or "offline"
+
+
+# 新增操作日志模型
+class ADBDeviceOperationLog(BaseModel):
+    """ADB设备操作日志记录"""
+    OPERATION_TYPES = (
+        ('connect', '连接设备'),
+        ('disconnect', '断开设备'),
+        ('add', '添加设备'),
+        ('edit', '编辑设备'),
+        ('delete', '删除设备'),
+        ('enable_wireless', '开启无线ADB'),
+        ('connect_all', '一键连接所有'),
+        ('disconnect_all', '一键断开所有'),
+        ('refresh_all', '刷新所有状态'),
+    )
+
+    device = models.ForeignKey(
+        ADBDevice,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="操作设备"
+    )
+    operation_type = models.CharField(
+        "操作类型",
+        max_length=20,
+        choices=OPERATION_TYPES
+    )
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="操作人"
+    )
+    operation_result = models.BooleanField("操作结果", default=True)
+    operation_details = models.TextField("操作详情", blank=True, default="")
+
+    class Meta:
+        verbose_name = "设备操作日志"
+        verbose_name_plural = "设备操作日志管理"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        username = self.user.username if self.user else "未知用户"
+        device_name = self.device.device_name if self.device else "无特定设备"
+        return f"{username} {self.get_operation_type_display()} {device_name} {'成功' if self.operation_result else '失败'}"

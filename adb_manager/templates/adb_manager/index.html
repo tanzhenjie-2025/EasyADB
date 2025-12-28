@@ -124,15 +124,53 @@
     }
 
     /* 在原有样式基础上添加 */
-.btn-purple {
-    background-color: #9b59b6;
-    color: white;
-    border: none;
-}
+    .btn-purple {
+        background-color: #9b59b6;
+        color: white;
+        border: none;
+    }
 
-.btn-purple:hover {
-    background-color: #8e44ad;
-}
+    .btn-purple:hover {
+        background-color: #8e44ad;
+    }
+
+    /* 新增：日志模态框补充样式 */
+    .form-control {
+        padding: 6px 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    .btn-default {
+        background-color: #fff;
+        color: #333;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .btn-default:hover {
+        background-color: #e6e6e6;
+    }
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #212529;
+        border-collapse: collapse;
+    }
+    .table th, .table td {
+        padding: 0.75rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+    }
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+    }
+    .logs-filter {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
 </style>
 {% endblock %}
 
@@ -155,6 +193,8 @@
         </form>
         <!-- 原有：查看已连接设备按钮 -->
         <button id="listDevicesBtn" class="btn btn-info">查看已连接设备</button>
+        <!-- 新增：查看操作日志按钮 -->
+        <button id="viewLogsBtn" class="btn btn-secondary">查看操作日志</button>
     </div>
 </div>
 {% endblock %}
@@ -262,6 +302,90 @@
                 <div id="detailLoading">加载中...请稍候（部分命令执行可能需要几秒）</div>
                 <!-- 结果展示区域 -->
                 <div id="detailResultContainer" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增：操作日志模态框 -->
+    <div id="logsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">📜 设备操作日志</h3>
+                <button class="close-modal" id="closeLogsModal">&times;</button>
+            </div>
+            <div id="logsModalBody">
+                <!-- 筛选区域 -->
+                <div class="logs-filter">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                        <div>
+                            <label style="margin-right: 5px;">设备：</label>
+                            <select id="logDeviceFilter" class="form-control" style="padding: 4px; width: 180px;">
+                                <option value="">所有设备</option>
+                                {% for device in devices %}
+                                <option value="{{ device.id }}">{{ device.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label style="margin-right: 5px;">操作类型：</label>
+                            <select id="logTypeFilter" class="form-control" style="padding: 4px; width: 150px;">
+                                <option value="">所有类型</option>
+                                <option value="connect">连接设备</option>
+                                <option value="disconnect">断开设备</option>
+                                <option value="add">添加设备</option>
+                                <option value="edit">编辑设备</option>
+                                <option value="delete">删除设备</option>
+                                <option value="enable_wireless">开启无线ADB</option>
+                                <option value="connect_all">一键连接所有</option>
+                                <option value="disconnect_all">一键断开所有</option>
+                                <option value="refresh_all">刷新所有状态</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="margin-right: 5px;">开始日期：</label>
+                            <input type="date" id="logStartDate" class="form-control" style="padding: 4px; width: 120px;">
+                        </div>
+                        <div>
+                            <label style="margin-right: 5px;">结束日期：</label>
+                            <input type="date" id="logEndDate" class="form-control" style="padding: 4px; width: 120px;">
+                        </div>
+                        <button id="logFilterBtn" class="btn btn-primary" style="padding: 4px 8px;">筛选</button>
+                        <button id="logResetBtn" class="btn btn-default" style="padding: 4px 8px; border: 1px solid #ccc;">重置</button>
+                    </div>
+                </div>
+
+                <!-- 加载中提示 -->
+                <div id="logsLoading">加载中...请稍候</div>
+
+                <!-- 日志列表区域 -->
+                <div id="logsResultContainer" style="display: none;">
+                    <!-- 日志表格 -->
+                    <table class="table" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="background-color: #f8f9fa;">
+                                <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left; width: 5%;">#</th>
+                                <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left; width: 15%;">操作时间</th>
+                                <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left; width: 10%;">操作人</th>
+                                <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left; width: 15%;">操作设备</th>
+                                <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left; width: 15%;">操作类型</th>
+                                <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left; width: 8%;">操作结果</th>
+                                <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left; flex: 1;">操作详情</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTableBody">
+                            <!-- 日志数据动态渲染 -->
+                        </tbody>
+                    </table>
+
+                    <!-- 分页控件 -->
+                    <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>共 <span id="logsTotalCount">0</span> 条记录，当前第 <span id="logsCurrentPage">1</span> 页/共 <span id="logsTotalPages">0</span> 页</div>
+                        <div>
+                            <button id="logsPrevPage" class="btn btn-default" style="padding: 4px 8px; border: 1px solid #ccc; margin-right: 5px;" disabled>上一页</button>
+                            <button id="logsNextPage" class="btn btn-default" style="padding: 4px 8px; border: 1px solid #ccc;" disabled>下一页</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -465,6 +589,177 @@ closeDetailModalBtn.addEventListener("click", function() {
 window.addEventListener("click", function(event) {
     if (event.target === detailModal) {
         detailModal.style.display = "none";
+    }
+});
+
+// 新增：操作日志模态框逻辑
+const logsModal = document.getElementById("logsModal");
+const closeLogsModalBtn = document.getElementById("closeLogsModal");
+const logsLoading = document.getElementById("logsLoading");
+const logsResultContainer = document.getElementById("logsResultContainer");
+const logsTableBody = document.getElementById("logsTableBody");
+const logsTotalCount = document.getElementById("logsTotalCount");
+const logsCurrentPage = document.getElementById("logsCurrentPage");
+const logsTotalPages = document.getElementById("logsTotalPages");
+const logsPrevPage = document.getElementById("logsPrevPage");
+const logsNextPage = document.getElementById("logsNextPage");
+const logDeviceFilter = document.getElementById("logDeviceFilter");
+const logTypeFilter = document.getElementById("logTypeFilter");
+const logStartDate = document.getElementById("logStartDate");
+const logEndDate = document.getElementById("logEndDate");
+const logFilterBtn = document.getElementById("logFilterBtn");
+const logResetBtn = document.getElementById("logResetBtn");
+
+// 当前分页和筛选参数
+let currentLogPage = 1;
+let currentLogFilters = {
+    device_id: "",
+    operation_type: "",
+    start_date: "",
+    end_date: ""
+};
+
+// 加载日志数据的核心函数
+function loadLogs(page = 1) {
+    logsLoading.style.display = "block";
+    logsResultContainer.style.display = "none";
+
+    // 构建查询参数
+    const params = new URLSearchParams();
+    params.append("page", page);
+    params.append("page_size", 20);
+    if (currentLogFilters.device_id) params.append("device_id", currentLogFilters.device_id);
+    if (currentLogFilters.operation_type) params.append("operation_type", currentLogFilters.operation_type);
+    if (currentLogFilters.start_date) params.append("start_date", currentLogFilters.start_date);
+    if (currentLogFilters.end_date) params.append("end_date", currentLogFilters.end_date);
+
+    fetch(`{% url 'adb_manager:operation_logs' %}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        logsLoading.style.display = "none";
+        logsResultContainer.style.display = "block";
+
+        if (data.code === 200) {
+            const { logs, total, page, total_pages } = data.data;
+            currentLogPage = page;
+
+            // 更新分页信息
+            logsTotalCount.textContent = total;
+            logsCurrentPage.textContent = page;
+            logsTotalPages.textContent = total_pages;
+
+            // 更新分页按钮状态
+            logsPrevPage.disabled = page <= 1;
+            logsNextPage.disabled = page >= total_pages;
+
+            // 渲染日志列表
+            logsTableBody.innerHTML = "";
+            if (logs.length === 0) {
+                logsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="padding: 20px; text-align: center; border: 1px solid #dee2e6;">
+                            暂无符合条件的日志记录
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            logs.forEach((log, index) => {
+                const row = document.createElement("tr");
+                row.style.borderBottom = "1px solid #eee";
+                row.innerHTML = `
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">${(page-1)*20 + index + 1}</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">${log.created_at}</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">${log.username}</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">${log.device_name}</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">${log.operation_type_display}</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">
+                        <span style="color: ${log.operation_result ? '#67c23a' : '#f56c6c'};">
+                            ${log.operation_result_display}
+                        </span>
+                    </td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6; word-break: break-all;">
+                        ${log.operation_details || "无"}
+                    </td>
+                `;
+                logsTableBody.appendChild(row);
+            });
+        } else {
+            logsResultContainer.innerHTML = `<div class="alert alert-danger">${data.msg}</div>`;
+        }
+    })
+    .catch(error => {
+        logsLoading.style.display = "none";
+        logsResultContainer.style.display = "block";
+        logsResultContainer.innerHTML = `<div class="alert alert-danger">请求失败：${error.message}</div>`;
+    });
+}
+
+// 绑定查看日志按钮事件
+document.getElementById("viewLogsBtn").addEventListener("click", function() {
+    logsModal.style.display = "flex";
+    currentLogPage = 1; // 重置分页
+    loadLogs(1);
+});
+
+// 关闭日志模态框
+closeLogsModalBtn.addEventListener("click", function() {
+    logsModal.style.display = "none";
+});
+
+// 点击模态框外部关闭
+window.addEventListener("click", function(event) {
+    if (event.target === logsModal) {
+        logsModal.style.display = "none";
+    }
+});
+
+// 筛选按钮事件
+logFilterBtn.addEventListener("click", function() {
+    currentLogFilters = {
+        device_id: logDeviceFilter.value,
+        operation_type: logTypeFilter.value,
+        start_date: logStartDate.value,
+        end_date: logEndDate.value
+    };
+    currentLogPage = 1;
+    loadLogs(1);
+});
+
+// 重置筛选按钮事件
+logResetBtn.addEventListener("click", function() {
+    logDeviceFilter.value = "";
+    logTypeFilter.value = "";
+    logStartDate.value = "";
+    logEndDate.value = "";
+    currentLogFilters = {
+        device_id: "",
+        operation_type: "",
+        start_date: "",
+        end_date: ""
+    };
+    currentLogPage = 1;
+    loadLogs(1);
+});
+
+// 分页按钮事件
+logsPrevPage.addEventListener("click", function() {
+    if (currentLogPage > 1) {
+        loadLogs(currentLogPage - 1);
+    }
+});
+
+logsNextPage.addEventListener("click", function() {
+    const totalPages = parseInt(logsTotalPages.textContent);
+    if (currentLogPage < totalPages) {
+        loadLogs(currentLogPage + 1);
     }
 });
 </script>
