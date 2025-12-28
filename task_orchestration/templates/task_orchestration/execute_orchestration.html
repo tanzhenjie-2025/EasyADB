@@ -49,6 +49,7 @@
         .btn-sm {
             padding: 4px 8px;
             font-size: 12px;
+            min-width: 60px; /* 确保小按钮有最小宽度 */
         }
         .card {
             background-color: #fff;
@@ -156,6 +157,31 @@
             border-radius: 4px;
             font-size: 12px;
         }
+
+        /* 新增搜索样式 */
+        .search-box {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            font-size: 14px;
+            min-height: 36px;
+        }
+
+        .search-results {
+            color: #606266;
+            font-size: 12px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -226,9 +252,29 @@
                 <div class="form-col">
                     <div class="form-group">
                         <label>选择编排任务（单选）</label>
-                        <div class="orch-list">
+
+                        <!-- 新增：编排任务搜索框 -->
+                        <div class="search-box">
+                            <input type="text"
+                                   id="orchSearch"
+                                   class="search-input"
+                                   placeholder="搜索编排任务名称..."
+                                   value="{{ search_query|default:'' }}">
+                            <button type="button" id="clearSearch" class="btn btn-sm btn-default" {% if not search_query %}disabled style="opacity:0.6; cursor:not-allowed;"{% endif %}>
+                                清除
+                            </button>
+                            <button type="button" id="doSearch" class="btn btn-sm btn-primary">
+                                搜索
+                            </button>
+                        </div>
+
+                        <div class="search-results" id="searchResults">
+                            共 {{ orchestrations|length }} 个编排任务
+                        </div>
+
+                        <div class="orch-list" id="orchList">
                             {% for orch in orchestrations %}
-                                <div class="orch-item" data-orch-id="{{ orch.id }}">
+                                <div class="orch-item" data-orch-id="{{ orch.id }}" data-orch-name="{{ orch.name|lower }}">
                                     <input type="radio" name="orch_id" id="orch_{{ orch.id }}" value="{{ orch.id }}" {% if forloop.first %}checked{% endif %} class="orch-radio">
                                     <label for="orch_{{ orch.id }}">
                                         {{ orch.name }} ({{ orch.steps.count }} 个步骤)
@@ -298,6 +344,17 @@
 
     <!-- 选择逻辑JS -->
     <script>
+        // 防抖函数
+        function debounce(func, delay = 100) {
+            let timer = null;
+            return function(...args) {
+                if (timer) clearTimeout(timer);
+                timer = setTimeout(() => {
+                    func.apply(this, args);
+                }, delay);
+            };
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const selectAllCheckbox = document.getElementById('selectAll');
             const selectOnlineBtn = document.getElementById('selectOnlineOnly');
@@ -307,12 +364,18 @@
             const orchItems = document.querySelectorAll('.orch-item');
             const selectedCountEl = document.getElementById('selectedCount');
 
+            // 搜索功能元素
+            const orchSearch = document.getElementById('orchSearch');
+            const clearSearch = document.getElementById('clearSearch');
+            const doSearch = document.getElementById('doSearch');
+            const searchResults = document.getElementById('searchResults');
+
             // 初始化
             initSelectedStates();
             updateSelectedCount();
 
             // 全选逻辑
-            selectAllCheckbox.addEventListener('change', function() {
+            selectAllCheckbox.addEventListener('change', debounce(function() {
                 let isChecked = this.checked;
                 deviceCheckboxes.forEach(checkbox => {
                     if (!checkbox.disabled) {
@@ -322,10 +385,10 @@
                     }
                 });
                 updateSelectedCount();
-            });
+            }, 50));
 
             // 只选在线设备
-            selectOnlineBtn.addEventListener('click', function() {
+            selectOnlineBtn.addEventListener('click', debounce(function() {
                 selectAllCheckbox.checked = false;
                 deviceCheckboxes.forEach(checkbox => {
                     const shouldCheck = checkbox.dataset.online === 'online';
@@ -336,11 +399,11 @@
                     }
                 });
                 updateSelectedCount();
-            });
+            }, 50));
 
             // 设备项点击事件
             deviceItems.forEach(item => {
-                item.addEventListener('click', function(e) {
+                item.addEventListener('click', debounce(function(e) {
                     if (this.classList.contains('disabled')) return;
                     const checkbox = this.querySelector('.device-checkbox');
                     if (e.target !== checkbox) {
@@ -349,12 +412,12 @@
                         updateSelectedCount();
                         syncSelectAllState();
                     }
-                });
+                }, 30));
             });
 
             // 编排任务项点击事件
             orchItems.forEach(item => {
-                item.addEventListener('click', function(e) {
+                item.addEventListener('click', debounce(function(e) {
                     const radio = this.querySelector('.orch-radio');
                     if (e.target !== radio) {
                         orchRadios.forEach(r => r.checked = false);
@@ -362,16 +425,16 @@
                         radio.checked = true;
                         this.classList.add('selected');
                     }
-                });
+                }, 30));
             });
 
             // 单选框变化事件
             orchRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
+                radio.addEventListener('change', debounce(function() {
                     orchItems.forEach(item => item.classList.remove('selected'));
                     const item = document.querySelector(`.orch-item[data-orch-id="${this.value}"]`);
                     item.classList.add('selected');
-                });
+                }, 30));
             });
 
             // 更新选中数量
@@ -420,6 +483,52 @@
                     alert('请至少选择一个在线设备！');
                 }
             });
+
+            // ========== 编排任务搜索功能 ==========
+            function filterOrchestrations() {
+                const searchTerm = orchSearch.value.toLowerCase().trim();
+                let visibleCount = 0;
+
+                orchItems.forEach(item => {
+                    const orchName = item.getAttribute('data-orch-name');
+                    if (searchTerm === '' || orchName.includes(searchTerm)) {
+                        item.style.display = '';
+                        visibleCount++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                searchResults.textContent = `找到 ${visibleCount} 个编排任务（共 ${orchItems.length} 个）`;
+
+                // 动态更新清除按钮状态
+                if (searchTerm) {
+                    clearSearch.disabled = false;
+                    clearSearch.style.opacity = '1';
+                    clearSearch.style.cursor = 'pointer';
+                } else {
+                    clearSearch.disabled = true;
+                    clearSearch.style.opacity = '0.6';
+                    clearSearch.style.cursor = 'not-allowed';
+                }
+            }
+
+            // 实时搜索（输入时）
+            orchSearch.addEventListener('input', debounce(filterOrchestrations, 150));
+
+            // 手动点击搜索按钮触发
+            doSearch.addEventListener('click', filterOrchestrations);
+
+            // 清除搜索
+            clearSearch.addEventListener('click', function() {
+                orchSearch.value = '';
+                filterOrchestrations();
+            });
+
+            // 初始过滤（如果有搜索参数）
+            if (orchSearch.value) {
+                filterOrchestrations();
+            }
         });
     </script>
 </body>
