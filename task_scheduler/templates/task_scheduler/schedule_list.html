@@ -4,9 +4,14 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>{{ page_title }}</h1>
-        <a href="{% url 'task_scheduler:create' %}" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> 创建定时任务
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{% url 'task_scheduler:management_log' %}" class="btn btn-info">
+                <i class="bi bi-journal-text"></i> 管理日志
+            </a>
+            <a href="{% url 'task_scheduler:create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> 创建定时任务
+            </a>
+        </div>
     </div>
 
     {% if messages %}
@@ -26,7 +31,7 @@
                         <th style="width: 20%;">Cron表达式</th>
                         <th style="width: 12%;">下次执行</th>
                         <th style="width: 8%;">状态</th>
-                        <th style="width: 12%;">操作</th> <!-- 给操作列固定宽度，避免挤压 -->
+                        <th style="width: 12%;">操作</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,13 +62,12 @@
                             {% endif %}
                         </td>
                         <td>
-                            <!-- 重构按钮组：去掉嵌套form，改用button+form分开，优化布局 -->
-                            <div class="d-flex gap-1"> <!-- 用gap-1控制按钮间距，替代btn-group避免嵌套问题 -->
+                            <div class="d-flex gap-1">
                                 <!-- 查看按钮 -->
                                 <a href="{% url 'task_scheduler:detail' schedule.id %}"
                                    class="btn btn-info btn-sm d-flex align-items-center"
                                    title="查看详情">
-                                    <i class="bi bi-eye me-1"></i> <!-- me-1：图标和文字间距 -->
+                                    <i class="bi bi-eye me-1"></i>
                                     <span>查看</span>
                                 </a>
                                 <!-- 编辑按钮 -->
@@ -73,7 +77,7 @@
                                     <i class="bi bi-pencil me-1"></i>
                                     <span>编辑</span>
                                 </a>
-                                <!-- 启用/禁用按钮（单独form，避免嵌套） -->
+                                <!-- 启用/禁用按钮 -->
                                 <form method="post" action="{% url 'task_scheduler:toggle' schedule.id %}" class="m-0">
                                     {% csrf_token %}
                                     <button type="submit"
@@ -83,7 +87,7 @@
                                         <span>{% if schedule.is_active %}禁用{% else %}启用{% endif %}</span>
                                     </button>
                                 </form>
-                                <!-- 立即执行按钮（单独form） -->
+                                <!-- 立即执行按钮 -->
                                 <form method="post" action="{% url 'task_scheduler:execute' schedule.id %}" class="m-0">
                                     {% csrf_token %}
                                     <button type="submit"
@@ -91,6 +95,17 @@
                                             title="立即执行">
                                         <i class="bi bi-play-circle me-1"></i>
                                         <span>执行</span>
+                                    </button>
+                                </form>
+                                <!-- 删除按钮（新增） -->
+                                <form method="post" action="{% url 'task_scheduler:delete' schedule.id %}" class="m-0">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="btn btn-dark btn-sm d-flex align-items-center"
+                                            title="删除任务"
+                                            onclick="return confirm('确认删除定时任务【{{ schedule.name }}】吗？此操作不可恢复！')">
+                                        <i class="bi bi-trash me-1"></i>
+                                        <span>删除</span>
                                     </button>
                                 </form>
                             </div>
@@ -109,7 +124,6 @@
     </div>
 </div>
 
-<!-- 可选：添加确认提示（禁用/执行时防误操作） -->
 <script>
 // 给禁用/执行按钮添加确认提示
 document.addEventListener('DOMContentLoaded', function() {

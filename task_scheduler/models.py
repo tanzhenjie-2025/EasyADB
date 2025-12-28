@@ -1,7 +1,6 @@
 # task_scheduler/models.py
 from django.db import models
-# 删掉 from django.utils import timezone
-import datetime  # 新增
+import datetime
 import croniter
 from task_orchestration.models import OrchestrationTask
 from adb_manager.models import ADBDevice
@@ -37,7 +36,7 @@ class ScheduleTask(models.Model):
     is_active = models.BooleanField("是否启用", default=True)
     last_run_time = models.DateTimeField("最后执行时间", blank=True, null=True)
     next_run_time = models.DateTimeField("下次执行时间", blank=True, null=True)
-    create_time = models.DateTimeField("创建时间", default=datetime.datetime.now)  # 改这里
+    create_time = models.DateTimeField("创建时间", default=datetime.datetime.now)
     update_time = models.DateTimeField("更新时间", auto_now=True)
 
     class Meta:
@@ -56,22 +55,21 @@ class ScheduleTask(models.Model):
 
     def calculate_next_run_time(self):
         """基于Cron表达式计算下次执行时间（生成本地无时区时间）"""
-        now = datetime.datetime.now()  # 本地时间（上海），无时区标记
+        now = datetime.datetime.now()
         cron = croniter.croniter(self.cron_expression, now)
         next_run = cron.get_next(datetime.datetime)
-        return next_run  # 直接返回naive datetime，去掉timezone.make_aware
+        return next_run
 
     def is_due(self):
         """检查当前是否到了执行时间（误差5分钟）"""
         now = datetime.datetime.now()
         cron = croniter.croniter(self.cron_expression, now - datetime.timedelta(minutes=5))
         prev_run = cron.get_prev(datetime.datetime)
-        # 检查是否在最近5分钟内应该执行
         return prev_run >= now - datetime.timedelta(minutes=5) and self.is_active
 
 
-# ScheduleExecutionLog 模型无需改字段，只需改视图/tasks中赋值的地方
 class ScheduleExecutionLog(models.Model):
+    """定时任务执行日志"""
     EXEC_STATUS = (
         ("success", "执行成功"),
         ("failed", "执行失败"),
@@ -99,7 +97,7 @@ class ScheduleExecutionLog(models.Model):
         blank=True,
         verbose_name="执行设备"
     )
-    start_time = models.DateTimeField("开始时间", default=datetime.datetime.now)  # 改这里
+    start_time = models.DateTimeField("开始时间", default=datetime.datetime.now)
     end_time = models.DateTimeField("结束时间", blank=True, null=True)
     error_msg = models.TextField("错误信息", blank=True, null=True)
 
@@ -110,3 +108,33 @@ class ScheduleExecutionLog(models.Model):
 
     def __str__(self):
         return f"{self.schedule.name} - {self.exec_status} - {self.start_time.strftime('%Y-%m-%d %H:%M')}"
+
+
+class ScheduleManagementLog(models.Model):
+    """定时任务管理日志（记录新增/编辑/删除/启用/禁用操作）"""
+    OPERATION_TYPE = (
+        ("create", "新增"),
+        ("edit", "编辑"),
+        ("delete", "删除"),
+        ("toggle", "启用/禁用"),
+    )
+
+    schedule = models.ForeignKey(
+        ScheduleTask,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name="关联定时任务"
+    )
+    operation = models.CharField("操作类型", max_length=20, choices=OPERATION_TYPE)
+    operator = models.CharField("操作人", max_length=100, help_text="执行操作的用户名")
+    operation_time = models.DateTimeField("操作时间", default=datetime.datetime.now)
+    details = models.TextField("操作详情", blank=True, null=True, help_text="记录操作前后的变化")
+
+    class Meta:
+        verbose_name = "定时任务管理日志"
+        verbose_name_plural = "定时任务管理日志"
+        ordering = ["-operation_time"]
+
+    def __str__(self):
+        task_name = self.schedule.name if self.schedule else "未知任务"
+        return f"{self.get_operation_display()} {task_name} - {self.operation_time.strftime('%Y-%m-%d %H:%M')}"
