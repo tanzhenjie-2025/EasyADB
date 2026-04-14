@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.urls import reverse
@@ -24,6 +26,25 @@ from .models import ScriptTask, TaskExecutionLog, ScriptTaskManagementLog
 from .forms import ScriptTaskForm
 from adb_manager.models import ADBDevice
 
+from django.conf import settings
+
+def scan_builtin_scripts():
+    """扫描内置脚本目录，返回脚本列表 [(脚本名称, 脚本绝对路径), ...]"""
+    scripts = []
+    builtin_dir = Path(settings.BUILTIN_SCRIPTS_DIR)
+
+    if not builtin_dir.exists():
+        return scripts
+
+    # 遍历目录下所有 .air 文件夹（Airtest 脚本是文件夹结构）
+    for air_dir in builtin_dir.iterdir():
+        if air_dir.is_dir() and air_dir.suffix == '.air':
+            # 查找 .air 目录下与文件夹同名的 .py 主文件
+            py_file = air_dir / f"{air_dir.stem}.py"
+            if py_file.exists():
+                scripts.append((air_dir.stem, str(py_file.resolve())))
+
+    return scripts
 
 def get_env_config(key, default=None, cast_type=str):
     value = os.getenv(key, default)
@@ -149,10 +170,13 @@ class TaskAddView(View):
     def get(self, request):
         # 初始值设为当前Python解释器路径
         form = ScriptTaskForm(initial={'python_path': sys.executable})
+        # 获取内置脚本列表
+        builtin_scripts = scan_builtin_scripts()
         context = {
             "page_title": "新增脚本任务",
             "form": form,
-            "default_python_path": sys.executable  # 传给前端用于提示
+            "default_python_path": sys.executable,
+            "builtin_scripts": builtin_scripts  # 传给前端
         }
         return render(request, "script_center/task_form.html", context)
 
@@ -172,6 +196,7 @@ class TaskAddView(View):
             "page_title": "新增脚本任务",
             "form": form,
             "default_python_path": sys.executable,
+            "builtin_scripts": scan_builtin_scripts(),  # 报错时重新传
             "error_msg": "表单填写有误，请检查！"
         }
         return render(request, "script_center/task_form.html", context)
@@ -181,16 +206,18 @@ class TaskEditView(View):
     """编辑任务：若原Python路径为空则填充默认值"""
     def get(self, request, task_id):
         task = get_object_or_404(ScriptTask, id=task_id)
-        # 如果任务未填写Python路径，初始值设为默认路径
         initial = {}
         if not task.python_path:
             initial['python_path'] = sys.executable
         form = ScriptTaskForm(instance=task, initial=initial)
+        # 获取内置脚本列表
+        builtin_scripts = scan_builtin_scripts()
         context = {
             "page_title": f"编辑任务 - {task.task_name}",
             "form": form,
             "task": task,
-            "default_python_path": sys.executable
+            "default_python_path": sys.executable,
+            "builtin_scripts": builtin_scripts  # 传给前端
         }
         return render(request, "script_center/task_form.html", context)
 
@@ -227,6 +254,7 @@ class TaskEditView(View):
             "form": form,
             "task": task,
             "default_python_path": sys.executable,
+            "builtin_scripts": scan_builtin_scripts(),  # 报错时重新传
             "error_msg": "表单填写有误，请检查！"
         }
         return render(request, "script_center/task_form.html", context)

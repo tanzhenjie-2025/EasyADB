@@ -165,3 +165,6 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+# 内置脚本目录配置（指向 builtin_scripts/examples）
+BUILTIN_SCRIPTS_DIR = os.path.join(BASE_DIR, 'builtin_scripts', 'examples')
