@@ -1,6 +1,5 @@
-# script_center/models.py
 from django.db import models
-from adb_manager.models import ADBDevice  # 关联已有的设备模型
+from adb_manager.models import ADBDevice
 from django.utils import timezone
 
 
@@ -13,9 +12,17 @@ class ScriptTask(models.Model):
     )
     task_name = models.CharField("任务名称", max_length=100, unique=True, help_text="如：自动化测试任务1")
     task_desc = models.TextField("任务描述", blank=True, null=True, help_text="任务详细说明")
-    python_path = models.CharField("Python解释器路径", max_length=500,
-                                   default=r"C:\Users\TanZhenJie\AppData\Local\Microsoft\WindowsApps\python3.11.exe",
-                                   help_text="Python.exe的完整路径")
+
+    # ====================== 我修改了这里 ======================
+    python_path = models.CharField(
+        "Python解释器路径",
+        max_length=500,
+        blank=True,  # 允许表单为空
+        null=True,  # 允许数据库为空
+        help_text="不填写则自动使用Django当前运行的Python解释器"
+    )
+    # =========================================================
+
     script_path = models.CharField("脚本文件路径", max_length=500,
                                    help_text="如：C:\\test\\test4.py（指向.py文件）")
     airtest_mode = models.BooleanField("是否使用Airtest模式", default=False,
@@ -35,18 +42,18 @@ class ScriptTask(models.Model):
         return f"{self.task_name} ({self.status})"
 
     def is_script_exists(self):
-        """校验脚本文件是否存在"""
         import os
         return os.path.exists(self.script_path)
 
     def is_python_exists(self):
-        """校验Python解释器是否存在"""
         import os
+        # 空路径不校验
+        if not self.python_path:
+            return True
         return os.path.exists(self.python_path)
 
 
 class TaskExecutionLog(models.Model):
-    """任务执行日志模型（修复stdout/stderr默认值为空字符串，避免NoneType拼接）"""
     EXEC_STATUS = (
         ("running", "执行中"),
         ("success", "执行成功"),
@@ -57,9 +64,9 @@ class TaskExecutionLog(models.Model):
     task = models.ForeignKey(ScriptTask, on_delete=models.CASCADE, verbose_name="关联任务")
     device = models.ForeignKey(ADBDevice, on_delete=models.CASCADE, verbose_name="执行设备")
     exec_status = models.CharField("执行状态", max_length=20, choices=EXEC_STATUS, default="running")
-    exec_command = models.TextField("执行命令", blank=True, default='')  # 修复默认值
-    stdout = models.TextField("标准输出", blank=True, default='')  # 核心修复：默认空字符串，去掉null=True
-    stderr = models.TextField("错误输出", blank=True, default='')  # 核心修复：默认空字符串，去掉null=True
+    exec_command = models.TextField("执行命令", blank=True, default='')
+    stdout = models.TextField("标准输出", blank=True, default='')
+    stderr = models.TextField("错误输出", blank=True, default='')
     start_time = models.DateTimeField("开始时间", default=timezone.now)
     end_time = models.DateTimeField("结束时间", blank=True, null=True)
     exec_duration = models.FloatField("执行耗时(秒)", blank=True, null=True)
@@ -74,7 +81,6 @@ class TaskExecutionLog(models.Model):
 
 
 class ScriptTaskManagementLog(models.Model):
-    """脚本任务管理日志（记录任务的新增、编辑、删除操作）"""
     OPERATION_TYPE = (
         ("create", "新增"),
         ("edit", "编辑"),
@@ -88,9 +94,9 @@ class ScriptTaskManagementLog(models.Model):
         verbose_name="关联任务"
     )
     operation = models.CharField("操作类型", max_length=20, choices=OPERATION_TYPE)
-    operator = models.CharField("操作人", max_length=100, help_text="执行操作的用户名")
+    operator = models.CharField("操作人", max_length=100)
     operation_time = models.DateTimeField("操作时间", default=timezone.now)
-    details = models.TextField("操作详情", blank=True, null=True, help_text="记录操作前后的变化")
+    details = models.TextField("操作详情", blank=True, null=True)
 
     class Meta:
         verbose_name = "脚本任务管理日志"
@@ -99,4 +105,4 @@ class ScriptTaskManagementLog(models.Model):
 
     def __str__(self):
         task_name = self.task.task_name if self.task else "未知任务"
-        return f"{self.get_operation_display()} {task_name} - {self.operation_time.strftime('%Y-%m-%d %H:%M')}"
+        return f"{self.get_operation_display()} {task_name}"

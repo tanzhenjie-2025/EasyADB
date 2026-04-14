@@ -79,6 +79,11 @@
             color: #909399;
             margin-top: 4px;
         }
+        /* 新增：默认路径高亮样式 */
+        .default-path-highlight {
+            color: #409eff;
+            font-weight: 500;
+        }
         .errorlist {
             color: #f56c6c;
             list-style: none;
@@ -119,6 +124,13 @@
             <div class="form-group">
                 <label>{{ form.python_path.label }}</label>
                 {{ form.python_path }}
+
+                <!-- ====================== 我添加了这里 ====================== -->
+                <div class="help-text">
+                    留空则使用默认路径：<span class="default-path-highlight">{{ default_python_path }}</span>
+                </div>
+                <!-- ========================================================= -->
+
                 {% if form.python_path.help_text %}
                     <div class="help-text">{{ form.python_path.help_text }}</div>
                 {% endif %}
