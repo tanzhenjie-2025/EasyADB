@@ -13,15 +13,13 @@ class ScriptTask(models.Model):
     task_name = models.CharField("任务名称", max_length=100, unique=True, help_text="如：自动化测试任务1")
     task_desc = models.TextField("任务描述", blank=True, null=True, help_text="任务详细说明")
 
-    # ====================== 我修改了这里 ======================
     python_path = models.CharField(
         "Python解释器路径",
         max_length=500,
-        blank=True,  # 允许表单为空
-        null=True,  # 允许数据库为空
+        blank=True,
+        null=True,
         help_text="不填写则自动使用Django当前运行的Python解释器"
     )
-    # =========================================================
 
     script_path = models.CharField("脚本文件路径", max_length=500,
                                    help_text="如：C:\\test\\test4.py（指向.py文件）")
@@ -37,6 +35,10 @@ class ScriptTask(models.Model):
         verbose_name = "脚本任务"
         verbose_name_plural = "脚本任务管理"
         ordering = ["-create_time"]
+        indexes = [
+            models.Index(fields=['task_name']),
+            models.Index(fields=['status']),
+        ]
 
     def __str__(self):
         return f"{self.task_name} ({self.status})"
@@ -47,7 +49,6 @@ class ScriptTask(models.Model):
 
     def is_python_exists(self):
         import os
-        # 空路径不校验
         if not self.python_path:
             return True
         return os.path.exists(self.python_path)
@@ -75,6 +76,12 @@ class TaskExecutionLog(models.Model):
         verbose_name = "执行日志"
         verbose_name_plural = "执行日志管理"
         ordering = ["-start_time"]
+        indexes = [
+            models.Index(fields=['task']),
+            models.Index(fields=['device']),
+            models.Index(fields=['exec_status']),
+            models.Index(fields=['-start_time']),
+        ]
 
     def __str__(self):
         return f"{self.task.task_name} - {self.device.adb_connect_str} - {self.exec_status}"
@@ -102,6 +109,12 @@ class ScriptTaskManagementLog(models.Model):
         verbose_name = "脚本任务管理日志"
         verbose_name_plural = "脚本任务管理日志"
         ordering = ["-operation_time"]
+        indexes = [
+            models.Index(fields=['task']),
+            models.Index(fields=['operation']),
+            models.Index(fields=['operator']),
+            models.Index(fields=['-operation_time']),
+        ]
 
     def __str__(self):
         task_name = self.task.task_name if self.task else "未知任务"

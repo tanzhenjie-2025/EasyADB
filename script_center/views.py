@@ -33,6 +33,9 @@ from django.http import FileResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
+# ====================== 优化：全局 Redis 连接池 ======================
+REDIS_POOL = None
+
 def scan_builtin_scripts():
     """扫描内置脚本目录，返回脚本列表 [(脚本名称, 脚本绝对路径), ...]"""
     scripts = []
@@ -41,15 +44,14 @@ def scan_builtin_scripts():
     if not builtin_dir.exists():
         return scripts
 
-    # 遍历目录下所有 .air 文件夹（Airtest 脚本是文件夹结构）
     for air_dir in builtin_dir.iterdir():
         if air_dir.is_dir() and air_dir.suffix == '.air':
-            # 查找 .air 目录下与文件夹同名的 .py 主文件
             py_file = air_dir / f"{air_dir.stem}.py"
             if py_file.exists():
                 scripts.append((air_dir.stem, str(py_file.resolve())))
 
     return scripts
+
 
 def get_env_config(key, default=None, cast_type=str):
     value = os.getenv(key, default)
@@ -81,14 +83,18 @@ os.environ['PYTHONLEGACYWINDOWSSTDIO'] = 'utf-8'
 
 
 def get_redis_conn():
-    try:
-        r = redis.Redis(
+    """优化：使用连接池"""
+    global REDIS_POOL
+    if REDIS_POOL is None:
+        REDIS_POOL = redis.ConnectionPool(
             host=get_env_config("REDIS_HOST", "127.0.0.1"),
             port=get_env_config("REDIS_PORT", 6379, int),
             db=get_env_config("REDIS_DB", 0, int),
             decode_responses=True,
-            socket_timeout=5
+            socket_timeout=2
         )
+    try:
+        r = redis.Redis(connection_pool=REDIS_POOL)
         r.ping()
         return r
     except Exception as e:
@@ -151,14 +157,16 @@ def get_python_warning(python_path):
 
 
 def get_recent_logs():
+    """优化：select_related 解决 N+1"""
     limit = get_env_config("SCRIPT_RECENT_LOGS_LIMIT", 10, int)
-    return TaskExecutionLog.objects.all().order_by("-id")[:limit]
+    return TaskExecutionLog.objects.select_related('task', 'device').order_by("-id")[:limit]
 
 
 class TaskListView(View):
     def get(self, request):
         search_query = request.GET.get('search', '').strip()
-        tasks_query = ScriptTask.objects.all()
+        # 优化：only() 只查需要的字段
+        tasks_query = ScriptTask.objects.only('id', 'task_name', 'status', 'script_path', 'create_time')
         if search_query:
             tasks_query = tasks_query.filter(task_name__icontains=search_query)
         tasks = tasks_query
@@ -173,15 +181,13 @@ class TaskListView(View):
 class TaskAddView(View):
     """新增任务：默认填充当前Django Python解释器路径"""
     def get(self, request):
-        # 初始值设为当前Python解释器路径
         form = ScriptTaskForm(initial={'python_path': sys.executable})
-        # 获取内置脚本列表
         builtin_scripts = scan_builtin_scripts()
         context = {
             "page_title": "新增脚本任务",
             "form": form,
             "default_python_path": sys.executable,
-            "builtin_scripts": builtin_scripts  # 传给前端
+            "builtin_scripts": builtin_scripts
         }
         return render(request, "script_center/task_form.html", context)
 
@@ -201,7 +207,7 @@ class TaskAddView(View):
             "page_title": "新增脚本任务",
             "form": form,
             "default_python_path": sys.executable,
-            "builtin_scripts": scan_builtin_scripts(),  # 报错时重新传
+            "builtin_scripts": scan_builtin_scripts(),
             "error_msg": "表单填写有误，请检查！"
         }
         return render(request, "script_center/task_form.html", context)
@@ -215,14 +221,13 @@ class TaskEditView(View):
         if not task.python_path:
             initial['python_path'] = sys.executable
         form = ScriptTaskForm(instance=task, initial=initial)
-        # 获取内置脚本列表
         builtin_scripts = scan_builtin_scripts()
         context = {
             "page_title": f"编辑任务 - {task.task_name}",
             "form": form,
             "task": task,
             "default_python_path": sys.executable,
-            "builtin_scripts": builtin_scripts  # 传给前端
+            "builtin_scripts": builtin_scripts
         }
         return render(request, "script_center/task_form.html", context)
 
@@ -259,7 +264,7 @@ class TaskEditView(View):
             "form": form,
             "task": task,
             "default_python_path": sys.executable,
-            "builtin_scripts": scan_builtin_scripts(),  # 报错时重新传
+            "builtin_scripts": scan_builtin_scripts(),
             "error_msg": "表单填写有误，请检查！"
         }
         return render(request, "script_center/task_form.html", context)
@@ -287,7 +292,8 @@ class TaskDeleteView(View):
 class TaskManagementLogView(View):
     def get(self, request):
         search_query = request.GET.get('search', '').strip()
-        logs_query = ScriptTaskManagementLog.objects.all().order_by("-operation_time")
+        # 优化：select_related 解决 N+1
+        logs_query = ScriptTaskManagementLog.objects.select_related('task').all().order_by("-operation_time")
         if search_query:
             logs_query = logs_query.filter(
                 models.Q(task__task_name__icontains=search_query) |
@@ -305,18 +311,25 @@ class TaskManagementLogView(View):
 
 class ExecuteTaskView(View):
     """执行任务：若任务未填Python路径则使用默认解释器"""
+
     def get(self, request):
         search_query = request.GET.get('search', '').strip()
-        devices = ADBDevice.objects.filter(is_active=True)
+
+        # 修复：only() 中只包含真实的数据库字段，去掉 'device_status'
+        # 因为 device_status 是 @property，不是数据库列
+        devices = ADBDevice.objects.filter(is_active=True).only('id', 'device_name', 'device_ip', 'device_port',
+                                                                'device_serial')
         device_list = []
         for dev in devices:
+            # 这里可以正常调用 @property dev.device_status
             dev.status = dev.device_status
             device_list.append(dev)
 
         recent_logs = get_recent_logs()
         logger.info(f"最近执行日志数量：{recent_logs.count()}")
 
-        tasks_query = ScriptTask.objects.filter(status="active")
+        # 优化：only() 只查需要的字段
+        tasks_query = ScriptTask.objects.filter(status="active").only('id', 'task_name', 'script_path', 'python_path')
         if search_query:
             tasks_query = tasks_query.filter(task_name__icontains=search_query)
         tasks = tasks_query
@@ -347,7 +360,6 @@ class ExecuteTaskView(View):
                 return redirect(f"{reverse('script_center:execute_task')}?msg={error_msg}")
 
             task = get_object_or_404(ScriptTask, id=task_id, status="active")
-            # 核心修改：若任务未填Python路径，使用当前Django解释器
             python_path = task.python_path or sys.executable
             logger.info(f"获取到任务：{task.task_name}，脚本路径：{task.script_path}，Python路径：{python_path}")
 
@@ -360,8 +372,11 @@ class ExecuteTaskView(View):
             valid_device_ids = []
             for device_id in device_ids:
                 device = get_object_or_404(ADBDevice, id=device_id)
-                logger.info(f"检查设备状态 - ID：{device_id}，名称：{device.device_name}，状态：{device.device_status}")
-                if device.device_status != "online":
+                # 修复：这里直接调用 @property
+                current_status = device.device_status
+                logger.info(f"检查设备状态 - ID：{device_id}，名称：{device.device_name}，状态：{current_status}")
+
+                if current_status != "online":
                     offline_devices.append(device.device_name)
                 else:
                     valid_device_ids.append(device_id)
@@ -385,7 +400,6 @@ class ExecuteTaskView(View):
                 logger.info(f"创建执行日志 - ID：{log.id}，设备：{device.device_name}")
 
                 try:
-                    # 注意：需确保tasks.py中的execute_script_task也接收并使用python_path参数
                     celery_task = execute_script_task.delay(task.id, device.id, log.id, python_path)
                     save_celery_task(log.id, celery_task.id)
                     logger.info(f"提交Celery任务 - 日志ID：{log.id}，任务ID：{celery_task.id}")
@@ -413,7 +427,8 @@ class StopTaskView(View):
     def get(self, request, log_id):
         try:
             logger.info(f"接收到停止任务请求 - 日志ID：{log_id}")
-            log = get_object_or_404(TaskExecutionLog, id=log_id)
+            # 优化：select_related
+            log = get_object_or_404(TaskExecutionLog.objects.select_related('task', 'device'), id=log_id)
             if log.exec_status != "running":
                 error_msg = quote(f"任务【{log.task.task_name}】未在运行中！当前状态：{log.exec_status}")
                 logger.warning(error_msg)
@@ -480,7 +495,8 @@ class StopTaskView(View):
 
 class LogDetailView(View):
     def get(self, request, log_id):
-        log = get_object_or_404(TaskExecutionLog, id=log_id)
+        # 优化：select_related
+        log = get_object_or_404(TaskExecutionLog.objects.select_related('task', 'device'), id=log_id)
         log.exec_duration_str = format_duration(log.exec_duration)
         context = {
             "page_title": f"执行日志 - {log.task.task_name}",
@@ -492,7 +508,8 @@ class LogDetailView(View):
 class LogStatusView(View):
     def get(self, request, log_id):
         try:
-            log = get_object_or_404(TaskExecutionLog, id=log_id)
+            # 优化：select_related
+            log = get_object_or_404(TaskExecutionLog.objects.select_related('task'), id=log_id)
             celery_task_id = get_celery_task(log.id)
             is_running = celery_task_id is not None and log.exec_status == "running"
             return JsonResponse({
@@ -510,22 +527,12 @@ class LogStatusView(View):
             })
 
 
-
-
-
 def get_airtest_log_dir(script_path):
-    """
-    从脚本路径解析出 Airtest log 目录
-    输入：E:\django_projects\EasyADB\builtin_scripts\examples\Advertisement_kuaishou.air\Advertisement_kuaishou.py
-    输出：E:\django_projects\EasyADB\builtin_scripts\examples\Advertisement_kuaishou.air\log
-    """
     try:
         script_path_obj = Path(script_path)
-        # 找到 .air 目录（脚本的父目录）
         air_dir = script_path_obj.parent
         if air_dir.suffix != '.air':
             return None
-        # 拼接 log 目录
         log_dir = air_dir / 'log'
         return log_dir if log_dir.exists() else None
     except Exception:
@@ -536,19 +543,18 @@ class AirtestLogImagesView(View):
     """获取指定日志关联的 Airtest log 图片列表"""
 
     def get(self, request, log_id):
-        log = get_object_or_404(TaskExecutionLog, id=log_id)
+        # 优化：select_related
+        log = get_object_or_404(TaskExecutionLog.objects.select_related('task'), id=log_id)
         log_dir = get_airtest_log_dir(log.task.script_path)
 
         if not log_dir:
             return JsonResponse({"code": 404, "msg": "未找到对应的 Airtest log 目录"})
 
-        # 扫描 log 目录下的图片（支持常见格式）
         image_extensions = {'.png', '.jpg', '.jpeg', '.bmp', '.gif'}
         images = []
         try:
             for file_path in log_dir.iterdir():
                 if file_path.is_file() and file_path.suffix.lower() in image_extensions:
-                    # 获取文件信息
                     stat = file_path.stat()
                     images.append({
                         "name": file_path.name,
@@ -556,7 +562,6 @@ class AirtestLogImagesView(View):
                         "url": reverse('script_center:serve_airtest_image', args=[log_id, file_path.name]),
                         "modified_time": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M:%S")
                     })
-            # 按修改时间倒序排列（最新的在最前）
             images.sort(key=lambda x: x["modified_time"], reverse=True)
             return JsonResponse({"code": 200, "images": images})
         except Exception as e:
@@ -568,13 +573,13 @@ class ServeAirtestLogImageView(View):
     """直接返回 Airtest log 图片文件（避免静态文件配置问题）"""
 
     def get(self, request, log_id, image_name):
-        log = get_object_or_404(TaskExecutionLog, id=log_id)
+        # 优化：select_related
+        log = get_object_or_404(TaskExecutionLog.objects.select_related('task'), id=log_id)
         log_dir = get_airtest_log_dir(log.task.script_path)
 
         if not log_dir:
             return HttpResponse("未找到 log 目录", status=404)
 
-        # 安全校验：防止路径遍历攻击
         image_path = (log_dir / image_name).resolve()
         if log_dir.resolve() not in image_path.parents:
             return HttpResponse("非法访问", status=403)
@@ -582,7 +587,6 @@ class ServeAirtestLogImageView(View):
         if not image_path.exists():
             return HttpResponse("图片不存在", status=404)
 
-        # 自动识别 Content-Type
         content_type, _ = mimetypes.guess_type(image_name)
         return FileResponse(open(image_path, 'rb'), content_type=content_type or 'image/png')
 
@@ -592,14 +596,14 @@ class ClearAirtestLogImagesView(View):
     """清理指定日志关联的 Airtest log 图片"""
 
     def post(self, request, log_id):
-        log = get_object_or_404(TaskExecutionLog, id=log_id)
+        # 优化：select_related
+        log = get_object_or_404(TaskExecutionLog.objects.select_related('task'), id=log_id)
         log_dir = get_airtest_log_dir(log.task.script_path)
 
         if not log_dir:
             return JsonResponse({"code": 404, "msg": "未找到对应的 Airtest log 目录"})
 
         try:
-            # 只删除图片文件，保留其他文件
             image_extensions = {'.png', '.jpg', '.jpeg', '.bmp', '.gif'}
             deleted_count = 0
             for file_path in log_dir.iterdir():

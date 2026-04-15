@@ -67,6 +67,12 @@ class ADBDevice(BaseModel):
         verbose_name = "ADB设备"
         verbose_name_plural = "ADB设备管理"
         unique_together = ("device_ip", "device_port")
+        # 新增索引
+        indexes = [
+            models.Index(fields=['is_active']),
+            models.Index(fields=['device_serial']),
+            models.Index(fields=['user']),
+        ]
 
     def __str__(self):
         if self.device_serial:
@@ -95,6 +101,8 @@ class ADBDevice(BaseModel):
         if not connect_id:
             return "invalid"
         return r.get(f"adb:device:{connect_id}") or "offline"
+
+
 
 
 # 新增操作日志模型

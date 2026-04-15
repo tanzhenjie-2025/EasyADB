@@ -20,6 +20,9 @@ stderr_buffer = {}
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
+# ====================== 优化：全局 Redis 连接池 ======================
+REDIS_POOL = None
+
 
 def read_stream(stream, buffer_key, log, is_stdout=True):
     """实时读取子进程输出流（线程执行）+ 推送WebSocket"""
@@ -34,6 +37,7 @@ def read_stream(stream, buffer_key, log, is_stdout=True):
                     log.stdout += line
                 else:
                     log.stderr += line
+                # 注意：这里依然是每行 save，如需极致性能需改为批量更新
                 log.save()
                 async_to_sync(channel_layer.group_send)(
                     f'script_log_{log.id}',
@@ -67,15 +71,18 @@ def read_stream(stream, buffer_key, log, is_stdout=True):
 
 
 def get_redis_conn():
-    """获取Redis连接"""
-    try:
-        r = redis.Redis(
+    """优化：使用连接池"""
+    global REDIS_POOL
+    if REDIS_POOL is None:
+        REDIS_POOL = redis.ConnectionPool(
             host="127.0.0.1",
             port=6379,
             db=0,
             decode_responses=True,
-            socket_timeout=5
+            socket_timeout=2
         )
+    try:
+        r = redis.Redis(connection_pool=REDIS_POOL)
         r.ping()
         return r
     except Exception as e:
@@ -117,7 +124,6 @@ def _graceful_terminate_process(pid: int, wait_time: int = 5):
         logger.error(f"终止进程{pid}失败：{str(e)}")
 
 
-# ====================== 我修改了这里：增加 python_path 参数 ======================
 @shared_task(bind=True, max_retries=0, time_limit=3600)
 def execute_script_task(self, task_id, device_id, log_id, python_path):
     """Celery异步执行单个设备的脚本任务"""
@@ -128,15 +134,11 @@ def execute_script_task(self, task_id, device_id, log_id, python_path):
     stdout_thread = None
     stderr_thread = None
     try:
-        # 1. 获取基础数据
         task = ScriptTask.objects.get(id=task_id)
         device = ADBDevice.objects.get(id=device_id)
         log = TaskExecutionLog.objects.get(id=log_id)
         device_serial = device.adb_connect_str
 
-        # ====================== 我修改了这里：优先使用传入的 python_path ======================
-        # 2. 处理Python路径（优先使用视图传入的路径，兼容原有WindowsApps逻辑）
-        # 如果传入的 python_path 为空，才回退到 task.python_path
         input_python_path = python_path or task.python_path
 
         real_python_path = input_python_path
@@ -154,12 +156,10 @@ def execute_script_task(self, task_id, device_id, log_id, python_path):
                     logger.info(f"替换Python路径：{input_python_path} → {real_python_path}")
                     break
 
-        # 强制检查Python路径有效性
         if not os.path.exists(real_python_path):
             raise Exception(f"Python路径无效：{real_python_path}（原始传入路径：{input_python_path}）")
         logger.info(f"使用Python路径：{real_python_path}，是否存在：{os.path.exists(real_python_path)}")
 
-        # 3. 构建执行命令和环境变量
         script_dir = os.path.dirname(task.script_path)
         command = f'"{real_python_path}" -X utf8 "{task.script_path}" "{device_serial}"'
         env = os.environ.copy()
@@ -170,7 +170,6 @@ def execute_script_task(self, task_id, device_id, log_id, python_path):
             'LANG': 'en_US.UTF-8'
         })
 
-        # 4. 启动子进程
         process = subprocess.Popen(
             command,
             shell=True,
@@ -184,7 +183,6 @@ def execute_script_task(self, task_id, device_id, log_id, python_path):
             universal_newlines=True
         )
 
-        # 5. 保存进程信息到Redis
         if r:
             process_info = {
                 "pid": process.pid,
@@ -196,14 +194,12 @@ def execute_script_task(self, task_id, device_id, log_id, python_path):
             r.hset("script_running_processes", log_id, json.dumps(process_info))
             logger.info(f"脚本任务{log_id}进程{process.pid}已存入Redis")
 
-        # 6. 更新Celery任务状态
         self.update_state(state='RUNNING', meta={
             'pid': process.pid,
             'log_id': log_id,
             'device_serial': device_serial
         })
 
-        # 7. 初始化日志头
         start_time = time.time()
         log.stdout = log.stdout or ''
         log_header = f"""【执行环境信息】
@@ -234,7 +230,6 @@ Celery任务ID：{self.request.id}
             }
         )
 
-        # 8. 启动线程实时读取stdout/stderr
         stdout_thread = threading.Thread(
             target=read_stream,
             args=(process.stdout, f"stdout_{process.pid}", log, True),
@@ -248,7 +243,6 @@ Celery任务ID：{self.request.id}
         stdout_thread.start()
         stderr_thread.start()
 
-        # 9. 等待进程完成
         try:
             process.wait(timeout=3000)
             stdout_thread.join(timeout=5)
@@ -297,11 +291,9 @@ Celery任务ID：{self.request.id}
                 log.stderr += f"\n\n【执行异常】{type(e).__name__}：{str(e)}，已终止进程{process.pid}"
             log.exec_duration = time.time() - start_time
 
-        # 11. 最终更新日志
         log.end_time = timezone.now()
         log.save()
 
-        # 12. 清理Redis
         if r:
             r.delete(f"airtest_stop_flag_{device_serial}")
             r.hdel("script_running_processes", log_id)
