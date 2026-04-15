@@ -14,10 +14,22 @@ urlpatterns = [
     path("edit/<int:task_id>/", views.TaskEditView.as_view(), name="task_edit"),
     # 删除任务
     path("delete/<int:task_id>/", views.TaskDeleteView.as_view(), name="task_delete"),
-    # 执行任务（关键：name统一为execute_task，匹配前端模板）
+    # 执行任务
     path("execute/", views.ExecuteTaskView.as_view(), name="execute_task"),
     # 停止任务
     path("stop/<int:log_id>/", views.StopTaskView.as_view(), name="stop_task"),
+
+    # ====================== 修正：Airtest 相关路由（顺序很重要！） ======================
+    # 1. 最具体的 clear 路由放最前面
+    path('log/<int:log_id>/airtest-images/clear/', views.ClearAirtestLogImagesView.as_view(),
+         name='clear_airtest_images'),
+    # 2. 然后是获取图片列表
+    path('log/<int:log_id>/airtest-images/', views.AirtestLogImagesView.as_view(), name='airtest_images'),
+    # 3. 最后才是带变量的图片文件名路由
+    path('log/<int:log_id>/airtest-images/<str:image_name>/', views.ServeAirtestLogImageView.as_view(),
+         name='serve_airtest_image'),
+
+    # ====================== 其他日志路由放在后面 ======================
     # 日志详情
     path("log/<int:log_id>/", views.LogDetailView.as_view(), name="log_detail"),
     # 日志状态（AJAX）

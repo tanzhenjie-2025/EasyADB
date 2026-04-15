@@ -28,6 +28,11 @@ from adb_manager.models import ADBDevice
 
 from django.conf import settings
 
+import mimetypes
+from django.http import FileResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
 def scan_builtin_scripts():
     """扫描内置脚本目录，返回脚本列表 [(脚本名称, 脚本绝对路径), ...]"""
     scripts = []
@@ -503,3 +508,113 @@ class LogStatusView(View):
                 "code": 500,
                 "msg": str(e)
             })
+
+
+
+
+
+def get_airtest_log_dir(script_path):
+    """
+    从脚本路径解析出 Airtest log 目录
+    输入：E:\django_projects\EasyADB\builtin_scripts\examples\Advertisement_kuaishou.air\Advertisement_kuaishou.py
+    输出：E:\django_projects\EasyADB\builtin_scripts\examples\Advertisement_kuaishou.air\log
+    """
+    try:
+        script_path_obj = Path(script_path)
+        # 找到 .air 目录（脚本的父目录）
+        air_dir = script_path_obj.parent
+        if air_dir.suffix != '.air':
+            return None
+        # 拼接 log 目录
+        log_dir = air_dir / 'log'
+        return log_dir if log_dir.exists() else None
+    except Exception:
+        return None
+
+
+class AirtestLogImagesView(View):
+    """获取指定日志关联的 Airtest log 图片列表"""
+
+    def get(self, request, log_id):
+        log = get_object_or_404(TaskExecutionLog, id=log_id)
+        log_dir = get_airtest_log_dir(log.task.script_path)
+
+        if not log_dir:
+            return JsonResponse({"code": 404, "msg": "未找到对应的 Airtest log 目录"})
+
+        # 扫描 log 目录下的图片（支持常见格式）
+        image_extensions = {'.png', '.jpg', '.jpeg', '.bmp', '.gif'}
+        images = []
+        try:
+            for file_path in log_dir.iterdir():
+                if file_path.is_file() and file_path.suffix.lower() in image_extensions:
+                    # 获取文件信息
+                    stat = file_path.stat()
+                    images.append({
+                        "name": file_path.name,
+                        "size": f"{stat.st_size / 1024:.2f} KB",
+                        "url": reverse('script_center:serve_airtest_image', args=[log_id, file_path.name]),
+                        "modified_time": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M:%S")
+                    })
+            # 按修改时间倒序排列（最新的在最前）
+            images.sort(key=lambda x: x["modified_time"], reverse=True)
+            return JsonResponse({"code": 200, "images": images})
+        except Exception as e:
+            logger.error(f"扫描 Airtest log 图片失败：{str(e)}")
+            return JsonResponse({"code": 500, "msg": f"扫描失败：{str(e)}"})
+
+
+class ServeAirtestLogImageView(View):
+    """直接返回 Airtest log 图片文件（避免静态文件配置问题）"""
+
+    def get(self, request, log_id, image_name):
+        log = get_object_or_404(TaskExecutionLog, id=log_id)
+        log_dir = get_airtest_log_dir(log.task.script_path)
+
+        if not log_dir:
+            return HttpResponse("未找到 log 目录", status=404)
+
+        # 安全校验：防止路径遍历攻击
+        image_path = (log_dir / image_name).resolve()
+        if log_dir.resolve() not in image_path.parents:
+            return HttpResponse("非法访问", status=403)
+
+        if not image_path.exists():
+            return HttpResponse("图片不存在", status=404)
+
+        # 自动识别 Content-Type
+        content_type, _ = mimetypes.guess_type(image_name)
+        return FileResponse(open(image_path, 'rb'), content_type=content_type or 'image/png')
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ClearAirtestLogImagesView(View):
+    """清理指定日志关联的 Airtest log 图片"""
+
+    def post(self, request, log_id):
+        log = get_object_or_404(TaskExecutionLog, id=log_id)
+        log_dir = get_airtest_log_dir(log.task.script_path)
+
+        if not log_dir:
+            return JsonResponse({"code": 404, "msg": "未找到对应的 Airtest log 目录"})
+
+        try:
+            # 只删除图片文件，保留其他文件
+            image_extensions = {'.png', '.jpg', '.jpeg', '.bmp', '.gif'}
+            deleted_count = 0
+            for file_path in log_dir.iterdir():
+                if file_path.is_file() and file_path.suffix.lower() in image_extensions:
+                    file_path.unlink()
+                    deleted_count += 1
+
+            ScriptTaskManagementLog.objects.create(
+                task=log.task,
+                operation="clear_images",
+                operator=request.user.username if request.user.is_authenticated else "匿名用户",
+                details=f"在日志详情页清理了 Airtest log 图片，共删除 {deleted_count} 张"
+            )
+
+            return JsonResponse({"code": 200, "msg": f"清理成功，共删除 {deleted_count} 张图片"})
+        except Exception as e:
+            logger.error(f"清理 Airtest log 图片失败：{str(e)}")
+            return JsonResponse({"code": 500, "msg": f"清理失败：{str(e)}"})
