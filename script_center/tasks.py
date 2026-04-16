@@ -147,7 +147,7 @@ def execute_script_task(self, task_id, device_id, log_id, python_path):
                 r"C:\Python311\python.exe",
                 r"C:\Users\TanZhenJie\AppData\Local\Programs\Python\Python311\python.exe",
                 os.path.expanduser("~\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"),
-                r"C:\Users\谭振捷\AppData\Local\Programs\Python\Python311\python.exe",
+                r"C:\Users\TanZhenJie\AppData\Local\Programs\Python\Python311\python.exe",
                 r"C:\Program Files\Python311\python.exe"
             ]
             for path in possible_paths:

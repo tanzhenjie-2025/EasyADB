@@ -33,6 +33,11 @@ from django.http import FileResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
+# 在文件顶部的 import 区域添加
+from django.views.decorators.http import etag
+from django.utils.cache import patch_response_headers
+import hashlib
+
 # ====================== 优化：全局 Redis 连接池 ======================
 REDIS_POOL = None
 
@@ -508,18 +513,35 @@ class LogDetailView(View):
 class LogStatusView(View):
     def get(self, request, log_id):
         try:
-            # 优化：select_related
-            log = get_object_or_404(TaskExecutionLog.objects.select_related('task'), id=log_id)
+            # 优化：只查 id, exec_status, exec_duration，不查巨大的 stdout/stderr
+            log = get_object_or_404(
+                TaskExecutionLog.objects.select_related('task').only('id', 'exec_status', 'exec_duration'),
+                id=log_id
+            )
+
             celery_task_id = get_celery_task(log.id)
             is_running = celery_task_id is not None and log.exec_status == "running"
-            return JsonResponse({
+
+            # 优化：生成 ETag，如果内容没变，返回 304 Not Modified
+            content_hash = hashlib.md5(f"{log.exec_status}-{log.exec_duration}".encode()).hexdigest()
+
+            # 检查 If-None-Match 头
+            if_none_match = request.META.get('HTTP_IF_NONE_MATCH')
+            if if_none_match == f'"{content_hash}"':
+                return HttpResponse(status=304)
+
+            response = JsonResponse({
                 "code": 200,
                 "status": log.exec_status,
-                "stdout": log.stdout,
-                "stderr": log.stderr,
                 "duration": log.exec_duration,
                 "is_running": is_running
             })
+
+            # 设置 ETag 和缓存头（缓存 1 秒）
+            response['ETag'] = f'"{content_hash}"'
+            patch_response_headers(response, cache_timeout=1)
+            return response
+
         except Exception as e:
             return JsonResponse({
                 "code": 500,
@@ -540,11 +562,12 @@ def get_airtest_log_dir(script_path):
 
 
 class AirtestLogImagesView(View):
-    """获取指定日志关联的 Airtest log 图片列表"""
+    """获取指定日志关联的 Airtest log 图片列表（优化：分页）"""
 
     def get(self, request, log_id):
-        # 优化：select_related
-        log = get_object_or_404(TaskExecutionLog.objects.select_related('task'), id=log_id)
+        # 优化：select_related 只查 task 里的 script_path
+        log = get_object_or_404(TaskExecutionLog.objects.select_related('task').only('id', 'task__script_path'),
+                                id=log_id)
         log_dir = get_airtest_log_dir(log.task.script_path)
 
         if not log_dir:
@@ -553,29 +576,55 @@ class AirtestLogImagesView(View):
         image_extensions = {'.png', '.jpg', '.jpeg', '.bmp', '.gif'}
         images = []
         try:
+            # 1. 先收集所有文件
+            all_files = []
             for file_path in log_dir.iterdir():
                 if file_path.is_file() and file_path.suffix.lower() in image_extensions:
                     stat = file_path.stat()
-                    images.append({
+                    all_files.append({
                         "name": file_path.name,
                         "size": f"{stat.st_size / 1024:.2f} KB",
                         "url": reverse('script_center:serve_airtest_image', args=[log_id, file_path.name]),
-                        "modified_time": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M:%S")
+                        "modified_time": datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M:%S"),
+                        "timestamp": stat.st_mtime  # 用于排序
                     })
-            images.sort(key=lambda x: x["modified_time"], reverse=True)
-            return JsonResponse({"code": 200, "images": images})
+
+            # 2. 排序
+            all_files.sort(key=lambda x: x["timestamp"], reverse=True)
+
+            # 3. 分页 (简单的分页逻辑)
+            page = int(request.GET.get('page', 1))
+            page_size = int(request.GET.get('page_size', 10))  # 默认每页10张
+            start = (page - 1) * page_size
+            end = start + page_size
+
+            paginated_images = all_files[start:end]
+
+            # 移除 timestamp，不返回给前端
+            for img in paginated_images:
+                del img['timestamp']
+
+            return JsonResponse({
+                "code": 200,
+                "images": paginated_images,
+                "total": len(all_files),
+                "page": page,
+                "page_size": page_size,
+                "has_next": end < len(all_files)
+            })
         except Exception as e:
             logger.error(f"扫描 Airtest log 图片失败：{str(e)}")
             return JsonResponse({"code": 500, "msg": f"扫描失败：{str(e)}"})
 
 
 class ServeAirtestLogImageView(View):
-    """直接返回 Airtest log 图片文件（避免静态文件配置问题）"""
+    """直接返回 Airtest log 图片文件（带缓存）"""
 
     def get(self, request, log_id, image_name):
-        # 优化：select_related
-        log = get_object_or_404(TaskExecutionLog.objects.select_related('task'), id=log_id)
-        log_dir = get_airtest_log_dir(log.task.script_path)
+        # 优化：select_related 确保安全，但只查必要字段
+        log_full = get_object_or_404(TaskExecutionLog.objects.select_related('task').only('id', 'task__script_path'),
+                                     id=log_id)
+        log_dir = get_airtest_log_dir(log_full.task.script_path)
 
         if not log_dir:
             return HttpResponse("未找到 log 目录", status=404)
@@ -588,7 +637,11 @@ class ServeAirtestLogImageView(View):
             return HttpResponse("图片不存在", status=404)
 
         content_type, _ = mimetypes.guess_type(image_name)
-        return FileResponse(open(image_path, 'rb'), content_type=content_type or 'image/png')
+        response = FileResponse(open(image_path, 'rb'), content_type=content_type or 'image/png')
+
+        # 优化：添加缓存头，让浏览器缓存图片 1 年
+        patch_response_headers(response, cache_timeout=31536000)
+        return response
 
 
 @method_decorator(csrf_exempt, name='dispatch')
