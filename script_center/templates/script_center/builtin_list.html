@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card">
+    <div style="border-bottom: 1px solid #ebeef5; margin-bottom: 20px;">
+        <div style="display: flex; gap: 5px;">
+            {% for category, scripts in scripts_by_category.items %}
+                <button class="btn btn-default tab-btn" onclick="showTab('{{ category }}')" id="btn-{{ category }}">
+                    {{ category }} ({{ scripts|length }})
+                </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% for category, scripts in scripts_by_category.items %}
+    <div id="tab-{{ category }}" class="tab-content">
+        <table>
+            <thead>
+                <tr>
+                    <th width="30%">脚本名称</th>
+                    <th width="50%">功能介绍</th>
+                    <th width="20%">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for script in scripts %}
+                <tr>
+                    <td style="font-weight: bold;">{{ script.name }}</td>
+                    <td>{{ script.description|truncatechars:80 }}</td>
+                    <td>
+                        <a href="{% url 'script_center:builtin_detail' script.id %}" class="btn btn-primary btn-sm">
+                            查看详情 & 运行
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+    .tab-content { display: none; }
+    .tab-content:first-of-type, .tab-content.active { display: block; }
+    .tab-btn.active { background-color: #409eff; color: white; }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+</style>
+
+<script>
+    // 默认激活第一个
+    document.addEventListener('DOMContentLoaded', function() {
+        const firstBtn = document.querySelector('.tab-btn');
+        if(firstBtn) {
+            firstBtn.classList.add('active');
+            const firstId = firstBtn.id.replace('btn-', '');
+            document.getElementById('tab-' + firstId).classList.add('active');
+        }
+    });
+
+    function showTab(category) {
+        // 隐藏所有
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+        // 显示选中
+        document.getElementById('tab-' + category).classList.add('active');
+        document.getElementById('btn-' + category).classList.add('active');
+    }
+</script>
+{% endblock %}

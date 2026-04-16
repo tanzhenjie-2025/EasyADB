@@ -141,14 +141,16 @@
                 <label>{{ form.script_path.label }}</label>
 
                 <!-- 新增：内置脚本选择下拉框 -->
-                <div class="form-group" style="margin-bottom: 8px;">
-                    <select id="builtin_script_selector" class="form-control">
-                        <option value="">-- 选择内置脚本（或下方手动输入） --</option>
-                        {% for name, path in builtin_scripts %}
-                            <option value="{{ path }}" {% if form.script_path.value == path %}selected{% endif %}>{{ name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+                {% if builtin_scripts %}
+<div class="form-group" style="margin-bottom: 8px;">
+    <select id="builtin_script_selector" class="form-control">
+        <option value="">-- 选择内置脚本（或下方手动输入） --</option>
+        {% for name, path in builtin_scripts %}
+            <option value="{{ path }}" {% if form.script_path.value == path %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+</div>
+{% endif %}
 
                 {{ form.script_path }}
                 {% if form.script_path.help_text %}

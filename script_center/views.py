@@ -41,8 +41,13 @@ import hashlib
 # ====================== 优化：全局 Redis 连接池 ======================
 REDIS_POOL = None
 
+
 def scan_builtin_scripts():
     """扫描内置脚本目录，返回脚本列表 [(脚本名称, 脚本绝对路径), ...]"""
+    # 新增：检查 settings 配置，如果设置为不显示，直接返回空列表
+    if not getattr(settings, 'SHOW_BUILTIN_SCRIPTS', True):
+        return []
+
     scripts = []
     builtin_dir = Path(settings.BUILTIN_SCRIPTS_DIR)
 
@@ -688,10 +693,16 @@ from django.utils import timezone
 import sys
 
 
+# ... 前面的所有代码保持不变 ...
+
 class BuiltinScriptListView(View):
     """内置脚本列表页（带Tab栏）"""
 
     def get(self, request):
+        # 新增：如果设置关闭了，直接重定向回脚本中心
+        if not getattr(settings, 'SHOW_BUILTIN_SCRIPTS', True):
+            return redirect(reverse('script_center:task_list'))
+
         categories = BuiltinScript.CATEGORY_CHOICES
         scripts_by_category = {}
 
@@ -711,6 +722,10 @@ class BuiltinScriptDetailView(View):
     """脚本详情页 + 动态表单 + 一键执行"""
 
     def get(self, request, script_id):
+        # 新增：如果设置关闭了，直接重定向
+        if not getattr(settings, 'SHOW_BUILTIN_SCRIPTS', True):
+            return redirect(reverse('script_center:task_list'))
+
         script = get_object_or_404(BuiltinScript, id=script_id, is_active=True)
 
         # 1. 动态构建表单
@@ -763,22 +778,17 @@ class BuiltinScriptDetailView(View):
 
     def post(self, request, script_id):
         """执行脚本：复用你现有的 Celery 逻辑"""
+        # 新增：POST 也要检查
+        if not getattr(settings, 'SHOW_BUILTIN_SCRIPTS', True):
+            return redirect(reverse('script_center:task_list'))
+
         script = get_object_or_404(BuiltinScript, id=script_id, is_active=True)
-
-        # 复用上面的 DynamicForm 定义来验证数据
-        class DynamicScriptForm(forms.Form):
-            device = forms.ModelChoiceField(queryset=ADBDevice.objects.filter(is_active=True))
-
-        for param in script.parameters.all():
-            # ... (省略重复的表单构建逻辑，直接用 request.POST 获取) ...
-            pass
 
         # 简单处理：直接获取数据
         device_id = request.POST.get('device')
         device = get_object_or_404(ADBDevice, id=device_id)
 
-        # 1. 创建一个临时的 ScriptTask (或者直接调用 Celery)
-        # 为了最大程度复用你的代码，我们创建一个临时 Task
+        # 1. 创建一个临时的 ScriptTask
         temp_task = ScriptTask.objects.create(
             task_name=f"[内置] {script.name} - {timezone.now().strftime('%H:%M:%S')}",
             task_desc=script.description,
@@ -787,10 +797,7 @@ class BuiltinScriptDetailView(View):
             airtest_mode=True
         )
 
-        # 2. 拼接参数 (这里简化处理，你可以后续完善 subprocess 的参数拼接)
-        # 目前先直接跑，不带自定义参数，或者把参数存到 log 里
-
-        # 3. 复用你现有的 ExecuteTaskView 里的逻辑
+        # 2. 复用你现有的 ExecuteTaskView 里的逻辑
         log = TaskExecutionLog.objects.create(
             task=temp_task,
             device=device,
@@ -800,14 +807,16 @@ class BuiltinScriptDetailView(View):
             start_time=timezone.now()
         )
 
-        # 4. 调用 Celery (这里直接导入你的 task)
+        # 3. 调用 Celery
         from .tasks import execute_script_task
         celery_task = execute_script_task.delay(temp_task.id, device.id, log.id, sys.executable)
 
-        # 5. 保存 Redis (复用你的函数)
+        # 4. 保存 Redis
         try:
             save_celery_task(log.id, celery_task.id)
         except:
             pass
 
         return redirect(reverse('script_center:log_detail', args=[log.id]))
+
+# ... 后面的代码保持不变 ...

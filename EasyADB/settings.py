@@ -78,10 +78,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # 【新增】添加这一行
+                'script_center.context_processors.global_settings',
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'EasyADB.wsgi.application'
 
@@ -171,3 +174,5 @@ BUILTIN_SCRIPTS_DIR = os.path.join(BASE_DIR, 'builtin_scripts', 'examples')
 
 import os
 BUILTIN_SCRIPTS_ROOT = os.path.join(BASE_DIR, 'builtin_scripts')
+
+SHOW_BUILTIN_SCRIPTS = False
