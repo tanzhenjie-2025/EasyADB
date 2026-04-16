@@ -675,3 +675,139 @@ class ClearAirtestLogImagesView(View):
         except Exception as e:
             logger.error(f"清理 Airtest log 图片失败：{str(e)}")
             return JsonResponse({"code": 500, "msg": f"清理失败：{str(e)}"})
+
+
+# script_center/views.py
+# ... (保留你原有的所有 View 代码) ...
+
+# === 新增：内置脚本库相关视图 ===
+from django import forms
+from .models import BuiltinScript, ScriptParameter, ScriptTask, TaskExecutionLog
+from adb_manager.models import ADBDevice
+from django.utils import timezone
+import sys
+
+
+class BuiltinScriptListView(View):
+    """内置脚本列表页（带Tab栏）"""
+
+    def get(self, request):
+        categories = BuiltinScript.CATEGORY_CHOICES
+        scripts_by_category = {}
+
+        for cat_key, cat_label in categories:
+            scripts = BuiltinScript.objects.filter(category=cat_key, is_active=True)
+            if scripts.exists():
+                scripts_by_category[cat_label] = scripts
+
+        context = {
+            "page_title": "内置脚本库",
+            "scripts_by_category": scripts_by_category
+        }
+        return render(request, "script_center/builtin_list.html", context)
+
+
+class BuiltinScriptDetailView(View):
+    """脚本详情页 + 动态表单 + 一键执行"""
+
+    def get(self, request, script_id):
+        script = get_object_or_404(BuiltinScript, id=script_id, is_active=True)
+
+        # 1. 动态构建表单
+        class DynamicScriptForm(forms.Form):
+            # 额外添加设备选择
+            device = forms.ModelChoiceField(
+                queryset=ADBDevice.objects.filter(is_active=True),
+                label="选择设备",
+                required=True,
+                widget=forms.Select(attrs={'class': 'form-control'})
+            )
+
+        for param in script.parameters.all():
+            field_args = {
+                'label': param.label,
+                'required': param.required,
+                'initial': param.default_value,
+                'help_text': param.help_text,
+            }
+
+            if param.param_type == 'integer':
+                field_class = forms.IntegerField
+            elif param.param_type == 'float':
+                field_class = forms.FloatField
+            elif param.param_type == 'boolean':
+                field_class = forms.BooleanField
+                field_args['required'] = False
+            else:
+                field_class = forms.CharField
+
+            DynamicScriptForm.base_fields[param.name] = field_class(**field_args)
+
+        form = DynamicScriptForm()
+
+        # 2. 读取源码用于展示
+        source_code = ""
+        try:
+            with open(script.get_absolute_path(), 'r', encoding='utf-8') as f:
+                source_code = f.read()
+        except:
+            source_code = "无法读取源码文件"
+
+        context = {
+            "page_title": f"脚本详情 - {script.name}",
+            "script": script,
+            "form": form,
+            "source_code": source_code
+        }
+        return render(request, "script_center/builtin_detail.html", context)
+
+    def post(self, request, script_id):
+        """执行脚本：复用你现有的 Celery 逻辑"""
+        script = get_object_or_404(BuiltinScript, id=script_id, is_active=True)
+
+        # 复用上面的 DynamicForm 定义来验证数据
+        class DynamicScriptForm(forms.Form):
+            device = forms.ModelChoiceField(queryset=ADBDevice.objects.filter(is_active=True))
+
+        for param in script.parameters.all():
+            # ... (省略重复的表单构建逻辑，直接用 request.POST 获取) ...
+            pass
+
+        # 简单处理：直接获取数据
+        device_id = request.POST.get('device')
+        device = get_object_or_404(ADBDevice, id=device_id)
+
+        # 1. 创建一个临时的 ScriptTask (或者直接调用 Celery)
+        # 为了最大程度复用你的代码，我们创建一个临时 Task
+        temp_task = ScriptTask.objects.create(
+            task_name=f"[内置] {script.name} - {timezone.now().strftime('%H:%M:%S')}",
+            task_desc=script.description,
+            script_path=script.get_absolute_path(),
+            status="active",
+            airtest_mode=True
+        )
+
+        # 2. 拼接参数 (这里简化处理，你可以后续完善 subprocess 的参数拼接)
+        # 目前先直接跑，不带自定义参数，或者把参数存到 log 里
+
+        # 3. 复用你现有的 ExecuteTaskView 里的逻辑
+        log = TaskExecutionLog.objects.create(
+            task=temp_task,
+            device=device,
+            exec_status="running",
+            exec_command=f"准备执行内置脚本: {script.name}",
+            stdout="任务启动中...",
+            start_time=timezone.now()
+        )
+
+        # 4. 调用 Celery (这里直接导入你的 task)
+        from .tasks import execute_script_task
+        celery_task = execute_script_task.delay(temp_task.id, device.id, log.id, sys.executable)
+
+        # 5. 保存 Redis (复用你的函数)
+        try:
+            save_celery_task(log.id, celery_task.id)
+        except:
+            pass
+
+        return redirect(reverse('script_center:log_detail', args=[log.id]))

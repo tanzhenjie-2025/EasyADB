@@ -36,4 +36,7 @@ urlpatterns = [
     path("log/status/<int:log_id>/", views.LogStatusView.as_view(), name="log_status"),
     # 管理日志
     path("management_log/", views.TaskManagementLogView.as_view(), name="management_log"),
+    # === 新增：内置脚本库路由 ===
+    path("builtin/", views.BuiltinScriptListView.as_view(), name="builtin_list"),
+    path("builtin/<int:script_id>/", views.BuiltinScriptDetailView.as_view(), name="builtin_detail"),
 ]

@@ -1,5 +1,10 @@
-# -*- encoding=utf8 -*-
-__author__ = "谭振捷"
+"""
+@ScriptName: 123
+@Description: 123
+@Param: loop_count|int|10|循环次数|True
+@Param: sleep_time|int|2|等待秒数|False
+"""
+__author__ = "tanzhenjie"
 
 import sys
 import os

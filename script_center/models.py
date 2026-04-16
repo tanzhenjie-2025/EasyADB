@@ -1,7 +1,8 @@
 from django.db import models
 from adb_manager.models import ADBDevice
 from django.utils import timezone
-
+from django.conf import settings
+import os
 
 class ScriptTask(models.Model):
     """脚本任务模型（存储任务信息和执行文件路径）"""
@@ -119,3 +120,61 @@ class ScriptTaskManagementLog(models.Model):
     def __str__(self):
         task_name = self.task.task_name if self.task else "未知任务"
         return f"{self.get_operation_display()} {task_name}"
+
+# script_center/models.py
+# ... (保留你原有的 ScriptTask, TaskExecutionLog 等模型) ...
+
+
+
+class BuiltinScript(models.Model):
+    CATEGORY_CHOICES = [
+        ('DEVICE', '设备控制'),
+        ('AD', '广告自动化'),
+        ('MONKEY', '压力测试'),
+        ('UTIL', '实用工具'),
+    ]
+
+    name = models.CharField("脚本名称", max_length=100)
+    identifier = models.SlugField("唯一标识", max_length=100, unique=True)
+    category = models.CharField("分类", max_length=20, choices=CATEGORY_CHOICES, db_index=True)
+    description = models.TextField("功能介绍", blank=True)
+    file_path = models.CharField("文件相对路径", max_length=255, help_text="相对于 BUILTIN_SCRIPTS_ROOT")
+    version = models.CharField("版本号", max_length=20, default="1.0.0")
+    is_active = models.BooleanField("是否启用", default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['category', 'name']
+        verbose_name = "内置脚本"
+        verbose_name_plural = "内置脚本库"
+
+    def __str__(self):
+        return f"[{self.get_category_display()}] {self.name}"
+
+    def get_absolute_path(self):
+        return os.path.join(settings.BUILTIN_SCRIPTS_ROOT, self.file_path)
+
+
+class ScriptParameter(models.Model):
+    TYPE_CHOICES = [
+        ('string', '字符串'),
+        ('integer', '整数'),
+        ('float', '小数'),
+        ('boolean', '开关'),
+    ]
+
+    script = models.ForeignKey(BuiltinScript, on_delete=models.CASCADE, related_name='parameters')
+    name = models.CharField("参数名 (如: --count)", max_length=50)
+    param_type = models.CharField("类型", max_length=10, choices=TYPE_CHOICES, default='string')
+    label = models.CharField("显示名称", max_length=100)
+    default_value = models.CharField("默认值", max_length=255, blank=True, null=True)
+    help_text = models.CharField("帮助说明", max_length=200, blank=True)
+    required = models.BooleanField("必填", default=False)
+    order = models.IntegerField("排序", default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return f"{self.script.name} - {self.name}"

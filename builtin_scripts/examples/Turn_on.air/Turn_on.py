@@ -1,4 +1,9 @@
-# 导入基础库
+"""
+@ScriptName: 123
+@Description: 123
+@Param: loop_count|int|10|循环次数|True
+@Param: sleep_time|int|2|等待秒数|False
+"""
 from airtest.core.api import auto_setup, connect_device, keyevent, sleep, swipe
 import re
 import subprocess
