@@ -174,6 +174,6 @@ BUILTIN_SCRIPTS_DIR = os.path.join(BASE_DIR, 'builtin_scripts', 'examples')
 
 BUILTIN_SCRIPTS_ROOT = os.path.join(BASE_DIR, 'builtin_scripts')
 
-SHOW_BUILTIN_SCRIPTS = os.getenv("SHOW_BUILTIN_SCRIPTS", "True").lower() == "true"
+SHOW_BUILTIN_SCRIPTS = os.getenv("SHOW_BUILTIN_SCRIPTS", "False").lower() == "true"
 
 USE_CELERY = os.getenv("USE_CELERY", "True").lower() == "true"
