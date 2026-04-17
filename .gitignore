@@ -1,0 +1,37 @@
+# ==============================
+# Django 项目自动忽略（必须）
+# ==============================
+*.log
+*.pot
+*.pyc
+__pycache__/
+easy_adb_db.sqlite3          # 本地数据库（最重要！不传）
+easy_adb_db.sqlite3
+script_execution.log
+db.sqlite3-journal
+media/              # 用户上传文件
+static/
+local_settings.py   # 本地私有配置
+start_easyadb.bat
+
+# ==============================
+# 你的 ADB 脚本平台 专用忽略
+# ==============================
+user_scripts/       # 用户自定义脚本（绝对不能上传）
+run/                # 运行日志、临时文件
+output/
+
+builtin_scripts/
+
+# ==============================
+# 系统/IDE 垃圾文件
+# ==============================
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+.env
+.venv/
+venv/
+ENV/
