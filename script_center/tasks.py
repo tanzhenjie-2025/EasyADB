@@ -37,7 +37,6 @@ def read_stream(stream, buffer_key, log, is_stdout=True):
                     log.stdout += line
                 else:
                     log.stderr += line
-                # 注意：这里依然是每行 save，如需极致性能需改为批量更新
                 log.save()
                 async_to_sync(channel_layer.group_send)(
                     f'script_log_{log.id}',
@@ -124,9 +123,9 @@ def _graceful_terminate_process(pid: int, wait_time: int = 5):
         logger.error(f"终止进程{pid}失败：{str(e)}")
 
 
-@shared_task(bind=True, max_retries=0, time_limit=3600)
-def execute_script_task(self, task_id, device_id, log_id, python_path):
-    """Celery异步执行单个设备的脚本任务"""
+# ====================== 核心：抽离执行逻辑（兼容异步/同步） ======================
+def _execute_script_core(task_id, device_id, log_id, python_path, celery_task_id=None):
+    """核心执行逻辑（被 Celery 任务 和 后台线程 共同调用）"""
     log = None
     device_serial = ""
     r = get_redis_conn()
@@ -189,17 +188,12 @@ def execute_script_task(self, task_id, device_id, log_id, python_path):
                 "device_serial": device_serial,
                 "log_id": log_id,
                 "task_id": task_id,
-                "celery_task_id": self.request.id
+                "celery_task_id": celery_task_id  # 兼容同步（传None）
             }
             r.hset("script_running_processes", log_id, json.dumps(process_info))
             logger.info(f"脚本任务{log_id}进程{process.pid}已存入Redis")
 
-        self.update_state(state='RUNNING', meta={
-            'pid': process.pid,
-            'log_id': log_id,
-            'device_serial': device_serial
-        })
-
+        # 移除 Celery 专属的 update_state（同步时不需要）
         start_time = time.time()
         log.stdout = log.stdout or ''
         log_header = f"""【执行环境信息】
@@ -210,7 +204,7 @@ Python路径是否存在：{os.path.exists(real_python_path)}
 系统编码：{sys.getfilesystemencoding()}
 Python IO编码：{os.environ.get('PYTHONIOENCODING', '未设置')}
 进程ID：{process.pid}
-Celery任务ID：{self.request.id}
+Celery任务ID：{celery_task_id or '同步执行（无）'}
 
 【执行日志】
 任务启动时间：{timezone.now()}
@@ -301,7 +295,7 @@ Celery任务ID：{self.request.id}
         return {"status": log.exec_status, "log_id": log_id}
 
     except Exception as e:
-        logger.error(f"Celery脚本任务执行失败：{str(e)}", exc_info=True)
+        logger.error(f"脚本任务执行失败：{str(e)}", exc_info=True)
         if log:
             log.exec_status = "error"
             current_stderr = log.stderr or ''
@@ -314,3 +308,29 @@ Celery任务ID：{self.request.id}
         if process and process.poll() is None:
             _graceful_terminate_process(process.pid, wait_time=1)
         return {"status": "error", "msg": str(e)}
+
+
+# ====================== Celery 异步任务（调用核心逻辑） ======================
+@shared_task(bind=True, max_retries=0, time_limit=3600)
+def execute_script_task(self, task_id, device_id, log_id, python_path):
+    """Celery 异步执行入口"""
+    return _execute_script_core(
+        task_id=task_id,
+        device_id=device_id,
+        log_id=log_id,
+        python_path=python_path,
+        celery_task_id=self.request.id
+    )
+
+
+# ====================== 新增：后台线程同步执行（优雅降级） ======================
+def execute_script_sync(task_id, device_id, log_id, python_path):
+    """后台线程同步执行入口（不阻塞 HTTP 请求）"""
+    thread = threading.Thread(
+        target=_execute_script_core,
+        args=(task_id, device_id, log_id, python_path),
+        kwargs={"celery_task_id": None},
+        daemon=True
+    )
+    thread.start()
+    logger.info(f"已启动后台同步执行线程 - 日志ID：{log_id}")

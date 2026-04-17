@@ -21,7 +21,11 @@ from django.utils import timezone
 from celery.result import AsyncResult
 import django.db.models as models
 
-from .tasks import execute_script_task, _graceful_terminate_process
+from .tasks import (
+    execute_script_task,
+    _graceful_terminate_process,
+    execute_script_sync
+)
 from .models import ScriptTask, TaskExecutionLog, ScriptTaskManagementLog
 from .forms import ScriptTaskForm
 from adb_manager.models import ADBDevice
@@ -32,6 +36,14 @@ import mimetypes
 from django.http import FileResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+
+
+# === 内置脚本库相关视图 ===
+from django import forms
+from .models import BuiltinScript, ScriptParameter, ScriptTask, TaskExecutionLog
+from adb_manager.models import ADBDevice
+from django.utils import timezone
+import sys
 
 # 在文件顶部的 import 区域添加
 from django.views.decorators.http import etag
@@ -61,7 +73,6 @@ def scan_builtin_scripts():
                 scripts.append((air_dir.stem, str(py_file.resolve())))
 
     return scripts
-
 
 def get_env_config(key, default=None, cast_type=str):
     value = os.getenv(key, default)
@@ -141,7 +152,6 @@ def delete_celery_task(log_id):
         except Exception as e:
             logger.error(f"删除Celery任务ID失败：{str(e)}")
 
-
 def send_redis_stop_signal(device_serial, log_id):
     r = get_redis_conn()
     if r and device_serial:
@@ -151,7 +161,6 @@ def send_redis_stop_signal(device_serial, log_id):
             logger.info(f"已发送Redis停止信号 - 设备：{device_serial}，日志ID：{log_id}，有效期：{expire_seconds}秒")
         except Exception as e:
             logger.error(f"发送Redis停止信号失败：{str(e)}")
-
 
 def format_duration(duration):
     if duration:
@@ -165,12 +174,10 @@ def get_python_warning(python_path):
         return "（注意：Python路径为WindowsApps快捷方式，已自动替换为真实路径）"
     return ""
 
-
 def get_recent_logs():
     """优化：select_related 解决 N+1"""
     limit = get_env_config("SCRIPT_RECENT_LOGS_LIMIT", 10, int)
     return TaskExecutionLog.objects.select_related('task', 'device').order_by("-id")[:limit]
-
 
 class TaskListView(View):
     def get(self, request):
@@ -187,9 +194,9 @@ class TaskListView(View):
         }
         return render(request, "script_center/task_list.html", context)
 
-
 class TaskAddView(View):
     """新增任务：默认填充当前Django Python解释器路径"""
+
     def get(self, request):
         form = ScriptTaskForm(initial={'python_path': sys.executable})
         builtin_scripts = scan_builtin_scripts()
@@ -225,6 +232,7 @@ class TaskAddView(View):
 
 class TaskEditView(View):
     """编辑任务：若原Python路径为空则填充默认值"""
+
     def get(self, request, task_id):
         task = get_object_or_404(ScriptTask, id=task_id)
         initial = {}
@@ -257,7 +265,8 @@ class TaskEditView(View):
             if old_script_path != updated_task.script_path:
                 details.append(f"脚本路径从 '{old_script_path}' 修改为 '{updated_task.script_path}'")
             if old_python_path != updated_task.python_path:
-                details.append(f"Python路径从 '{old_python_path or '默认路径'}' 修改为 '{updated_task.python_path or '默认路径'}'")
+                details.append(
+                    f"Python路径从 '{old_python_path or '默认路径'}' 修改为 '{updated_task.python_path or '默认路径'}'")
             if old_status != updated_task.status:
                 details.append(f"任务状态从 '{old_status}' 修改为 '{updated_task.status}'")
 
@@ -320,8 +329,7 @@ class TaskManagementLogView(View):
 
 
 class ExecuteTaskView(View):
-    """执行任务：若任务未填Python路径则使用默认解释器"""
-
+    """执行任务：优先 Celery 异步，失败则降级到后台线程同步"""
     def get(self, request):
         search_query = request.GET.get('search', '').strip()
 
@@ -344,9 +352,9 @@ class ExecuteTaskView(View):
             tasks_query = tasks_query.filter(task_name__icontains=search_query)
         tasks = tasks_query
 
+        # 修改：兼容同步：只要状态是 running 就算运行中
         for log in recent_logs:
-            celery_task_id = get_celery_task(log.id)
-            log.is_running = celery_task_id is not None and log.exec_status == "running"
+            log.is_running = log.exec_status == "running"
             logger.info(f"日志ID：{log.id}，状态：{log.exec_status}，是否运行中：{log.is_running}")
 
         context = {
@@ -404,24 +412,30 @@ class ExecuteTaskView(View):
                     device=device,
                     exec_status="running",
                     exec_command=f"准备执行：{python_path} {task.script_path} {device.adb_connect_str}",
-                    stdout=f"任务启动中（Celery异步执行）{python_warning}",
+                    stdout=f"任务启动中（{'Celery异步' if settings.USE_CELERY else '后台线程同步'}执行）{python_warning}",
                     start_time=timezone.now()
                 )
                 logger.info(f"创建执行日志 - ID：{log.id}，设备：{device.device_name}")
 
                 try:
-                    celery_task = execute_script_task.delay(task.id, device.id, log.id, python_path)
-                    save_celery_task(log.id, celery_task.id)
-                    logger.info(f"提交Celery任务 - 日志ID：{log.id}，任务ID：{celery_task.id}")
+                    # ====================== 核心：异步/同步降级逻辑 ======================
+                    if settings.USE_CELERY:
+                        # 优先尝试 Celery 异步
+                        celery_task = execute_script_task.delay(task.id, device.id, log.id, python_path)
+                        save_celery_task(log.id, celery_task.id)
+                        logger.info(f"提交Celery任务 - 日志ID：{log.id}，任务ID：{celery_task.id}")
+                    else:
+                        # 配置关闭 Celery，直接用后台线程
+                        logger.info(f"配置USE_CELERY=False，使用后台线程同步执行 - 日志ID：{log.id}")
+                        execute_script_sync(task.id, device.id, log.id, python_path)
                 except Exception as celery_err:
-                    log.exec_status = "error"
-                    log.stderr = f"Celery任务提交失败：{str(celery_err)}"
-                    log.end_time = timezone.now()
-                    log.save()
-                    logger.error(f"Celery任务提交失败 - 日志ID：{log.id}，错误：{str(celery_err)}")
+                    # Celery 提交失败，优雅降级到后台线程
+                    logger.warning(f"Celery任务提交失败，优雅降级到后台线程 - 日志ID：{log.id}，错误：{str(celery_err)}")
+                    execute_script_sync(task.id, device.id, log.id, python_path)
 
             success_msg = quote(
-                f"任务【{task.task_name}】已启动！共{len(valid_device_ids)}个在线设备执行中{python_warning}")
+                f"任务【{task.task_name}】已启动！共{len(valid_device_ids)}个在线设备执行中{python_warning}"
+            )
             if offline_devices:
                 success_msg = quote(f"{success_msg}（离线设备已过滤：{','.join(offline_devices)}）")
             logger.info(success_msg)
@@ -434,10 +448,11 @@ class ExecuteTaskView(View):
 
 
 class StopTaskView(View):
+    """停止任务：兼容异步/同步（通过 Redis 信号停止）"""
+
     def get(self, request, log_id):
         try:
             logger.info(f"接收到停止任务请求 - 日志ID：{log_id}")
-            # 优化：select_related
             log = get_object_or_404(TaskExecutionLog.objects.select_related('task', 'device'), id=log_id)
             if log.exec_status != "running":
                 error_msg = quote(f"任务【{log.task.task_name}】未在运行中！当前状态：{log.exec_status}")
@@ -445,13 +460,10 @@ class StopTaskView(View):
                 return redirect(f"{reverse('script_center:execute_task')}?msg={error_msg}")
 
             celery_task_id = get_celery_task(log_id)
-            if not celery_task_id:
-                error_msg = quote(f"未找到任务【{log.task.task_name}】的Celery执行记录！")
-                logger.warning(error_msg)
-                return redirect(f"{reverse('script_center:execute_task')}?msg={error_msg}")
-
             r = get_redis_conn()
             device_serial = None
+
+            # 1. 无论异步/同步，优先发送 Redis 停止信号（脚本会检测）
             if r:
                 process_info_str = r.hget("script_running_processes", log_id)
                 if process_info_str:
@@ -459,13 +471,19 @@ class StopTaskView(View):
                     device_serial = process_info.get("device_serial")
                     send_redis_stop_signal(device_serial, log_id)
 
-            AsyncResult(celery_task_id).revoke(terminate=False)
-            delete_celery_task(log_id)
-            logger.info(f"已发送Celery停止信号 - ID：{celery_task_id}，日志ID：{log_id}")
+            # 2. 如果是 Celery 异步，撤销任务
+            if celery_task_id:
+                from celery.result import AsyncResult
+                AsyncResult(celery_task_id).revoke(terminate=False)
+                delete_celery_task(log_id)
+                logger.info(f"已发送Celery停止信号 - ID：{celery_task_id}，日志ID：{log_id}")
+            else:
+                logger.info(f"未找到Celery任务ID（同步执行模式），仅依赖Redis信号停止 - 日志ID：{log_id}")
 
             stop_wait_time = get_env_config("SCRIPT_STOP_WAIT_TIME", 8, int)
             time.sleep(stop_wait_time)
 
+            # 3. 强制清理进程（兜底）
             if r and process_info_str:
                 process_info = json.loads(process_info_str)
                 pid = process_info.get("pid")
@@ -487,7 +505,7 @@ class StopTaskView(View):
             log.stderr = f"""任务已手动停止（优雅退出）
 - 停止时间：{timezone.now()}
 - 设备序列号：{device_serial or '未知'}
-- Celery任务ID：{celery_task_id}
+- Celery任务ID：{celery_task_id or '同步执行（无）'}
 - 终止日志ID：{log_id}
 - 已等待{stop_wait_time}秒让脚本完成清理和日志输出"""
             log.end_time = timezone.now()
@@ -524,8 +542,8 @@ class LogStatusView(View):
                 id=log_id
             )
 
-            celery_task_id = get_celery_task(log.id)
-            is_running = celery_task_id is not None and log.exec_status == "running"
+            # 修改：兼容同步：只要状态是 running 就算运行中
+            is_running = log.exec_status == "running"
 
             # 优化：生成 ETag，如果内容没变，返回 304 Not Modified
             content_hash = hashlib.md5(f"{log.exec_status}-{log.exec_duration}".encode()).hexdigest()
@@ -682,24 +700,11 @@ class ClearAirtestLogImagesView(View):
             return JsonResponse({"code": 500, "msg": f"清理失败：{str(e)}"})
 
 
-# script_center/views.py
-# ... (保留你原有的所有 View 代码) ...
-
-# === 新增：内置脚本库相关视图 ===
-from django import forms
-from .models import BuiltinScript, ScriptParameter, ScriptTask, TaskExecutionLog
-from adb_manager.models import ADBDevice
-from django.utils import timezone
-import sys
-
-
-# ... 前面的所有代码保持不变 ...
-
 class BuiltinScriptListView(View):
     """内置脚本列表页（带Tab栏）"""
 
     def get(self, request):
-        # 新增：如果设置关闭了，直接重定向回脚本中心
+        # 如果设置关闭了，直接重定向回脚本中心
         if not getattr(settings, 'SHOW_BUILTIN_SCRIPTS', True):
             return redirect(reverse('script_center:task_list'))
 
@@ -722,7 +727,7 @@ class BuiltinScriptDetailView(View):
     """脚本详情页 + 动态表单 + 一键执行"""
 
     def get(self, request, script_id):
-        # 新增：如果设置关闭了，直接重定向
+        # 如果设置关闭了，直接重定向
         if not getattr(settings, 'SHOW_BUILTIN_SCRIPTS', True):
             return redirect(reverse('script_center:task_list'))
 
@@ -778,7 +783,7 @@ class BuiltinScriptDetailView(View):
 
     def post(self, request, script_id):
         """执行脚本：复用你现有的 Celery 逻辑"""
-        # 新增：POST 也要检查
+        # POST 也要检查
         if not getattr(settings, 'SHOW_BUILTIN_SCRIPTS', True):
             return redirect(reverse('script_center:task_list'))
 
@@ -796,8 +801,7 @@ class BuiltinScriptDetailView(View):
             status="active",
             airtest_mode=True
         )
-
-        # 2. 复用你现有的 ExecuteTaskView 里的逻辑
+        # 2. 复用现有的 ExecuteTaskView 里的逻辑
         log = TaskExecutionLog.objects.create(
             task=temp_task,
             device=device,
@@ -818,5 +822,3 @@ class BuiltinScriptDetailView(View):
             pass
 
         return redirect(reverse('script_center:log_detail', args=[log.id]))
-
-# ... 后面的代码保持不变 ...
