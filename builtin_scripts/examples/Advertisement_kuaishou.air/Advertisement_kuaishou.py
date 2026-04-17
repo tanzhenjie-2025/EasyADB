@@ -1,9 +1,5 @@
-"""
-@ScriptName: 123
-@Description: 123
-@Param: loop_count|int|10|循环次数|True
-@Param: sleep_time|int|2|等待秒数|False
-"""
+# -*- encoding=utf8 -*-
+__author__ = "谭振捷"
 
 import sys
 import os
@@ -14,6 +10,8 @@ import logging  # 新增：导入日志模块
 from airtest.core.api import *
 from airtest.core.error import TargetNotFoundError, NoDeviceError
 from airtest.core.android.android import Android
+
+MAX_LOOP = 5
 
 # ===================== 1. 日志配置（核心新增） =====================
 def setup_logger(device_serial):
@@ -229,8 +227,20 @@ if __name__ == "__main__":
         if make_money:
             touch(make_money)
             sleep(3)
-        
-        advertisement_pos = exists(Template(r"tpl1765178876073.png", record_pos=(0.372, 0.193), resolution=(720, 1612)))
+
+        # 开启RGB彩色匹配
+        double_x = exists(
+            Template(r"tpl1776393869785.png", record_pos=(0.415, -0.599), resolution=(720, 1612), rgb=True))
+        if double_x:
+            touch(double_x)
+            sleep(3)
+
+        advertisement_pos = exists(Template(
+            r"tpl1765178876073.png",
+            record_pos=(0.372, 0.193),
+            resolution=(720, 1612),
+            rgb=True  # ✅ 开启彩色识别（关键参数）
+        ))
         touch(advertisement_pos)
         logger.info("✅ 点击目标元素成功")
         sys.stdout.flush()
@@ -260,7 +270,7 @@ if __name__ == "__main__":
 
         # 循环执行（带高频退出检测）
         loop_count = 0
-        max_loop = 30
+        max_loop = MAX_LOOP
         logger.info(f"🚀 开始循环执行（最大{max_loop}次），设备：{device_serial}")
         sys.stdout.flush()
         
@@ -286,7 +296,7 @@ if __name__ == "__main__":
                 sys.stdout.flush()
                 
                 touch(x_pos)
-                safe_sleep(1, r, device_serial)
+                safe_sleep(3, r, device_serial)
                 logger.info(f"✅ 第{loop_count+1}次：点击关闭按钮成功")
                 sys.stdout.flush()
                 
