@@ -168,23 +168,28 @@ if __name__ == "__main__":
 
         if kuaishou_pos:
             touch(kuaishou_pos)
+            sleep(5)
+
+        x_pos = exists(Template(r"tpl1776397039913.png", record_pos=(0.354, -0.65), resolution=(720, 1612)))
+        if x_pos:
+            touch(x_pos)
+            sleep(3)
 
         make_money_pos = exists(Template(r"tpl1765285700753.png", record_pos=(0.197, 1.051), resolution=(720, 1612)))
         if make_money_pos:
             touch(make_money_pos)
+            sleep(5)
 
 
         welfare_box_pos = exists(Template(r"tpl1765285756343.png", record_pos=(0.36, 0.992), resolution=(720, 1612)))
         
         if welfare_box_pos:
             touch(welfare_box_pos)
-            keyevent("BACK")
             sleep(1)
+            touch(welfare_box_pos)
             keyevent("BACK")
-            
-            
-            
-        
+            sleep(3)
+            keyevent("BACK")
 
     # -------------------- 步骤5：键盘中断捕获（Ctrl+C） --------------------
     except KeyboardInterrupt:
