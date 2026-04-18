@@ -208,3 +208,26 @@ SCRIPT_GRACEFUL_TERMINATE_WAIT = int(os.getenv("SCRIPT_GRACEFUL_TERMINATE_WAIT",
 # Redis键名配置
 SCRIPT_REDIS_PROCESS_HASH = os.getenv("SCRIPT_REDIS_PROCESS_HASH", "script_running_processes")
 SCRIPT_REDIS_STOP_FLAG_PREFIX = os.getenv("SCRIPT_REDIS_STOP_FLAG_PREFIX", "airtest_stop_flag_")
+
+# ====================== Task Orchestration 编排任务配置 ======================
+# 日志与展示配置
+ORCH_LOG_FILE = os.getenv("ORCH_LOG_FILE", "orchestration_execution.log")
+ORCH_RECENT_LOGS_LIMIT = int(os.getenv("ORCH_RECENT_LOGS_LIMIT", 10))
+
+# 执行超时与进程控制
+ORCH_STEP_TIMEOUT_BUFFER = int(os.getenv("ORCH_STEP_TIMEOUT_BUFFER", 10))
+ORCH_PROCESS_TERMINATE_WAIT = int(os.getenv("ORCH_PROCESS_TERMINATE_WAIT", 1))
+ORCH_CELERY_TERMINATE_FORCE = os.getenv("ORCH_CELERY_TERMINATE_FORCE", "True").lower() == "true"
+ORCH_CELERY_TASK_TIME_LIMIT = int(os.getenv("ORCH_CELERY_TASK_TIME_LIMIT", 3600))
+
+# Redis键名配置
+ORCH_REDIS_PROCESS_HASH = os.getenv("ORCH_REDIS_PROCESS_HASH", "orch_running_processes")
+
+# 执行环境变量配置
+ORCH_PYTHONIOENCODING = os.getenv("ORCH_PYTHONIOENCODING", "utf-8")
+ORCH_PYTHONLEGACYWINDOWSSTDIO = os.getenv("ORCH_PYTHONLEGACYWINDOWSSTDIO", "utf-8")
+ORCH_LC_ALL = os.getenv("ORCH_LC_ALL", "en_US.UTF-8")
+ORCH_LANG = os.getenv("ORCH_LANG", "en_US.UTF-8")
+
+# 其他配置
+ORCH_MOBILE_VALID_LENGTH = int(os.getenv("ORCH_MOBILE_VALID_LENGTH", 11))

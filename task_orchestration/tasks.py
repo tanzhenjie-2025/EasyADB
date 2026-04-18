@@ -7,6 +7,7 @@ import os
 import json
 from celery import shared_task
 from django.utils import timezone
+from django.conf import settings  # 【优化】顶部导入Settings
 from .models import OrchestrationLog, StepExecutionLog, TaskStep
 from script_center.models import ScriptTask
 from adb_manager.models import ADBDevice
@@ -16,17 +17,16 @@ import redis
 logger = logging.getLogger(__name__)
 
 
-# ===================== Redis操作工具函数（支持本地降级） =====================
+# ===================== Redis操作工具函数（支持本地降级，复用Settings） =====================
 def get_redis_conn():
     """获取Redis连接（失败返回None）"""
     try:
-        from django.conf import settings
         r = redis.Redis(
-            host=getattr(settings, 'REDIS_HOST', '127.0.0.1'),
-            port=getattr(settings, 'REDIS_PORT', 6379),
-            db=getattr(settings, 'REDIS_DB', 0),
+            host=settings.REDIS_HOST,  # 【优化】复用Settings
+            port=settings.REDIS_PORT,  # 【优化】复用Settings
+            db=settings.REDIS_DB,  # 【优化】复用Settings
             decode_responses=True,
-            socket_timeout=5
+            socket_timeout=settings.REDIS_SOCKET_TIMEOUT  # 【优化】复用Settings
         )
         r.ping()
         return r
@@ -45,7 +45,7 @@ def save_running_process(process_key, process_info):
     r = get_redis_conn()
     if r:
         try:
-            r.hset("orch_running_processes", process_key, json.dumps(process_info))
+            r.hset(settings.ORCH_REDIS_PROCESS_HASH, process_key, json.dumps(process_info))  # 【优化】复用Settings
             logger.info(f"Redis已存储进程信息：KEY={process_key}, PID={process_info.get('pid')}")
             return
         except Exception as e:
@@ -62,7 +62,7 @@ def get_running_process(process_key):
     r = get_redis_conn()
     if r:
         try:
-            data = r.hget("orch_running_processes", process_key)
+            data = r.hget(settings.ORCH_REDIS_PROCESS_HASH, process_key)  # 【优化】复用Settings
             return json.loads(data) if data else None
         except Exception as e:
             logger.warning(f"Redis获取失败，尝试本地存储：{str(e)}")
@@ -77,7 +77,7 @@ def remove_running_process(process_key):
     r = get_redis_conn()
     if r:
         try:
-            r.hdel("orch_running_processes", process_key)
+            r.hdel(settings.ORCH_REDIS_PROCESS_HASH, process_key)  # 【优化】复用Settings
             logger.info(f"Redis中进程信息已删除，KEY={process_key}")
         except Exception as e:
             logger.warning(f"Redis删除失败：{str(e)}")
@@ -89,7 +89,7 @@ def remove_running_process(process_key):
             logger.info(f"本地进程信息已删除，KEY={process_key}")
 
 
-# ===================== 核心执行逻辑（Celery和本地共用） =====================
+# ===================== 核心执行逻辑（Celery和本地共用，去硬编码） =====================
 def _execute_step_core(step_id, orch_log_id, device_data, task_id=None):
     """
     执行单个步骤的核心逻辑（无Celery依赖）
@@ -123,7 +123,7 @@ def _execute_step_core(step_id, orch_log_id, device_data, task_id=None):
             step_log.save()
             return {"status": "error", "msg": error_msg}
 
-        # 处理Python路径
+        # 处理Python路径（复用Script Center配置）
         real_python_path = _get_real_python_path(script_task)
 
         # 构建执行命令
@@ -132,13 +132,13 @@ def _execute_step_core(step_id, orch_log_id, device_data, task_id=None):
         step_log.exec_command = command
         step_log.save()
 
-        # 构建环境变量
+        # 构建环境变量（复用Settings配置）
         env = os.environ.copy()
         env.update({
-            'PYTHONIOENCODING': 'utf-8',
-            'PYTHONLEGACYWINDOWSSTDIO': 'utf-8',
-            'LC_ALL': 'en_US.UTF-8',
-            'LANG': 'en_US.UTF-8'
+            'PYTHONIOENCODING': settings.ORCH_PYTHONIOENCODING,  # 【优化】复用Settings
+            'PYTHONLEGACYWINDOWSSTDIO': settings.ORCH_PYTHONLEGACYWINDOWSSTDIO,  # 【优化】复用Settings
+            'LC_ALL': settings.ORCH_LC_ALL,  # 【优化】复用Settings
+            'LANG': settings.ORCH_LANG  # 【优化】复用Settings
         })
 
         # 启动进程
@@ -192,7 +192,7 @@ def _execute_step_core(step_id, orch_log_id, device_data, task_id=None):
             stdout_thread.start()
             stderr_thread.start()
 
-            # 等待进程结束或超时
+            # 等待进程结束或超时（可扩展缓冲时间）
             while process.poll() is None:
                 if time.time() - step_start_time > step.run_duration:
                     raise subprocess.TimeoutExpired(command, step.run_duration)
@@ -262,14 +262,14 @@ def _execute_step_core(step_id, orch_log_id, device_data, task_id=None):
         return {"status": "error", "msg": str(e)}
 
 
-# ===================== Celery任务（仅作为可选执行方式） =====================
-@shared_task(bind=True, max_retries=0, time_limit=3600)
+# ===================== Celery任务（复用Settings时间限制） =====================
+@shared_task(bind=True, max_retries=0, time_limit=settings.ORCH_CELERY_TASK_TIME_LIMIT)  # 【优化】复用Settings
 def execute_step_task(self, step_id, orch_log_id, device_data):
     """Celery异步执行任务（内部调用核心逻辑）"""
     return _execute_step_core(step_id, orch_log_id, device_data, task_id=self.request.id)
 
 
-# ===================== 辅助函数（保持不变） =====================
+# ===================== 辅助函数（去硬编码，复用配置） =====================
 def _read_stream(stream, buffer, step_log, orch_log, stream_type):
     """实时读取进程输出并更新日志"""
     try:
@@ -291,43 +291,40 @@ def _read_stream(stream, buffer, step_log, orch_log, stream_type):
 
 
 def _get_real_python_path(script_task: ScriptTask) -> str:
-    """获取真实的Python路径"""
-    from django.conf import settings
-    warning_keyword = getattr(settings, 'SCRIPT_PYTHON_WARNING_KEYWORD', 'WindowsApps')
+    """获取真实的Python路径（复用Script Center配置）"""
+    warning_keyword = settings.SCRIPT_PYTHON_WARNING_KEYWORD  # 【优化】复用Settings
 
     if warning_keyword in script_task.python_path:
-        # 优先使用settings中的fallback路径
-        fallback_paths = getattr(settings, 'PYTHON_FALLBACK_PATHS', [])
+        # 优先使用settings中的fallback路径（已包含动态路径）
+        fallback_paths = settings.PYTHON_FALLBACK_PATHS  # 【优化】复用Settings
         for path in fallback_paths:
             if os.path.exists(path):
-                return path
-
-        # 兼容原有逻辑
-        possible_paths = [
-            r"C:\Python311\python.exe",
-            os.path.expanduser("~\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"),
-            r"C:\Program Files\Python311\python.exe"
-        ]
-        for path in possible_paths:
-            if os.path.exists(path):
+                logger.info(f"替换Python路径：{script_task.python_path} → {path}")
                 return path
     return script_task.python_path
 
 
 def _terminate_process(pid: int):
-    """彻底终止进程及所有子进程"""
+    """彻底终止进程及所有子进程（复用Settings等待时间）"""
     try:
         parent = psutil.Process(pid)
+        logger.info(f"开始终止进程{pid}，等待{settings.ORCH_PROCESS_TERMINATE_WAIT}秒...")  # 【优化】复用Settings
+
+        # 终止子进程
         for child in parent.children(recursive=True):
             try:
                 child.terminate()
-            except:
-                pass
+            except Exception as e:
+                logger.warning(f"终止子进程{child.pid}失败：{str(e)}")
+
         parent.terminate()
-        time.sleep(1)
+        time.sleep(settings.ORCH_PROCESS_TERMINATE_WAIT)  # 【优化】复用Settings
+
         if parent.is_running():
             parent.kill()
-        logger.info(f"进程{pid}及其子进程已彻底终止")
+            logger.warning(f"进程{pid}未自行终止，已强制杀死")
+        else:
+            logger.info(f"进程{pid}及其子进程已彻底终止")
     except Exception as e:
         logger.error(f"终止进程{pid}失败：{str(e)}")
 
