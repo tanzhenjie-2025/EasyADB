@@ -50,6 +50,7 @@ from django.views.decorators.http import etag
 from django.utils.cache import patch_response_headers
 import hashlib
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # ====================== 优化：全局 Redis 连接池 ======================
 REDIS_POOL = None
 
@@ -330,6 +331,7 @@ class TaskManagementLogView(View):
 
 class ExecuteTaskView(View):
     """执行任务：优先 Celery 异步，失败则降级到后台线程同步"""
+
     def get(self, request):
         search_query = request.GET.get('search', '').strip()
 
@@ -343,8 +345,22 @@ class ExecuteTaskView(View):
             dev.status = dev.device_status
             device_list.append(dev)
 
-        recent_logs = get_recent_logs()
-        logger.info(f"最近执行日志数量：{recent_logs.count()}")
+        # ====================== 新增：分页获取最近执行日志 ======================
+        page = request.GET.get('page', 1)
+        page_size = get_env_config("SCRIPT_RECENT_LOGS_LIMIT", 10, int)
+        logs_queryset = TaskExecutionLog.objects.select_related('task', 'device').order_by("-id")
+        paginator = Paginator(logs_queryset, page_size)
+
+        try:
+            recent_logs = paginator.page(page)
+        except PageNotAnInteger:
+            # 如果 page 不是整数，显示第一页
+            recent_logs = paginator.page(1)
+        except EmptyPage:
+            # 如果 page 超出范围，显示最后一页
+            recent_logs = paginator.page(paginator.num_pages)
+
+        logger.info(f"最近执行日志总数：{logs_queryset.count()}，当前页：{recent_logs.number}")
 
         # 优化：only() 只查需要的字段
         tasks_query = ScriptTask.objects.filter(status="active").only('id', 'task_name', 'script_path', 'python_path')
@@ -361,8 +377,12 @@ class ExecuteTaskView(View):
             "page_title": "执行脚本任务",
             "devices": device_list,
             "tasks": tasks,
-            "recent_logs": recent_logs,
-            "search_query": search_query
+            "recent_logs": recent_logs,  # 现在是 Page 对象
+            "search_query": search_query,
+            # 新增：分页专用变量
+            "page_obj": recent_logs,
+            "is_paginated": recent_logs.has_other_pages(),
+            "paginator": paginator
         }
         return render(request, "script_center/execute_task.html", context)
 

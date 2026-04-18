@@ -297,6 +297,42 @@
                 {% endfor %}
             </tbody>
         </table>
+
+     <!-- ====================== 新增：分页控件 ====================== -->
+        {% if is_paginated %}
+        <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div style="color: #606266; font-size: 14px;">
+                共 {{ paginator.count }} 条记录，第 {{ page_obj.number }} / {{ paginator.num_pages }} 页
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-sm btn-default">首页</a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-sm btn-default">上一页</a>
+                {% else %}
+                    <button class="btn btn-sm btn-default" disabled style="opacity: 0.6; cursor: not-allowed;">首页</button>
+                    <button class="btn btn-sm btn-default" disabled style="opacity: 0.6; cursor: not-allowed;">上一页</button>
+                {% endif %}
+
+                {# 显示页码：只显示当前页附近的页码 #}
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <button class="btn btn-sm btn-primary" disabled>{{ num }}</button>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-sm btn-default">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-sm btn-default">下一页</a>
+                    <a href="?page={{ paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-sm btn-default">末页</a>
+                {% else %}
+                    <button class="btn btn-sm btn-default" disabled style="opacity: 0.6; cursor: not-allowed;">下一页</button>
+                    <button class="btn btn-sm btn-default" disabled style="opacity: 0.6; cursor: not-allowed;">末页</button>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
     </div>
 {% endblock %}
 
