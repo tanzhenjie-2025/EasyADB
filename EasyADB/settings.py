@@ -177,3 +177,34 @@ BUILTIN_SCRIPTS_ROOT = os.path.join(BASE_DIR, 'builtin_scripts')
 SHOW_BUILTIN_SCRIPTS = os.getenv("SHOW_BUILTIN_SCRIPTS", "False").lower() == "true"
 
 USE_CELERY = os.getenv("USE_CELERY", "True").lower() == "true"
+
+# ====================== 新增：Script Center 优化配置 ======================
+SCRIPT_PYTHON_WARNING_KEYWORD = os.getenv("SCRIPT_PYTHON_WARNING_KEYWORD", "WindowsApps")
+# Python版本（用于构建动态fallback路径）
+PYTHON_VERSION = os.getenv("PYTHON_VERSION", "311")
+
+# Python Fallback路径（解决WindowsApps问题）
+# 1. 从.env读取分号分隔的固定路径
+PYTHON_FALLBACK_PATHS = os.getenv("PYTHON_FALLBACK_PATHS", "").split(";")
+# 2. 过滤空值并去重
+PYTHON_FALLBACK_PATHS = list({path.strip() for path in PYTHON_FALLBACK_PATHS if path.strip()})
+# 3. 添加动态用户目录路径（自动适配当前用户）
+dynamic_python_path = os.path.expanduser(
+    f"~\\AppData\\Local\\Programs\\Python\\Python{PYTHON_VERSION}\\python.exe"
+)
+if dynamic_python_path not in PYTHON_FALLBACK_PATHS:
+    PYTHON_FALLBACK_PATHS.append(dynamic_python_path)
+
+# Redis连接池配置（复用已有REDIS_HOST/REDIS_PORT/REDIS_DB）
+REDIS_SOCKET_TIMEOUT = int(os.getenv("REDIS_SOCKET_TIMEOUT", 2))
+
+# 脚本执行超时配置
+SCRIPT_EXECUTION_TIMEOUT = int(os.getenv("SCRIPT_EXECUTION_TIMEOUT", 3000))  # 50分钟
+
+# 进程终止相关配置（复用部分已有配置）
+SCRIPT_GRACEFUL_TERMINATE_WAIT = int(os.getenv("SCRIPT_GRACEFUL_TERMINATE_WAIT", 5))  # 优雅等待默认时间
+# （复用已有SCRIPT_STOP_WAIT_TIME、SCRIPT_PROCESS_TERMINATE_WAIT、SCRIPT_REDIS_STOP_FLAG_EXPIRE）
+
+# Redis键名配置
+SCRIPT_REDIS_PROCESS_HASH = os.getenv("SCRIPT_REDIS_PROCESS_HASH", "script_running_processes")
+SCRIPT_REDIS_STOP_FLAG_PREFIX = os.getenv("SCRIPT_REDIS_STOP_FLAG_PREFIX", "airtest_stop_flag_")

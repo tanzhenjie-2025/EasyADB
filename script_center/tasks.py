@@ -8,6 +8,7 @@ import json
 import threading
 from celery import shared_task
 from django.utils import timezone
+from django.conf import settings  # 【新增】导入Django settings
 from .models import ScriptTask, TaskExecutionLog
 from adb_manager.models import ADBDevice
 import logging
@@ -20,7 +21,7 @@ stderr_buffer = {}
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-# ====================== 优化：全局 Redis 连接池 ======================
+# ====================== 优化：全局 Redis 连接池（使用settings配置） ======================
 REDIS_POOL = None
 
 
@@ -70,15 +71,15 @@ def read_stream(stream, buffer_key, log, is_stdout=True):
 
 
 def get_redis_conn():
-    """优化：使用连接池"""
+    """优化：使用连接池 + settings配置"""
     global REDIS_POOL
     if REDIS_POOL is None:
         REDIS_POOL = redis.ConnectionPool(
-            host="127.0.0.1",
-            port=6379,
-            db=0,
+            host=settings.REDIS_HOST,  # 【修改】使用settings
+            port=settings.REDIS_PORT,  # 【修改】使用settings
+            db=settings.REDIS_DB,      # 【修改】使用settings
             decode_responses=True,
-            socket_timeout=2
+            socket_timeout=settings.REDIS_SOCKET_TIMEOUT  # 【修改】使用settings
         )
     try:
         r = redis.Redis(connection_pool=REDIS_POOL)
@@ -89,8 +90,9 @@ def get_redis_conn():
         return None
 
 
-def _graceful_terminate_process(pid: int, wait_time: int = 5):
-    """优雅终止进程"""
+def _graceful_terminate_process(pid: int, wait_time: int = None):
+    """优雅终止进程（使用settings默认值）"""
+    wait_time = wait_time or settings.SCRIPT_GRACEFUL_TERMINATE_WAIT  # 【修改】使用settings
     try:
         parent = psutil.Process(pid)
         logger.info(f"开始优雅终止进程{pid}，等待{wait_time}秒让脚本清理并输出日志...")
@@ -141,14 +143,8 @@ def _execute_script_core(task_id, device_id, log_id, python_path, celery_task_id
         input_python_path = python_path or task.python_path
 
         real_python_path = input_python_path
-        if "WindowsApps" in input_python_path:
-            possible_paths = [
-                r"C:\Python311\python.exe",
-                r"C:\Users\TanZhenJie\AppData\Local\Programs\Python\Python311\python.exe",
-                os.path.expanduser("~\\AppData\\Local\\Programs\\Python\\Python311\\python.exe"),
-                r"C:\Users\TanZhenJie\AppData\Local\Programs\Python\Python311\python.exe",
-                r"C:\Program Files\Python311\python.exe"
-            ]
+        if settings.SCRIPT_PYTHON_WARNING_KEYWORD in input_python_path:  # 【修改】使用settings（你原有配置里有这个）
+            possible_paths = settings.PYTHON_FALLBACK_PATHS  # 【修改】使用settings
             for path in possible_paths:
                 if os.path.exists(path):
                     real_python_path = path
@@ -190,7 +186,7 @@ def _execute_script_core(task_id, device_id, log_id, python_path, celery_task_id
                 "task_id": task_id,
                 "celery_task_id": celery_task_id  # 兼容同步（传None）
             }
-            r.hset("script_running_processes", log_id, json.dumps(process_info))
+            r.hset(settings.SCRIPT_REDIS_PROCESS_HASH, log_id, json.dumps(process_info))  # 【修改】使用settings
             logger.info(f"脚本任务{log_id}进程{process.pid}已存入Redis")
 
         # 移除 Celery 专属的 update_state（同步时不需要）
@@ -238,7 +234,7 @@ Celery任务ID：{celery_task_id or '同步执行（无）'}
         stderr_thread.start()
 
         try:
-            process.wait(timeout=3000)
+            process.wait(timeout=settings.SCRIPT_EXECUTION_TIMEOUT)  # 【修改】使用settings
             stdout_thread.join(timeout=5)
             stderr_thread.join(timeout=5)
 
@@ -254,33 +250,37 @@ Celery任务ID：{celery_task_id or '同步执行（无）'}
                 log.stdout += f"\n\n【执行失败】返回码：{return_code}，耗时：{log.exec_duration:.2f}秒"
 
         except subprocess.TimeoutExpired:
-            logger.info(f"任务{log_id}执行超时（50分钟），发送停止信号...")
+            logger.info(f"任务{log_id}执行超时（{settings.SCRIPT_EXECUTION_TIMEOUT}秒），发送停止信号...")  # 【修改】使用settings
             if r:
-                r.set(f"airtest_stop_flag_{device_serial}", "True", ex=60)
-                log.stderr += f"\n\n【执行超时】超过50分钟，已发送停止信号，等待脚本优雅退出..."
+                r.set(
+                    f"{settings.SCRIPT_REDIS_STOP_FLAG_PREFIX}{device_serial}",  # 【修改】使用settings
+                    "True",
+                    ex=settings.SCRIPT_REDIS_STOP_FLAG_EXPIRE  # 【修改】使用你原有配置
+                )
+                log.stderr += f"\n\n【执行超时】超过{settings.SCRIPT_EXECUTION_TIMEOUT}秒，已发送停止信号，等待脚本优雅退出..."  # 【修改】使用settings
                 log.save()
 
-            time.sleep(5)
-            _graceful_terminate_process(process.pid, wait_time=3)
+            time.sleep(settings.SCRIPT_STOP_WAIT_TIME)  # 【修改】使用你原有配置
+            _graceful_terminate_process(process.pid, wait_time=settings.SCRIPT_PROCESS_TERMINATE_WAIT)  # 【修改】使用你原有配置
 
             log.exec_status = "timeout"
-            log.stderr += f"\n\n【执行超时】进程{process.pid}已终止，总耗时：3000秒"
-            log.exec_duration = 3000
+            log.stderr += f"\n\n【执行超时】进程{process.pid}已终止，总耗时：{settings.SCRIPT_EXECUTION_TIMEOUT}秒"  # 【修改】使用settings
+            log.exec_duration = settings.SCRIPT_EXECUTION_TIMEOUT  # 【修改】使用settings
 
         except Exception as e:
-            if r and r.get(f"airtest_stop_flag_{device_serial}") == "True":
+            if r and r.get(f"{settings.SCRIPT_REDIS_STOP_FLAG_PREFIX}{device_serial}") == "True":  # 【修改】使用settings
                 logger.info(f"任务{log_id}收到手动停止信号，等待日志输出...")
-                time.sleep(5)
+                time.sleep(settings.SCRIPT_STOP_WAIT_TIME)  # 【修改】使用你原有配置
                 stdout_thread.join(timeout=3)
                 stderr_thread.join(timeout=3)
 
-                _graceful_terminate_process(process.pid, wait_time=3)
+                _graceful_terminate_process(process.pid, wait_time=settings.SCRIPT_PROCESS_TERMINATE_WAIT)  # 【修改】使用你原有配置
 
                 log.exec_status = "stopped"
                 log.stderr += f"\n\n【任务停止】收到手动停止信号，进程{process.pid}已终止，设备：{device_serial}"
             else:
                 logger.error(f"任务{log_id}执行异常：{str(e)}")
-                _graceful_terminate_process(process.pid, wait_time=1)
+                _graceful_terminate_process(process.pid, wait_time=1)  # 紧急终止保持1秒（可根据需要新增配置）
                 log.exec_status = "error"
                 log.stderr += f"\n\n【执行异常】{type(e).__name__}：{str(e)}，已终止进程{process.pid}"
             log.exec_duration = time.time() - start_time
@@ -289,8 +289,8 @@ Celery任务ID：{celery_task_id or '同步执行（无）'}
         log.save()
 
         if r:
-            r.delete(f"airtest_stop_flag_{device_serial}")
-            r.hdel("script_running_processes", log_id)
+            r.delete(f"{settings.SCRIPT_REDIS_STOP_FLAG_PREFIX}{device_serial}")  # 【修改】使用settings
+            r.hdel(settings.SCRIPT_REDIS_PROCESS_HASH, log_id)  # 【修改】使用settings
 
         return {"status": log.exec_status, "log_id": log_id}
 
@@ -303,10 +303,10 @@ Celery任务ID：{celery_task_id or '同步执行（无）'}
             log.end_time = timezone.now()
             log.save()
         if r:
-            r.delete(f"airtest_stop_flag_{device_serial}")
-            r.hdel("script_running_processes", log_id)
+            r.delete(f"{settings.SCRIPT_REDIS_STOP_FLAG_PREFIX}{device_serial}")  # 【修改】使用settings
+            r.hdel(settings.SCRIPT_REDIS_PROCESS_HASH, log_id)  # 【修改】使用settings
         if process and process.poll() is None:
-            _graceful_terminate_process(process.pid, wait_time=1)
+            _graceful_terminate_process(process.pid, wait_time=1)  # 紧急终止保持1秒
         return {"status": "error", "msg": str(e)}
 
 
