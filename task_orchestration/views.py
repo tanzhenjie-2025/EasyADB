@@ -1,10 +1,3 @@
-"""
-编排任务管理视图
-重构说明：
-1. 新增优雅降级：Celery不可用时自动切换本地线程执行
-2. 新增容灾处理：Redis/Celery故障不影响业务
-3. 保持原有业务逻辑、接口格式完全兼容
-"""
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.urls import reverse
@@ -31,6 +24,7 @@ from .tasks import _execute_step_core, kill_redis_process, get_running_process, 
 
 from celery.result import AsyncResult
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 # ===================== 公共工具函数（保持不变） =====================
 def get_env_config(key, default=None, cast_type=str):
     """统一读取环境变量配置"""
@@ -574,7 +568,7 @@ class ExecuteOrchestrationAPIView(View):
             orch_log.save()
 
 class OrchestrationExecuteView(View):
-    """新版执行页面（保持不变，复用逻辑）"""
+    """新版执行页面（添加分页功能）"""
     def get(self, request):
         devices = ADBDevice.objects.filter(is_active=True)
         device_list = []
@@ -582,17 +576,35 @@ class OrchestrationExecuteView(View):
             dev.status = dev.device_status
             device_list.append(dev)
 
-        recent_logs = OrchestrationLog.objects.all().order_by("-id")[:RECENT_LOGS_LIMIT]
-        for log in recent_logs:
+        # 分页处理：获取所有日志并分页
+        all_logs = OrchestrationLog.objects.all().order_by("-id")
+        paginator = Paginator(all_logs, RECENT_LOGS_LIMIT)  # 每页显示 RECENT_LOGS_LIMIT 条
+        page = request.GET.get('page')
+
+        try:
+            recent_logs_page = paginator.page(page)
+        except PageNotAnInteger:
+            # 如果页码不是整数，显示第一页
+            recent_logs_page = paginator.page(1)
+        except EmptyPage:
+            # 如果页码超出范围，显示最后一页
+            recent_logs_page = paginator.page(paginator.num_pages)
+
+        # 给当前页的日志添加运行状态标记
+        for log in recent_logs_page:
             log.is_running = log.exec_status == "running"
 
         context = {
             "page_title": "执行编排任务",
             "devices": device_list,
             "orchestrations": OrchestrationTask.objects.filter(status="active"),
-            "recent_logs": recent_logs
+            "recent_logs": recent_logs_page,  # 传递分页后的页面对象
+            "paginator": paginator,
+            "page_obj": recent_logs_page,
+            "is_paginated": recent_logs_page.has_other_pages(),  # 是否有分页
         }
         return render(request, "task_orchestration/execute_orchestration.html", context)
+
 
     def post(self, request):
         try:

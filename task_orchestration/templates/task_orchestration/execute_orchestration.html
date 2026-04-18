@@ -109,6 +109,28 @@
         margin-top: 5px;
         margin-bottom: 10px;
     }
+    /* 分页控件样式 */
+    .pagination-container {
+        margin-top: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .pagination-info {
+        color: #606266;
+        font-size: 14px;
+    }
+    .pagination-buttons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+    .pagination-buttons .btn-sm[disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 </style>
 {% endblock %}
 
@@ -253,6 +275,36 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <!-- 分页控件 -->
+        {% if is_paginated %}
+        <div class="pagination-container">
+            <div class="pagination-info">
+                第 {{ page_obj.start_index }}-{{ page_obj.end_index }} 条，共 {{ paginator.count }} 条
+            </div>
+            <div class="pagination-buttons">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1" class="btn btn-sm btn-default">首页</a>
+                    <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-sm btn-default">上一页</a>
+                {% else %}
+                    <button class="btn btn-sm btn-default" disabled>首页</button>
+                    <button class="btn btn-sm btn-default" disabled>上一页</button>
+                {% endif %}
+
+                <span style="color: #606266; font-size: 14px; padding: 0 8px;">
+                    第 {{ page_obj.number }} 页 / 共 {{ paginator.num_pages }} 页
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="btn btn-sm btn-default">下一页</a>
+                    <a href="?page={{ paginator.num_pages }}" class="btn btn-sm btn-default">末页</a>
+                {% else %}
+                    <button class="btn btn-sm btn-default" disabled>下一页</button>
+                    <button class="btn btn-sm btn-default" disabled>末页</button>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 {% endblock %}
 
@@ -373,7 +425,7 @@
 
         function initSelectedStates() {
             deviceCheckboxes.forEach(checkbox => {
-                const item = document.querySelector(`.device-item[data-device-id="${checkbox.value}"]`;
+                const item = document.querySelector(`.device-item[data-device-id="${checkbox.value}"]`);
                 item.classList.toggle('selected', checkbox.checked);
             });
             orchRadios.forEach(radio => {
