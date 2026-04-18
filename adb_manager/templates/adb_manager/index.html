@@ -171,6 +171,22 @@
         padding-bottom: 15px;
         border-bottom: 1px solid #eee;
     }
+
+    /* 【新增】添加设备按钮样式 */
+    .add-device-link {
+        display: inline-block;
+        margin-left: 10px;
+        padding: 2px 8px;
+        background-color: #67c23a;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+    .add-device-link:hover {
+        background-color: #85ce61;
+        color: white;
+    }
 </style>
 {% endblock %}
 
@@ -393,7 +409,7 @@
 
 {% block extra_js %}
 <script>
-// 原有：已连接设备列表模态框逻辑（保持不变）
+// 原有：已连接设备列表模态框逻辑（【仅修改了此处渲染逻辑，添加了按钮】）
 const modal = document.getElementById("devicesModal");
 const listDevicesBtn = document.getElementById("listDevicesBtn");
 const closeModalBtn = document.querySelector(".close-modal");
@@ -428,11 +444,16 @@ listDevicesBtn.addEventListener("click", function() {
             if (device_count > 0) {
                 html += "<h4>设备详情：</h4>";
                 connected_devices.forEach(device => {
+                    // 【新增】构建添加设备的URL
+                    const addUrl = "{% url 'adb_manager:add_device' %}?serial=" + encodeURIComponent(device.serial);
+
                     html += `
                         <div class="device-list-item">
                             <span class="device-serial">${device.serial}</span> -
                             状态：<span class="${device.status === 'device' ? 'status-online' : 'status-offline'}">${device.status}</span>
                             ${device.details ? `<br>详情：${device.details}` : ''}
+                            <!-- 【新增】添加此设备按钮 -->
+                            <a href="${addUrl}" class="add-device-link">➕ 添加此设备</a>
                         </div>
                     `;
                 });

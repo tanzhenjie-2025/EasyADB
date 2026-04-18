@@ -445,9 +445,13 @@ class RefreshAllDevicesView(View):
 
 
 class AddDeviceView(View):
-    """添加ADB设备（添加日志记录）"""
+    """添加ADB设备（添加日志记录 + 支持URL参数预填序列号）"""
+
     def get(self, request):
-        form = ADBDeviceForm()
+        # 从 GET 参数中获取序列号（如果有）
+        initial_serial = request.GET.get("serial", "")
+
+        form = ADBDeviceForm(initial={"device_serial": initial_serial})
         if request.user.is_authenticated:
             form.fields["user"].initial = request.user.id
 
