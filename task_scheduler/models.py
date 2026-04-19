@@ -1,4 +1,3 @@
-# task_scheduler/models.py
 from django.db import models
 import datetime
 import croniter
@@ -61,11 +60,16 @@ class ScheduleTask(models.Model):
         return next_run
 
     def is_due(self):
-        """检查当前是否到了执行时间（误差5分钟）"""
+        """检查当前是否到了执行时间（核心修复：基于next_run_time判断，误差5分钟）"""
+        if not self.is_active:
+            return False
+        if not self.next_run_time:
+            self.next_run_time = self.calculate_next_run_time()
+            self.save(update_fields=['next_run_time'])
+
         now = datetime.datetime.now()
-        cron = croniter.croniter(self.cron_expression, now - datetime.timedelta(minutes=5))
-        prev_run = cron.get_prev(datetime.datetime)
-        return prev_run >= now - datetime.timedelta(minutes=5) and self.is_active
+        # 判断逻辑：下次执行时间已过，且在5分钟窗口期内（防止漏执行）
+        return self.next_run_time <= now and (now - self.next_run_time) <= datetime.timedelta(minutes=5)
 
 
 class ScheduleExecutionLog(models.Model):
