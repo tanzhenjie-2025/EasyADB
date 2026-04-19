@@ -180,18 +180,37 @@ def get_recent_logs():
     limit = get_env_config("SCRIPT_RECENT_LOGS_LIMIT", 10, int)
     return TaskExecutionLog.objects.select_related('task', 'device').order_by("-id")[:limit]
 
+
 class TaskListView(View):
     def get(self, request):
         search_query = request.GET.get('search', '').strip()
         # 优化：only() 只查需要的字段
-        tasks_query = ScriptTask.objects.only('id', 'task_name', 'status', 'script_path', 'create_time')
+        tasks_query = ScriptTask.objects.only('id', 'task_name', 'status', 'script_path', 'python_path', 'create_time')
         if search_query:
             tasks_query = tasks_query.filter(task_name__icontains=search_query)
-        tasks = tasks_query
+
+        # ====================== 新增：分页逻辑 ======================
+        page_size = get_env_config("SCRIPT_TASK_LIST_PAGE_SIZE", 10, int)
+        paginator = Paginator(tasks_query, page_size)
+        page = request.GET.get('page')
+
+        try:
+            tasks = paginator.page(page)
+        except PageNotAnInteger:
+            # 如果 page 不是整数，显示第一页
+            tasks = paginator.page(1)
+        except EmptyPage:
+            # 如果 page 超出范围，显示最后一页
+            tasks = paginator.page(paginator.num_pages)
+
         context = {
             "page_title": "脚本任务管理",
             "tasks": tasks,
-            "search_query": search_query
+            "search_query": search_query,
+            # 新增：分页专用变量
+            "page_obj": tasks,
+            "is_paginated": tasks.has_other_pages(),
+            "paginator": paginator
         }
         return render(request, "script_center/task_list.html", context)
 

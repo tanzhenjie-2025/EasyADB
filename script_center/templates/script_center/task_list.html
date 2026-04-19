@@ -100,7 +100,7 @@
     <!-- 搜索结果提示 -->
     {% if search_query %}
         <div class="alert alert-success">
-            搜索关键词: "{{ search_query }}", 找到 {{ tasks.count }} 个结果
+            搜索关键词: "{{ search_query }}", 找到 {{ paginator.count }} 个结果
         </div>
     {% endif %}
 
@@ -160,6 +160,27 @@
             </tbody>
         </table>
     </div>
+
+    <!-- 新增：分页控件 -->
+    {% if is_paginated %}
+    <div class="pagination-container" style="margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 10px;">
+        <nav class="pagination" style="display: flex; gap: 5px;">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-default btn-small" style="min-width: 80px;">首页</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-default btn-small" style="min-width: 80px;">上一页</a>
+            {% endif %}
+
+            <span class="current-page" style="padding: 6px 12px; font-size: 14px; color: #606266;">
+                第 {{ page_obj.number }} 页 / 共 {{ paginator.num_pages }} 页
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-default btn-small" style="min-width: 80px;">下一页</a>
+                <a href="?page={{ paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}" class="btn btn-default btn-small" style="min-width: 80px;">末页</a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
 {% endblock %}
 
 <!-- 5. 页面无额外JS，此块可留空或省略 -->
