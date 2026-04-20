@@ -149,13 +149,20 @@ r = get_redis_client()
 
 # ===================== 视图函数/类 =====================
 def index(request):
-    """易控ADB首页（保持不变）"""
-    devices = ADBDevice.objects.all()
-    logger.info(f"数据库查询到的设备数量：{devices.count()}")
-    logger.info(f"数据库设备详情：{[str(dev) for dev in devices]}")
+    """易控ADB首页（添加搜索功能）"""
+    # 获取搜索关键词
+    q = request.GET.get('q', '').strip()
+
+    # 过滤设备
+    devices_queryset = ADBDevice.objects.all()
+    if q:
+        devices_queryset = devices_queryset.filter(device_name__icontains=q)
+
+    logger.info(f"数据库查询到的设备数量：{devices_queryset.count()}")
+    logger.info(f"数据库设备详情：{[str(dev) for dev in devices_queryset]}")
 
     device_list = []
-    for dev in devices:
+    for dev in devices_queryset:
         try:
             connect_id = dev.connect_identifier
             logger.info(f"处理设备：{connect_id}")

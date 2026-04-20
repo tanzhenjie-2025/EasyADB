@@ -187,6 +187,28 @@
         background-color: #85ce61;
         color: white;
     }
+
+    /* 【新增】搜索栏样式 */
+    .search-bar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+    }
+    .search-input {
+        flex: 1;
+        max-width: 300px;
+        padding: 6px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    .search-btn {
+        padding: 6px 16px;
+    }
 </style>
 {% endblock %}
 
@@ -224,6 +246,17 @@
     {% endif %}
 
     <div class="card">
+        <!-- 【新增】搜索栏 -->
+        <div class="search-bar">
+            <form method="GET" action="{% url 'adb_manager:index' %}" style="display: flex; gap: 10px; align-items: center; width: 100%;">
+                <input type="text" name="q" class="search-input" placeholder="搜索设备名称..." value="{{ request.GET.q|default:'' }}">
+                <button type="submit" class="btn btn-primary search-btn">搜索</button>
+                {% if request.GET.q %}
+                    <a href="{% url 'adb_manager:index' %}" class="btn btn-default">重置</a>
+                {% endif %}
+            </form>
+        </div>
+
         <table class="device-table">
             <thead>
                 <tr>
