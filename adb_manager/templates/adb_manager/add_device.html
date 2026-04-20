@@ -1,207 +1,179 @@
+
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ page_title }}</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            padding: 20px;
-            background-color: #f5f7fa;
-            font-family: "Microsoft YaHei", sans-serif;
-        }
-        .page-header {
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .page-header h1 {
-            color: #303133;
-            font-size: 24px;
-        }
-        .back-btn {
-            text-decoration: none;
-            color: #409eff;
-            font-size: 14px;
-        }
-        .back-btn:hover {
-            color: #66b1ff;
-        }
-        .form-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-        }
-        .form-title {
-            font-size: 18px;
-            color: #303133;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ebeef5;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            color: #303133;
-            font-weight: 500;
-        }
-        .form-help {
-            font-size: 12px;
-            color: #909399;
-            margin-top: 4px;
-        }
-        .form-input, .form-select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #dcdfe6;
-            border-radius: 4px;
-            font-size: 14px;
-            transition: border-color 0.2s;
-        }
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: #409eff;
-        }
-        .form-checkbox {
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-        .error-msg {
-            color: #f56c6c;
-            font-size: 14px;
-            margin-bottom: 15px;
-            padding: 10px;
-            background-color: #fef0f0;
-            border-radius: 4px;
-        }
-        .field-error {
-            color: #f56c6c;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-        .submit-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #409eff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .submit-btn:hover {
-            background-color: #66b1ff;
-        }
-        .submit-btn:active {
-            background-color: #337ecc;
-        }
-        .tip-box {
-            padding: 10px;
-            background-color: #f0f9ff;
-            border-left: 4px solid #409eff;
-            margin-bottom: 20px;
-            font-size: 12px;
-            color: #606266;
-        }
-    </style>
-</head>
-<body>
-    <div class="page-header">
-        <h1>➕ {{ page_title }}</h1>
-        <a href="{% url 'adb_manager:index' %}" class="back-btn">← 返回设备列表</a>
+{% block extra_css %}
+<style>
+    .back-btn {
+        text-decoration: none;
+        color: #409eff;
+        font-size: 14px;
+    }
+    .back-btn:hover {
+        color: #66b1ff;
+    }
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    }
+    .form-title {
+        font-size: 18px;
+        color: #303133;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #ebeef5;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #303133;
+        font-weight: 500;
+    }
+    .form-help {
+        font-size: 12px;
+        color: #909399;
+        margin-top: 4px;
+    }
+    .form-input, .form-select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #dcdfe6;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus {
+        outline: none;
+        border-color: #409eff;
+    }
+    .form-checkbox {
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+    .error-msg {
+        color: #f56c6c;
+        font-size: 14px;
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: #fef0f0;
+        border-radius: 4px;
+    }
+    .field-error {
+        color: #f56c6c;
+        font-size: 12px;
+        margin-top: 4px;
+    }
+    .submit-btn {
+        width: 100%;
+        padding: 12px;
+        background-color: #409eff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .submit-btn:hover {
+        background-color: #66b1ff;
+    }
+    .submit-btn:active {
+        background-color: #337ecc;
+    }
+    .tip-box {
+        padding: 10px;
+        background-color: #f0f9ff;
+        border-left: 4px solid #409eff;
+        margin-bottom: 20px;
+        font-size: 12px;
+        color: #606266;
+    }
+</style>
+{% endblock %}
+
+{% block page_header %}
+<div class="page-header">
+    <h1>➕ {{ page_title }}</h1>
+    <a href="{% url 'adb_manager:index' %}" class="back-btn">← 返回设备列表</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-title">设备基本信息</div>
+
+    <div class="tip-box">
+        📌 序列号优先级高于IP+端口 | 序列号可通过 <code>adb devices</code> 命令查看 | 示例：10AF5E1AKU003NR
     </div>
 
-    <div class="form-container">
-        <div class="form-title">设备基本信息</div>
+    {% if error_msg %}
+        <div class="error-msg">{{ error_msg }}</div>
+    {% endif %}
 
-        <!-- 提示框 -->
-        <div class="tip-box">
-            📌 序列号优先级高于IP+端口 | 序列号可通过 <code>adb devices</code> 命令查看 | 示例：10AF5E1AKU003NR
+    <form method="POST" action="{% url 'adb_manager:add_device' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label class="form-label">{{ form.device_name.label }} *</label>
+            {{ form.device_name }}
+            {% if form.device_name.errors %}
+                <div class="field-error">{{ form.device_name.errors.0 }}</div>
+            {% endif %}
+            <div class="form-help">如：游戏手机1、测试设备2</div>
         </div>
 
-        {% if error_msg %}
-            <div class="error-msg">{{ error_msg }}</div>
-        {% endif %}
+        <div class="form-group">
+            <label class="form-label">{{ form.device_serial.label }}</label>
+            {{ form.device_serial }}
+            {% if form.device_serial.errors %}
+                <div class="field-error">{{ form.device_serial.errors.0 }}</div>
+            {% endif %}
+            <div class="form-help">ADB设备序列号（优先使用），可留空（需填写IP+端口）</div>
+        </div>
 
-        <form method="POST" action="{% url 'adb_manager:add_device' %}">
-            {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label">{{ form.device_ip.label }}</label>
+            {{ form.device_ip }}
+            {% if form.device_ip.errors %}
+                <div class="field-error">{{ form.device_ip.errors.0 }}</div>
+            {% endif %}
+            <div class="form-help">局域网IP地址（序列号留空时必填），如：192.168.3.100</div>
+        </div>
 
-            <!-- 设备名称 -->
-            <div class="form-group">
-                <label class="form-label">{{ form.device_name.label }} *</label>
-                {{ form.device_name }}
-                {% if form.device_name.errors %}
-                    <div class="field-error">{{ form.device_name.errors.0 }}</div>
-                {% endif %}
-                <div class="form-help">如：游戏手机1、测试设备2</div>
-            </div>
+        <div class="form-group">
+            <label class="form-label">{{ form.device_port.label }}</label>
+            {{ form.device_port }}
+            {% if form.device_port.errors %}
+                <div class="field-error">{{ form.device_port.errors.0 }}</div>
+            {% endif %}
+            <div class="form-help">ADB服务端口（序列号留空时必填），默认5555</div>
+        </div>
 
-            <!-- 设备序列号 -->
-            <div class="form-group">
-                <label class="form-label">{{ form.device_serial.label }}</label>
-                {{ form.device_serial }}
-                {% if form.device_serial.errors %}
-                    <div class="field-error">{{ form.device_serial.errors.0 }}</div>
-                {% endif %}
-                <div class="form-help">ADB设备序列号（优先使用），可留空（需填写IP+端口）</div>
-            </div>
+        <div class="form-group">
+            {{ form.is_active }}
+            <label class="form-label" style="display: inline-block;">{{ form.is_active.label }}</label>
+            {% if form.is_active.errors %}
+                <div class="field-error">{{ form.is_active.errors.0 }}</div>
+            {% endif %}
+            <div class="form-help">启用后会自动监控设备连接状态</div>
+        </div>
 
-            <!-- 设备IP -->
-            <div class="form-group">
-                <label class="form-label">{{ form.device_ip.label }}</label>
-                {{ form.device_ip }}
-                {% if form.device_ip.errors %}
-                    <div class="field-error">{{ form.device_ip.errors.0 }}</div>
-                {% endif %}
-                <div class="form-help">局域网IP地址（序列号留空时必填），如：192.168.3.100</div>
-            </div>
+        <div class="form-group">
+            <label class="form-label">{{ form.user.label }}</label>
+            {{ form.user }}
+            {% if form.user.errors %}
+                <div class="field-error">{{ form.user.errors.0 }}</div>
+            {% endif %}
+            <div class="form-help">绑定该设备的用户，为空则所有用户可操作</div>
+        </div>
 
-            <!-- ADB端口 -->
-            <div class="form-group">
-                <label class="form-label">{{ form.device_port.label }}</label>
-                {{ form.device_port }}
-                {% if form.device_port.errors %}
-                    <div class="field-error">{{ form.device_port.errors.0 }}</div>
-                {% endif %}
-                <div class="form-help">ADB服务端口（序列号留空时必填），默认5555</div>
-            </div>
-
-            <!-- 启用监控 -->
-            <div class="form-group">
-                {{ form.is_active }}
-                <label class="form-label" style="display: inline-block;">{{ form.is_active.label }}</label>
-                {% if form.is_active.errors %}
-                    <div class="field-error">{{ form.is_active.errors.0 }}</div>
-                {% endif %}
-                <div class="form-help">启用后会自动监控设备连接状态</div>
-            </div>
-
-            <!-- 关联用户 -->
-            <div class="form-group">
-                <label class="form-label">{{ form.user.label }}</label>
-                {{ form.user }}
-                {% if form.user.errors %}
-                    <div class="field-error">{{ form.user.errors.0 }}</div>
-                {% endif %}
-                <div class="form-help">绑定该设备的用户，为空则所有用户可操作</div>
-            </div>
-
-            <button type="submit" class="submit-btn">保存设备</button>
-        </form>
-    </div>
-</body>
-</html>
+        <button type="submit" class="submit-btn">保存设备</button>
+    </form>
+</div>
+{% endblock %}
