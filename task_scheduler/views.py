@@ -21,10 +21,20 @@ class ScheduleTaskListView(View):
     """定时任务列表页"""
 
     def get(self, request):
+        # 获取搜索关键词
+        search_query = request.GET.get('search', '').strip()
+
+        # 基础查询集
         schedules = ScheduleTask.objects.all()
+
+        # 如果有搜索关键词，按任务名称模糊搜索
+        if search_query:
+            schedules = schedules.filter(name__icontains=search_query)
+
         return render(request, "task_scheduler/schedule_list.html", {
             "schedules": schedules,
-            "page_title": "定时任务管理"
+            "page_title": "定时任务管理",
+            "search_query": search_query  # 传给前端，保持搜索框内容
         })
 
 
