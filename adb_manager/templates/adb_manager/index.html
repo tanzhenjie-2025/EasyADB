@@ -279,6 +279,8 @@
                             </form>
                             <!-- 新增：设备详情按钮 -->
                             <button class="btn btn-info action-btn view-detail-btn" data-device-id="{{ device.id }}">详情</button>
+                            <!-- 【新增】执行任务按钮 -->
+                            <a href="{% url 'script_center:execute_task' %}?device_id={{ device.id }}" class="btn btn-primary action-btn">执行任务</a>
                         </td>
                     </tr>
                 {% empty %}
