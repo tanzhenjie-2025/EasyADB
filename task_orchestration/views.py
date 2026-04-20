@@ -166,12 +166,22 @@ def wait_task_completion(task_type, task_handle, step, orch_log, process_key):
 
 # ===================== 编排任务核心视图（修改执行逻辑） =====================
 class OrchestrationListView(View):
-    """编排任务列表（保持不变）"""
+    """编排任务列表（支持任务名称搜索）"""
+
     def get(self, request):
+        # 获取搜索关键词
+        search_keyword = request.GET.get('search', '').strip()
+        # 基础查询
         tasks = OrchestrationTask.objects.all()
+
+        # 搜索过滤：任务名称模糊匹配
+        if search_keyword:
+            tasks = tasks.filter(name__icontains=search_keyword)
+
         return render(request, "task_orchestration/list.html", {
             "tasks": tasks,
-            "page_title": "编排任务管理"
+            "page_title": "编排任务管理",
+            "current_search": search_keyword  # 把搜索词传回前端，保持输入框内容
         })
 
 class OrchestrationCreateView(View):

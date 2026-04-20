@@ -8,6 +8,33 @@
         .text-center {
             text-align: center;
         }
+        /* 搜索栏样式 */
+        .search-bar {
+           margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        width: 30%;
+        flex-wrap: nowrap; /* 禁止换行，确保按钮和输入框在一行 */
+        }
+        .search-input {
+            flex: 1;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .search-btn {
+            padding: 6px 16px;
+            background: #5bc0de;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .search-btn:hover {
+            background: #31b0d5;
+        }
     </style>
 {% endblock %}
 
@@ -17,14 +44,27 @@
         <div class="btn-group">
             <a href="{% url 'task_orchestration:create' %}" class="btn btn-primary">创建新编排任务</a>
             <a href="{% url 'task_orchestration:execute_orchestration' %}" class="btn btn-success">批量执行编排任务</a>
-            <!-- 全局日志入口 -->
             <a href="{% url 'task_orchestration:global_management_logs' %}" class="btn btn-info">查看操作日志</a>
         </div>
     </div>
 {% endblock %}
 
 {% block content %}
+    <!-- 搜索栏 -->
+        <form method="get" action="{% url 'task_orchestration:list' %}" class="search-bar">
+            <input
+                type="text"
+                name="search"
+                class="search-input"
+                placeholder="请输入任务名称搜索..."
+                value="{{ current_search|default:'' }}"
+                autocomplete="off"
+            >
+            <button type="submit" class="search-btn">搜索</button>
+        </form>
     <div class="card">
+
+
         <table>
             <thead>
             <tr>
@@ -64,6 +104,19 @@
 
 {% block extra_js %}
     <script>
+        // 回车搜索
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('.search-input');
+            if (searchInput) {
+                searchInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.form.submit();
+                    }
+                });
+            }
+        });
+
         function executeOrchestration(taskId) {
             fetch(`{% url 'task_orchestration:execute_api' 0 %}`.replace('0', taskId), {
                 method: 'POST',
