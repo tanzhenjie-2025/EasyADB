@@ -895,39 +895,8 @@ class OrchestrationCloneView(View):
 # ===================== 原有测试相关代码（保持不变） =====================
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from mycelery.email.tasks import send_email, send_email2
 from mycelery.main import app
 
-def send_sms(request):
-    return render(request, 'sms_send.html')
-
-def send_sms_view(request):
-    if request.method == 'POST':
-        try:
-            request_data = json.loads(request.body)
-            mobile = request_data.get('mobile', '').strip()
-        except json.JSONDecodeError:
-            mobile = request.POST.get('mobile', '').strip()
-
-        if not mobile:
-            return JsonResponse({'code': 400, 'msg': '手机号不能为空'})
-        if not mobile.isdigit() or len(mobile) != MOBILE_VALID_LENGTH:
-            return JsonResponse({'code': 400, 'msg': f'手机号格式错误（需{MOBILE_VALID_LENGTH}位数字）'})
-
-        try:
-            task1 = send_email.delay(mobile)
-            task2 = send_email2.delay(mobile)
-        except Exception as e:
-            return JsonResponse({'code': 500, 'msg': f'任务提交失败：{str(e)}'})
-
-        return JsonResponse({
-            'code': 200,
-            'msg': '任务已提交',
-            'task1_id': task1.id,
-            'task2_id': task2.id,
-            'mobile': mobile
-        })
-    return JsonResponse({'code': 405, 'msg': '仅支持POST请求'})
 
 @api_view(['GET'])
 def check_task_result(request):
