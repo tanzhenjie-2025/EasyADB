@@ -109,12 +109,12 @@ _scheduler_thread = None  # 全局线程实例，防止重复启动
 
 def _scheduler_worker():
     """后台调度线程工作函数：每分钟检查一次到期任务"""
-    logger.info("✅ 定时任务后台调度线程已启动（优雅降级模式）")
+    logger.info("定时任务后台调度线程已启动（优雅降级模式）")
     while True:
         try:
             _check_and_execute_core()
         except Exception as e:
-            logger.error(f"❌ 后台调度线程异常：{str(e)}", exc_info=True)
+            logger.error(f"后台调度线程异常：{str(e)}", exc_info=True)
         time.sleep(60)  # 检查间隔：60秒（可根据需要调整）
 
 def start_scheduler_thread():

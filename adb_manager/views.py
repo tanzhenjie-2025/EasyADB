@@ -14,6 +14,8 @@ import subprocess
 import os
 import re
 
+from .tasks import check_all_devices_sync
+
 # 初始化日志
 logger = logging.getLogger(__name__)
 
@@ -369,8 +371,8 @@ class ADBDeviceDisconnectView(View):
 
 
 class RefreshAllDevicesView(View):
-    """刷新所有设备状态（添加日志记录）"""
-    def post(self, request):
+    """刷新所有设备状态（异步执行 + 优雅降级）"""
+    def post(self, request, check_all_devices=None):
         try:
             devices = ADBDevice.objects.filter(is_active=True)
             if not devices.exists():
@@ -381,60 +383,14 @@ class RefreshAllDevicesView(View):
                 )
                 return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
 
-            adb_path = get_adb_path()
+            # 【核心修改】根据配置选择 Celery 或 后台线程
+            if hasattr(settings, 'USE_CELERY') and settings.USE_CELERY:
+                check_all_devices.delay()
+                success_msg = "已提交 Celery 异步任务刷新设备状态，请稍后查看结果"
+            else:
+                check_all_devices_sync()
+                success_msg = "已启动后台线程刷新设备状态，请稍后查看结果"
 
-            # 获取已连接的设备列表
-            devices_cmd = [adb_path, "devices"]
-            devices_result = execute_adb_command(devices_cmd)
-            connected_devices = []
-            for line in devices_result.stdout.splitlines():
-                line = line.strip()
-                if line and not line.startswith(("List of devices", "adb:")):
-                    parts = line.split()
-                    if len(parts) >= 2 and parts[1] == "device":
-                        connected_devices.append(parts[0].strip())
-
-            # 遍历更新设备状态
-            success_count = 0
-            fail_count = 0
-            for device in devices:
-                connect_id = device.connect_identifier
-                if not connect_id:
-                    fail_count += 1
-                    continue
-
-                try:
-                    if connect_id in connected_devices:
-                        r.set(f"adb:device:{connect_id}", "online")
-                        r.set(f"adb:device:{connect_id}:stdout", f"设备{connect_id}已连接（自动检测）")
-                        r.set(f"adb:device:{connect_id}:stderr", "")
-                        success_count += 1
-                    else:
-                        # 尝试重新连接
-                        if ":" in connect_id:
-                            cmd = [adb_path, "connect", connect_id]
-                        else:
-                            cmd = [adb_path, "-s", connect_id, "wait-for-device", "shell", "echo", "connected"]
-
-                        result = execute_adb_command(cmd)
-
-                        if any(kw in result.stdout for kw in
-                               ["connected to", "connected", "echo connected"]) or result.returncode == 0:
-                            r.set(f"adb:device:{connect_id}", "online")
-                            r.set(f"adb:device:{connect_id}:stdout", result.stdout)
-                            r.set(f"adb:device:{connect_id}:stderr", "")
-                            success_count += 1
-                        else:
-                            r.set(f"adb:device:{connect_id}", "offline")
-                            r.set(f"adb:device:{connect_id}:stderr", result.stderr or result.stdout)
-                            fail_count += 1
-                except Exception as dev_err:
-                    logger.error(f"处理设备{connect_id}失败：{dev_err}", exc_info=True)
-                    r.set(f"adb:device:{connect_id}", "error")
-                    r.set(f"adb:device:{connect_id}:stderr", str(dev_err))
-                    fail_count += 1
-
-            success_msg = f"刷新完成！成功更新{success_count}台设备，失败{fail_count}台设备"
             log_device_operation(
                 request, None, 'refresh_all', True,
                 success_msg

@@ -13,7 +13,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-
+import logging
+logger = logging.getLogger(__name__)
 # 加载.env文件（项目根目录，与manage.py同级）
 # 先定位.env文件路径，确保加载成功
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -177,6 +178,17 @@ BUILTIN_SCRIPTS_ROOT = os.path.join(BASE_DIR, 'builtin_scripts')
 SHOW_BUILTIN_SCRIPTS = os.getenv("SHOW_BUILTIN_SCRIPTS", "False").lower() == "true"
 
 USE_CELERY = os.getenv("USE_CELERY", "True").lower() == "true"
+try:
+    # 尝试检测 Celery 是否可用
+    from celery import Celery
+    # 尝试初始化 Celery（仅检测，不重复配置）
+    app = Celery("EasyADB")  # 替换为你的项目名
+    app.config_from_object('django.conf:settings', namespace='CELERY')
+    # 尝试连接 Broker（可选，更严格的检测）
+    # app.connection().connect()
+    logger.info("Celery 初始化成功，启用异步任务模式")
+except Exception as e:
+    logger.warning(f"Celery 不可用，将使用后台线程模式：{str(e)}")
 
 # ====================== 新增：Script Center 优化配置 ======================
 SCRIPT_PYTHON_WARNING_KEYWORD = os.getenv("SCRIPT_PYTHON_WARNING_KEYWORD", "WindowsApps")
