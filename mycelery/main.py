@@ -1,25 +1,33 @@
-# mycelery/main.py 最终修正版
+# mycelery/main.py 最终稳定版
 import os
 import django
 from celery import Celery
 
-# 1. 设置 Django 环境变量
+# 1. 设置 Django 环境
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'EasyADB.settings')
 
-# 2. 【关键修复】只有在 Django 未初始化时才调用 setup()，防止重复 setup
-if not django.apps.apps.ready:
-    django.setup()
+# 2. 初始化 Django（必须这样写，才能同时支持 celery + 不报错）
+django.setup()
 
-# 3. 创建 Celery 实例
+# 3. 安全获取已安装应用
+from django.conf import settings
+installed_apps = settings.INSTALLED_APPS
+
+# 4. 创建 Celery
 app = Celery("EasyADB")
 
-# 4. 从 Django 配置加载 Celery 设置
+# 5. 加载配置
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
-# 5. 自动发现任务（不传参数，Celery 会自动从 INSTALLED_APPS 查找）
-app.autodiscover_tasks()
+# 6. 自动发现任务
+app.autodiscover_tasks([
+    'adb_manager',
+    'script_center',
+    'task_scheduler',    # 强制加载
+    'task_orchestration',
+])
 
-# 6. 定时任务配置（保留你原来的业务逻辑）
+# 7. 定时任务
 app.conf.beat_schedule = {
     'check-scheduled-tasks-every-minute': {
         'task': 'task_scheduler.check_and_execute_schedules',
@@ -27,7 +35,7 @@ app.conf.beat_schedule = {
     },
 }
 
-# 调试任务（保留）
+# 调试任务
 @app.task(bind=True)
 def debug_task(self):
     print(f'Request: {self.request!r}')
