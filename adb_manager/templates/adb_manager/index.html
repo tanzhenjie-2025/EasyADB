@@ -209,6 +209,15 @@
     .search-btn {
         padding: 6px 16px;
     }
+
+    /* 【新增】文件管理样式 */
+    .enter-dir-link {
+        color: #1989fa;
+        text-decoration: none;
+    }
+    .enter-dir-link:hover {
+        text-decoration: underline;
+    }
 </style>
 {% endblock %}
 
@@ -312,13 +321,15 @@
                             </form>
                             <!-- 新增：设备详情按钮 -->
                             <button class="btn btn-info action-btn view-detail-btn" data-device-id="{{ device.id }}">详情</button>
+                            <!-- 【新增】文件管理按钮 -->
+                            <button class="btn btn-info action-btn file-manager-btn" data-device-id="{{ device.id }}" data-device-status="{{ device.status }}">文件管理</button>
                             <!-- 【新增】执行任务按钮 -->
                             <a href="{% url 'script_center:execute_task' %}?device_id={{ device.id }}" class="btn btn-primary action-btn">执行任务</a>
                         </td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="7" class="empty-device-cell">
+                        <td colspan="8" class="empty-device-cell">
                             暂无设备，请点击「添加设备」按钮添加
                         </td>
                     </tr>
@@ -436,6 +447,62 @@
                             <button id="logsNextPage" class="btn btn-default" style="padding: 4px 8px; border: 1px solid #ccc;" disabled>下一页</button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增：文件管理模态框 -->
+    <div id="fileManagerModal" class="modal">
+        <div class="modal-content" style="max-width: 1200px;">
+            <div class="modal-header">
+                <h3 class="modal-title">📁 文件管理</h3>
+                <button class="close-modal" id="closeFileManagerModal">&times;</button>
+            </div>
+            <div id="fileManagerModalBody">
+                <!-- 设备信息 -->
+                <div style="margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 4px;">
+                    <strong>当前设备：</strong><span id="currentDeviceName"></span>
+                    <input type="hidden" id="currentDeviceId">
+                </div>
+
+                <!-- 路径栏 -->
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+                    <label style="font-weight: 600;">当前路径：</label>
+                    <input type="text" id="currentPath" class="form-control" style="flex: 1;" value="/sdcard/">
+                    <button id="goToPathBtn" class="btn btn-primary">进入</button>
+                    <button id="refreshPathBtn" class="btn btn-default">刷新</button>
+                </div>
+
+                <!-- 操作栏 -->
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center;">
+                    <input type="text" id="newDirName" class="form-control" style="width: 200px;" placeholder="新文件夹名称">
+                    <button id="createDirBtn" class="btn btn-success">创建文件夹</button>
+                    <input type="text" id="deletePath" class="form-control" style="width: 300px;" placeholder="要删除的文件/文件夹路径">
+                    <button id="deleteFileBtn" class="btn btn-danger" onclick="return confirm('确定要删除吗？此操作不可恢复！');">删除</button>
+                </div>
+
+                <!-- 加载中提示 -->
+                <div id="fileManagerLoading" style="display: none;">加载中...</div>
+
+                <!-- 文件列表 -->
+                <div id="fileListContainer">
+                    <table class="table" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="background-color: #f8f9fa;">
+                                <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left; width: 5%;">类型</th>
+                                <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left; width: 30%;">名称</th>
+                                <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left; width: 10%;">大小</th>
+                                <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left; width: 20%;">日期</th>
+                                <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left; width: 10%;">所有者</th>
+                                <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left; width: 15%;">权限</th>
+                                <th style="padding: 8px; border: 1px solid #dee2e6; text-align: left; width: 10%;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fileListTableBody">
+                            <!-- 文件数据动态渲染 -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -817,6 +884,234 @@ logsNextPage.addEventListener("click", function() {
     if (currentLogPage < totalPages) {
         loadLogs(currentLogPage + 1);
     }
+});
+
+// 新增：文件管理模态框逻辑
+const fileManagerModal = document.getElementById("fileManagerModal");
+const closeFileManagerModalBtn = document.getElementById("closeFileManagerModal");
+const currentDeviceName = document.getElementById("currentDeviceName");
+const currentDeviceId = document.getElementById("currentDeviceId");
+const currentPathInput = document.getElementById("currentPath");
+const goToPathBtn = document.getElementById("goToPathBtn");
+const refreshPathBtn = document.getElementById("refreshPathBtn");
+const newDirNameInput = document.getElementById("newDirName");
+const createDirBtn = document.getElementById("createDirBtn");
+const deletePathInput = document.getElementById("deletePath");
+const deleteFileBtn = document.getElementById("deleteFileBtn");
+const fileManagerLoading = document.getElementById("fileManagerLoading");
+const fileListTableBody = document.getElementById("fileListTableBody");
+
+// 加载文件列表的函数
+function loadFileList(path) {
+    const deviceId = currentDeviceId.value;
+    if (!deviceId) return;
+
+    fileManagerLoading.style.display = "block";
+    fileListTableBody.innerHTML = "";
+
+    const formData = new FormData();
+    formData.append("device_id", deviceId);
+    formData.append("path", path);
+    formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+    fetch("{% url 'adb_manager:list_dir' %}", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        fileManagerLoading.style.display = "none";
+        if (data.code === 200) {
+            const { path: currentPath, files } = data.data;
+            currentPathInput.value = currentPath;
+
+            if (files.length === 0) {
+                fileListTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="padding: 20px; text-align: center; border: 1px solid #dee2e6;">
+                            当前目录为空
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // 添加上级目录入口（如果不是根目录）
+            if (currentPath !== "/" && currentPath !== "") {
+                const parentPath = currentPath.endsWith("/") ? currentPath.slice(0, -1) : currentPath;
+                const parentDir = parentPath.substring(0, parentPath.lastIndexOf("/") + 1) || "/";
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">📁</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;"><a href="javascript:void(0);" class="enter-dir-link" data-path="${parentDir}">..</a></td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">-</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">-</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">-</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">-</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">-</td>
+                `;
+                fileListTableBody.appendChild(row);
+            }
+
+            files.forEach(file => {
+                const row = document.createElement("tr");
+                const fullPath = currentPath.endsWith("/") ? `${currentPath}${file.name}` : `${currentPath}/${file.name}`;
+                row.innerHTML = `
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">${file.is_dir ? '📁' : '📄'}</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">
+                        ${file.is_dir ? `<a href="javascript:void(0);" class="enter-dir-link" data-path="${fullPath}">${file.name}</a>` : file.name}
+                    </td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">${file.size}</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">${file.date}</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">${file.owner}:${file.group}</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">${file.permissions}</td>
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">
+                        <button class="btn btn-danger action-btn copy-delete-path-btn" data-path="${fullPath}" style="padding: 2px 6px; font-size: 12px;">删除</button>
+                    </td>
+                `;
+                fileListTableBody.appendChild(row);
+            });
+
+            // 绑定进入目录的点击事件
+            document.querySelectorAll(".enter-dir-link").forEach(link => {
+                link.addEventListener("click", function() {
+                    const path = this.getAttribute("data-path");
+                    loadFileList(path);
+                });
+            });
+
+            // 绑定复制删除路径的点击事件
+            document.querySelectorAll(".copy-delete-path-btn").forEach(btn => {
+                btn.addEventListener("click", function() {
+                    const path = this.getAttribute("data-path");
+                    deletePathInput.value = path;
+                });
+            });
+        } else {
+            alert(data.msg);
+        }
+    })
+    .catch(error => {
+        fileManagerLoading.style.display = "none";
+        alert(`请求失败：${error.message}`);
+    });
+}
+
+// 绑定文件管理按钮事件
+document.querySelectorAll(".file-manager-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+        const deviceId = this.getAttribute("data-device-id");
+        const deviceStatus = this.getAttribute("data-device-status");
+        const deviceName = this.closest("tr").querySelector("td:first-child").textContent;
+
+        if (deviceStatus !== "online") {
+            alert("设备不在线，无法进行文件管理");
+            return;
+        }
+
+        currentDeviceId.value = deviceId;
+        currentDeviceName.textContent = deviceName;
+        currentPathInput.value = "/sdcard/";
+        fileManagerModal.style.display = "flex";
+        loadFileList("/sdcard/");
+    });
+});
+
+// 关闭文件管理模态框
+closeFileManagerModalBtn.addEventListener("click", function() {
+    fileManagerModal.style.display = "none";
+});
+
+// 点击模态框外部关闭
+window.addEventListener("click", function(event) {
+    if (event.target === fileManagerModal) {
+        fileManagerModal.style.display = "none";
+    }
+});
+
+// 进入路径按钮事件
+goToPathBtn.addEventListener("click", function() {
+    const path = currentPathInput.value.trim();
+    if (path) {
+        loadFileList(path);
+    }
+});
+
+// 刷新路径按钮事件
+refreshPathBtn.addEventListener("click", function() {
+    const path = currentPathInput.value.trim();
+    if (path) {
+        loadFileList(path);
+    }
+});
+
+// 创建文件夹按钮事件
+createDirBtn.addEventListener("click", function() {
+    const deviceId = currentDeviceId.value;
+    const currentPath = currentPathInput.value.trim();
+    const dirName = newDirNameInput.value.trim();
+    if (!dirName) {
+        alert("请输入文件夹名称");
+        return;
+    }
+    const fullPath = currentPath.endsWith("/") ? `${currentPath}${dirName}` : `${currentPath}/${dirName}`;
+
+    const formData = new FormData();
+    formData.append("device_id", deviceId);
+    formData.append("path", fullPath);
+    formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+    fetch("{% url 'adb_manager:create_dir' %}", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.code === 200) {
+            alert("创建成功");
+            newDirNameInput.value = "";
+            loadFileList(currentPath);
+        } else {
+            alert(data.msg);
+        }
+    })
+    .catch(error => {
+        alert(`请求失败：${error.message}`);
+    });
+});
+
+// 删除文件/文件夹按钮事件
+deleteFileBtn.addEventListener("click", function() {
+    const deviceId = currentDeviceId.value;
+    const path = deletePathInput.value.trim();
+    const currentPath = currentPathInput.value.trim();
+    if (!path) {
+        alert("请输入要删除的路径");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("device_id", deviceId);
+    formData.append("path", path);
+    formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+    fetch("{% url 'adb_manager:delete_file' %}", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.code === 200) {
+            alert("删除成功");
+            deletePathInput.value = "";
+            loadFileList(currentPath);
+        } else {
+            alert(data.msg);
+        }
+    })
+    .catch(error => {
+        alert(`请求失败：${error.message}`);
+    });
 });
 </script>
 {% endblock %}

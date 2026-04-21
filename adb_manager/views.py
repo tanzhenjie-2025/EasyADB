@@ -60,23 +60,24 @@ def get_redis_client():
         return EmptyRedis()
 
 
-def execute_adb_command(cmd, timeout=None):
+def execute_adb_command(cmd, timeout=None, shell=True):
     """执行ADB命令的公共方法"""
     if timeout is None:
         timeout = int(os.getenv("ADB_COMMAND_TIMEOUT", 10))
 
-    logger.info(f"执行ADB命令：{' '.join(cmd)}")
+    cmd_str = ' '.join(cmd) if isinstance(cmd, list) else cmd
+    logger.info(f"执行ADB命令：{cmd_str}")
     try:
         result = subprocess.run(
             cmd,
-            shell=True,
+            shell=shell,
             capture_output=True,
             encoding="utf-8",
             timeout=timeout
         )
         return result
     except subprocess.TimeoutExpired:
-        logger.error(f"ADB命令执行超时：{' '.join(cmd)}")
+        logger.error(f"ADB命令执行超时：{cmd_str}")
         raise
     except Exception as e:
         logger.error(f"ADB命令执行失败：{str(e)}", exc_info=True)
@@ -96,7 +97,7 @@ def get_wifi_ip(connect_id):
 
     for cmd in ip_commands:
         try:
-            result = execute_adb_command(cmd)
+            result = execute_adb_command(cmd, shell=False)
             if result.returncode == 0 and result.stdout:
                 # 解析IP地址
                 ip_lines = result.stdout.splitlines()
@@ -266,7 +267,7 @@ class ADBDeviceConnectView(View):
                 # 纯序列号格式 - 先检查设备是否在线，再连接（USB/无线）
                 cmd = [adb_path, "-s", connect_id, "wait-for-device", "shell", "echo", "connected"]
 
-            result = execute_adb_command(cmd)
+            result = execute_adb_command(cmd, shell=False)
 
             # 结果判断
             success_keywords = ["connected to", "connected", "echo connected"]
@@ -332,7 +333,7 @@ class ADBDeviceDisconnectView(View):
             else:
                 cmd = [adb_path, "-s", connect_id, "disconnect"]
 
-            result = execute_adb_command(cmd)
+            result = execute_adb_command(cmd, shell=False)
 
             # 更新状态
             if "disconnected" in result.stdout or result.returncode == 0:
@@ -531,7 +532,7 @@ class DeleteDeviceView(View):
                     cmd = [adb_path, "disconnect", connect_id]
                 else:
                     cmd = [adb_path, "-s", connect_id, "disconnect"]
-                execute_adb_command(cmd, timeout=5)
+                execute_adb_command(cmd, shell=False, timeout=5)
 
                 # 删除Redis状态
                 r.delete(f"adb:device:{connect_id}")
@@ -598,7 +599,7 @@ class ConnectAllDevicesView(View):
                     else:
                         cmd = [adb_path, "-s", connect_id, "wait-for-device", "shell", "echo", "connected"]
 
-                    result = execute_adb_command(cmd)
+                    result = execute_adb_command(cmd, shell=False)
 
                     if any(kw in result.stdout for kw in
                            ["connected to", "connected", "echo connected"]) or result.returncode == 0:
@@ -669,7 +670,7 @@ class DisconnectAllDevicesView(View):
                     else:
                         cmd = [adb_path, "-s", connect_id, "disconnect"]
 
-                    result = execute_adb_command(cmd)
+                    result = execute_adb_command(cmd, shell=False)
 
                     if "disconnected" in result.stdout or result.returncode == 0:
                         r.set(f"adb:device:{connect_id}", "offline")
@@ -724,7 +725,7 @@ class ADBDevicesListView(View):
 
             # 执行adb devices命令
             cmd = [adb_path, "devices", "-l"]  # -l参数显示详细信息
-            result = execute_adb_command(cmd)
+            result = execute_adb_command(cmd, shell=False)
 
             # 解析命令结果
             output = result.stdout.strip()
@@ -831,7 +832,7 @@ class ADBDeviceDetailView(View):
             # 执行每个命令
             for cmd_key, cmd in commands.items():
                 try:
-                    result = execute_adb_command(cmd, timeout=default_timeout)
+                    result = execute_adb_command(cmd, shell=False, timeout=default_timeout)
                     stdout = result.stdout.strip()
                     stderr = result.stderr.strip()
                     result_data["raw_commands"][cmd_key] = {"stdout": stdout, "stderr": stderr}
@@ -1002,7 +1003,7 @@ class ADBDeviceEnableWirelessView(View):
                     request, device, 'enable_wireless', False,
                     error_msg
                 )
-                return redirect(f"{reverse('adb_manager:index')}?msg={error_msg}")
+                return redirect(f"{reverse('adb_manager:index')}?msg={quote(error_msg)}")
 
             # 检查数据库中是否已有该无线信息
             db_check_msg = ""
@@ -1020,7 +1021,7 @@ class ADBDeviceEnableWirelessView(View):
 
             # 执行tcpip命令开启无线ADB
             cmd = [adb_path, "-s", connect_id, "tcpip", str(default_port)]
-            result = execute_adb_command(cmd)
+            result = execute_adb_command(cmd, shell=False)
 
             # 验证tcpip命令执行结果
             success_keywords = [
@@ -1072,6 +1073,7 @@ class ADBDeviceEnableWirelessView(View):
                 error_msg
             )
             return redirect(f"{reverse('adb_manager:index')}?msg={quote(error_msg)}")
+
 
 class ADBOperationLogView(View):
     """设备操作日志列表视图（支持筛选、分页）"""
@@ -1138,5 +1140,184 @@ class ADBOperationLogView(View):
             return JsonResponse({
                 "code": 500,
                 "msg": f"获取日志失败：{str(e)}",
+                "data": {}
+            })
+
+
+# ===================== 新增：文件管理视图 =====================
+class ADBDeviceListDirView(View):
+    """列出设备指定目录"""
+    def post(self, request):
+        try:
+            device_id = request.POST.get("device_id")
+            path = request.POST.get("path", "/sdcard/").strip()
+            if not device_id or not device_id.isdigit():
+                return JsonResponse({"code": 400, "msg": "参数错误：device_id必须为数字", "data": {}})
+
+            device = get_object_or_404(ADBDevice, id=device_id)
+            connect_id = device.connect_identifier
+            if not connect_id:
+                return JsonResponse({"code": 400, "msg": "设备未配置序列号/IP+端口", "data": {}})
+
+            # 检查设备状态
+            status = r.get(f"adb:device:{connect_id}") or "offline"
+            if status != "online":
+                return JsonResponse({"code": 400, "msg": "设备不在线", "data": {}})
+
+            adb_path = get_adb_path()
+            cmd = [adb_path, "-s", connect_id, "shell", "ls", "-la", path]
+            result = execute_adb_command(cmd, shell=False)
+
+            if result.returncode == 0:
+                # 解析ls -la的输出
+                lines = result.stdout.strip().splitlines()
+                file_list = []
+                # 跳过第一行（total ...）
+                for line in lines[1:]:
+                    parts = line.split(maxsplit=8)
+                    if len(parts) >= 9:
+                        permissions = parts[0]
+                        links = parts[1]
+                        owner = parts[2]
+                        group = parts[3]
+                        size = parts[4]
+                        date = f"{parts[5]} {parts[6]} {parts[7]}"
+                        name = parts[8]
+                        is_dir = permissions.startswith('d')
+                        file_list.append({
+                            "name": name,
+                            "is_dir": is_dir,
+                            "permissions": permissions,
+                            "size": size,
+                            "date": date,
+                            "owner": owner,
+                            "group": group
+                        })
+                return JsonResponse({
+                    "code": 200,
+                    "msg": "获取成功",
+                    "data": {
+                        "path": path,
+                        "files": file_list,
+                        "raw_output": result.stdout
+                    }
+                })
+            else:
+                return JsonResponse({
+                    "code": 500,
+                    "msg": f"执行失败：{result.stderr or result.stdout}",
+                    "data": {}
+                })
+        except Exception as e:
+            logger.error(f"列出目录失败：{str(e)}", exc_info=True)
+            return JsonResponse({
+                "code": 500,
+                "msg": f"失败：{str(e)}",
+                "data": {}
+            })
+
+
+class ADBDeviceCreateDirView(View):
+    """创建文件夹"""
+    def post(self, request):
+        try:
+            device_id = request.POST.get("device_id")
+            path = request.POST.get("path", "").strip()
+            if not device_id or not device_id.isdigit():
+                return JsonResponse({"code": 400, "msg": "参数错误：device_id必须为数字", "data": {}})
+            if not path:
+                return JsonResponse({"code": 400, "msg": "路径不能为空", "data": {}})
+
+            device = get_object_or_404(ADBDevice, id=device_id)
+            connect_id = device.connect_identifier
+            if not connect_id:
+                return JsonResponse({"code": 400, "msg": "设备未配置序列号/IP+端口", "data": {}})
+
+            status = r.get(f"adb:device:{connect_id}") or "offline"
+            if status != "online":
+                return JsonResponse({"code": 400, "msg": "设备不在线", "data": {}})
+
+            adb_path = get_adb_path()
+            cmd = [adb_path, "-s", connect_id, "shell", "mkdir", "-p", path]
+            result = execute_adb_command(cmd, shell=False)
+
+            if result.returncode == 0:
+                log_device_operation(
+                    request, device, 'create_dir', True,
+                    f"创建文件夹：{path}"
+                )
+                return JsonResponse({
+                    "code": 200,
+                    "msg": "创建成功",
+                    "data": {}
+                })
+            else:
+                log_device_operation(
+                    request, device, 'create_dir', False,
+                    f"创建文件夹失败：{path}，错误：{result.stderr or result.stdout}"
+                )
+                return JsonResponse({
+                    "code": 500,
+                    "msg": f"创建失败：{result.stderr or result.stdout}",
+                    "data": {}
+                })
+        except Exception as e:
+            logger.error(f"创建文件夹失败：{str(e)}", exc_info=True)
+            return JsonResponse({
+                "code": 500,
+                "msg": f"失败：{str(e)}",
+                "data": {}
+            })
+
+
+class ADBDeviceDeleteFileView(View):
+    """删除文件或文件夹"""
+    def post(self, request):
+        try:
+            device_id = request.POST.get("device_id")
+            path = request.POST.get("path", "").strip()
+            if not device_id or not device_id.isdigit():
+                return JsonResponse({"code": 400, "msg": "参数错误：device_id必须为数字", "data": {}})
+            if not path:
+                return JsonResponse({"code": 400, "msg": "路径不能为空", "data": {}})
+
+            device = get_object_or_404(ADBDevice, id=device_id)
+            connect_id = device.connect_identifier
+            if not connect_id:
+                return JsonResponse({"code": 400, "msg": "设备未配置序列号/IP+端口", "data": {}})
+
+            status = r.get(f"adb:device:{connect_id}") or "offline"
+            if status != "online":
+                return JsonResponse({"code": 400, "msg": "设备不在线", "data": {}})
+
+            adb_path = get_adb_path()
+            cmd = [adb_path, "-s", connect_id, "shell", "rm", "-rf", path]
+            result = execute_adb_command(cmd, shell=False)
+
+            if result.returncode == 0:
+                log_device_operation(
+                    request, device, 'delete_file', True,
+                    f"删除：{path}"
+                )
+                return JsonResponse({
+                    "code": 200,
+                    "msg": "删除成功",
+                    "data": {}
+                })
+            else:
+                log_device_operation(
+                    request, device, 'delete_file', False,
+                    f"删除失败：{path}，错误：{result.stderr or result.stdout}"
+                )
+                return JsonResponse({
+                    "code": 500,
+                    "msg": f"删除失败：{result.stderr or result.stdout}",
+                    "data": {}
+                })
+        except Exception as e:
+            logger.error(f"删除失败：{str(e)}", exc_info=True)
+            return JsonResponse({
+                "code": 500,
+                "msg": f"失败：{str(e)}",
                 "data": {}
             })

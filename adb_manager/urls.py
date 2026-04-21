@@ -21,4 +21,8 @@ urlpatterns = [
     path("detail-device/", views.ADBDeviceDetailView.as_view(), name="detail_device"),
     path("enable-wireless/", views.ADBDeviceEnableWirelessView.as_view(), name="enable_wireless"),
     path('logs/', views.ADBOperationLogView.as_view(), name='operation_logs'),
+    # 新增：文件管理路由
+    path("list-dir/", views.ADBDeviceListDirView.as_view(), name="list_dir"),
+    path("create-dir/", views.ADBDeviceCreateDirView.as_view(), name="create_dir"),
+    path("delete-file/", views.ADBDeviceDeleteFileView.as_view(), name="delete_file"),
 ]
