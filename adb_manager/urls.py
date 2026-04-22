@@ -25,4 +25,9 @@ urlpatterns = [
     path("list-dir/", views.ADBDeviceListDirView.as_view(), name="list_dir"),
     path("create-dir/", views.ADBDeviceCreateDirView.as_view(), name="create_dir"),
     path("delete-file/", views.ADBDeviceDeleteFileView.as_view(), name="delete_file"),
+    # 新增：应用管理路由
+    path("list-apps/", views.ADBDeviceListAppsView.as_view(), name="list_apps"),
+    path("launch-app/", views.ADBDeviceLaunchAppView.as_view(), name="launch_app"),
+    path("stop-app/", views.ADBDeviceStopAppView.as_view(), name="stop_app"),
+    path("clear-app-data/", views.ADBDeviceClearAppDataView.as_view(), name="clear_app_data"),
 ]

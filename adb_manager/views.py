@@ -1321,3 +1321,318 @@ class ADBDeviceDeleteFileView(View):
                 "msg": f"失败：{str(e)}",
                 "data": {}
             })
+
+
+# ===================== 新增：应用管理视图 =====================
+class ADBDeviceListAppsView(View):
+    """获取设备已安装应用列表"""
+
+    def post(self, request):
+        try:
+            device_id = request.POST.get("device_id")
+            if not device_id or not device_id.isdigit():
+                return JsonResponse({"code": 400, "msg": "参数错误：device_id必须为数字", "data": {}})
+
+            device = get_object_or_404(ADBDevice, id=device_id)
+            connect_id = device.connect_identifier
+            if not connect_id:
+                return JsonResponse({"code": 400, "msg": "设备未配置序列号/IP+端口", "data": {}})
+
+            # 检查设备状态
+            status = r.get(f"adb:device:{connect_id}") or "offline"
+            if status != "online":
+                return JsonResponse({"code": 400, "msg": "设备不在线", "data": {}})
+
+            adb_path = get_adb_path()
+
+            # 1. 获取所有第三方应用包名
+            cmd_packages = [adb_path, "-s", connect_id, "shell", "pm", "list", "packages", "-3"]
+            result_packages = execute_adb_command(cmd_packages, shell=False)
+
+            if result_packages.returncode != 0:
+                return JsonResponse({
+                    "code": 500,
+                    "msg": f"获取应用列表失败：{result_packages.stderr or result_packages.stdout}",
+                    "data": {}
+                })
+
+            # 解析包名
+            package_lines = result_packages.stdout.strip().splitlines()
+            packages = []
+            for line in package_lines:
+                if line.startswith("package:"):
+                    packages.append(line.split(":", 1)[1].strip())
+
+            app_list = []
+            for package_name in packages:
+                try:
+                    # 2. 获取应用名称
+                    cmd_label = [adb_path, "-s", connect_id, "shell", "dumpsys", "package", package_name]
+                    result_label = execute_adb_command(cmd_label, shell=False, timeout=5)
+
+                    app_name = package_name
+                    if result_label.returncode == 0:
+                        # 尝试从dumpsys输出中解析应用名
+                        label_match = re.search(r"ApplicationInfo.*labelRes=0x[0-9a-f]+ nonLocalizedLabel=\"([^\"]+)\"",
+                                                result_label.stdout)
+                        if label_match:
+                            app_name = label_match.group(1)
+                        else:
+                            # 备选方案：使用pm dump
+                            alt_match = re.search(r"package=" + re.escape(package_name) + r".*?label=\"([^\"]+)\"",
+                                                  result_label.stdout, re.DOTALL)
+                            if alt_match:
+                                app_name = alt_match.group(1)
+
+                    # 3. 获取启动Activity (关键修复：这里只取纯Activity类名)
+                    cmd_launcher = [adb_path, "-s", connect_id, "shell", "cmd", "package", "resolve-activity",
+                                    "--brief", package_name]
+                    result_launcher = execute_adb_command(cmd_launcher, shell=False, timeout=5)
+
+                    launcher_activity = ""
+                    if result_launcher.returncode == 0:
+                        lines = result_launcher.stdout.strip().splitlines()
+                        if len(lines) > 1:
+                            full_component = lines[1].strip()
+                            # 【关键修复】：如果返回结果包含 "/"，只取后面的部分
+                            if "/" in full_component:
+                                # 格式可能是 "package/Activity" 或 "package/.Activity"
+                                activity_part = full_component.split("/", 1)[1]
+                                # 如果是 ".Activity" 开头，保留点；如果是完整类名，直接用
+                                launcher_activity = activity_part
+                            else:
+                                launcher_activity = full_component
+
+                    app_list.append({
+                        "package_name": package_name,
+                        "app_name": app_name,
+                        "launcher_activity": launcher_activity
+                    })
+                except Exception as e:
+                    logger.warning(f"获取应用 {package_name} 信息失败：{str(e)}")
+                    # 即使获取详情失败，也至少返回包名
+                    app_list.append({
+                        "package_name": package_name,
+                        "app_name": package_name,
+                        "launcher_activity": ""
+                    })
+
+            # 按应用名排序
+            app_list.sort(key=lambda x: x["app_name"].lower())
+
+            return JsonResponse({
+                "code": 200,
+                "msg": "获取成功",
+                "data": {
+                    "apps": app_list,
+                    "total": len(app_list)
+                }
+            })
+        except Exception as e:
+            logger.error(f"获取应用列表失败：{str(e)}", exc_info=True)
+            return JsonResponse({
+                "code": 500,
+                "msg": f"失败：{str(e)}",
+                "data": {}
+            })
+
+
+class ADBDeviceLaunchAppView(View):
+    """启动应用"""
+
+    def post(self, request):
+        try:
+            device_id = request.POST.get("device_id")
+            package_name = request.POST.get("package_name", "").strip()
+            activity_name = request.POST.get("activity_name", "").strip()
+
+            if not device_id or not device_id.isdigit():
+                return JsonResponse({"code": 400, "msg": "参数错误：device_id必须为数字", "data": {}})
+            if not package_name:
+                return JsonResponse({"code": 400, "msg": "包名不能为空", "data": {}})
+
+            device = get_object_or_404(ADBDevice, id=device_id)
+            connect_id = device.connect_identifier
+            if not connect_id:
+                return JsonResponse({"code": 400, "msg": "设备未配置序列号/IP+端口", "data": {}})
+
+            status = r.get(f"adb:device:{connect_id}") or "offline"
+            if status != "online":
+                return JsonResponse({"code": 400, "msg": "设备不在线", "data": {}})
+
+            adb_path = get_adb_path()
+            cmd = []
+            component = ""
+
+            if activity_name:
+                # 【关键修复】：智能拼接 ComponentName
+                if activity_name.startswith("."):
+                    # 以点开头，是相对类名
+                    component = f"{package_name}{activity_name}"
+                elif "/" in activity_name:
+                    # 已经包含包名，直接使用
+                    component = activity_name
+                else:
+                    # 普通类名，拼接
+                    component = f"{package_name}/{activity_name}"
+
+                cmd = [adb_path, "-s", connect_id, "shell", "am", "start", "-n", component]
+            else:
+                # 使用monkey启动应用（保底方案）
+                cmd = [adb_path, "-s", connect_id, "shell", "monkey", "-p", package_name, "-c",
+                       "android.intent.category.LAUNCHER", "1"]
+
+            # 记录实际执行的完整命令以便调试
+            logger.info(f"启动应用最终命令：{' '.join(cmd)}")
+            result = execute_adb_command(cmd, shell=False)
+
+            # 【增强】：不仅检查 returncode，还要检查输出内容
+            success = result.returncode == 0
+            error_msg = result.stderr or result.stdout
+
+            # 即使 returncode 为 0，某些错误信息也会在 stdout 中
+            if success and ("Error" in result.stdout or "Exception" in result.stdout):
+                success = False
+                error_msg = result.stdout
+
+            if success:
+                log_msg = f"启动应用：{package_name}"
+                if component:
+                    log_msg += f" (Component: {component})"
+                log_msg += f" 输出: {result.stdout[:100]}"
+
+                log_device_operation(
+                    request, device, 'launch_app', True, log_msg
+                )
+                return JsonResponse({
+                    "code": 200,
+                    "msg": "启动成功",
+                    "data": {"stdout": result.stdout}
+                })
+            else:
+                log_device_operation(
+                    request, device, 'launch_app', False,
+                    f"启动应用失败：{package_name}，错误：{error_msg}"
+                )
+                return JsonResponse({
+                    "code": 500,
+                    "msg": f"启动失败：{error_msg}",
+                    "data": {}
+                })
+        except Exception as e:
+            logger.error(f"启动应用失败：{str(e)}", exc_info=True)
+            return JsonResponse({
+                "code": 500,
+                "msg": f"失败：{str(e)}",
+                "data": {}
+            })
+
+
+class ADBDeviceStopAppView(View):
+    """停止应用（强制停止）"""
+
+    def post(self, request):
+        try:
+            device_id = request.POST.get("device_id")
+            package_name = request.POST.get("package_name", "").strip()
+
+            if not device_id or not device_id.isdigit():
+                return JsonResponse({"code": 400, "msg": "参数错误：device_id必须为数字", "data": {}})
+            if not package_name:
+                return JsonResponse({"code": 400, "msg": "包名不能为空", "data": {}})
+
+            device = get_object_or_404(ADBDevice, id=device_id)
+            connect_id = device.connect_identifier
+            if not connect_id:
+                return JsonResponse({"code": 400, "msg": "设备未配置序列号/IP+端口", "data": {}})
+
+            status = r.get(f"adb:device:{connect_id}") or "offline"
+            if status != "online":
+                return JsonResponse({"code": 400, "msg": "设备不在线", "data": {}})
+
+            adb_path = get_adb_path()
+            cmd = [adb_path, "-s", connect_id, "shell", "am", "force-stop", package_name]
+            result = execute_adb_command(cmd, shell=False)
+
+            if result.returncode == 0:
+                log_device_operation(
+                    request, device, 'stop_app', True,
+                    f"停止应用：{package_name}"
+                )
+                return JsonResponse({
+                    "code": 200,
+                    "msg": "停止成功",
+                    "data": {}
+                })
+            else:
+                log_device_operation(
+                    request, device, 'stop_app', False,
+                    f"停止应用失败：{package_name}，错误：{result.stderr or result.stdout}"
+                )
+                return JsonResponse({
+                    "code": 500,
+                    "msg": f"停止失败：{result.stderr or result.stdout}",
+                    "data": {}
+                })
+        except Exception as e:
+            logger.error(f"停止应用失败：{str(e)}", exc_info=True)
+            return JsonResponse({
+                "code": 500,
+                "msg": f"失败：{str(e)}",
+                "data": {}
+            })
+
+
+class ADBDeviceClearAppDataView(View):
+    """清除应用数据"""
+
+    def post(self, request):
+        try:
+            device_id = request.POST.get("device_id")
+            package_name = request.POST.get("package_name", "").strip()
+
+            if not device_id or not device_id.isdigit():
+                return JsonResponse({"code": 400, "msg": "参数错误：device_id必须为数字", "data": {}})
+            if not package_name:
+                return JsonResponse({"code": 400, "msg": "包名不能为空", "data": {}})
+
+            device = get_object_or_404(ADBDevice, id=device_id)
+            connect_id = device.connect_identifier
+            if not connect_id:
+                return JsonResponse({"code": 400, "msg": "设备未配置序列号/IP+端口", "data": {}})
+
+            status = r.get(f"adb:device:{connect_id}") or "offline"
+            if status != "online":
+                return JsonResponse({"code": 400, "msg": "设备不在线", "data": {}})
+
+            adb_path = get_adb_path()
+            cmd = [adb_path, "-s", connect_id, "shell", "pm", "clear", package_name]
+            result = execute_adb_command(cmd, shell=False)
+
+            if result.returncode == 0 and "Success" in result.stdout:
+                log_device_operation(
+                    request, device, 'clear_app_data', True,
+                    f"清除应用数据：{package_name}"
+                )
+                return JsonResponse({
+                    "code": 200,
+                    "msg": "清除成功",
+                    "data": {}
+                })
+            else:
+                log_device_operation(
+                    request, device, 'clear_app_data', False,
+                    f"清除应用数据失败：{package_name}，错误：{result.stderr or result.stdout}"
+                )
+                return JsonResponse({
+                    "code": 500,
+                    "msg": f"清除失败：{result.stderr or result.stdout}",
+                    "data": {}
+                })
+        except Exception as e:
+            logger.error(f"清除应用数据失败：{str(e)}", exc_info=True)
+            return JsonResponse({
+                "code": 500,
+                "msg": f"失败：{str(e)}",
+                "data": {}
+            })

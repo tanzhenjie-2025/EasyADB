@@ -218,6 +218,40 @@
     .enter-dir-link:hover {
         text-decoration: underline;
     }
+        /* 【新增】应用管理样式 */
+    .app-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    .app-info {
+        flex: 1;
+    }
+    .app-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 4px;
+    }
+    .app-package {
+        font-size: 12px;
+        color: #666;
+        font-family: monospace;
+    }
+    .app-activity {
+        font-size: 11px;
+        color: #999;
+        font-family: monospace;
+        margin-top: 2px;
+    }
+    .app-actions {
+        display: flex;
+        gap: 8px;
+    }
+    .search-app-input {
+        margin-bottom: 15px;
+    }
 </style>
 {% endblock %}
 
@@ -323,13 +357,15 @@
                             <button class="btn btn-info action-btn view-detail-btn" data-device-id="{{ device.id }}">详情</button>
                             <!-- 【新增】文件管理按钮 -->
                             <button class="btn btn-info action-btn file-manager-btn" data-device-id="{{ device.id }}" data-device-status="{{ device.status }}">文件管理</button>
+                                                    <!-- 【新增】应用管理按钮 -->
+                            <button class="btn btn-info action-btn app-manager-btn" data-device-id="{{ device.id }}" data-device-status="{{ device.status }}">应用管理</button>
                             <!-- 【新增】执行任务按钮 -->
                             <a href="{% url 'script_center:execute_task' %}?device_id={{ device.id }}" class="btn btn-primary action-btn">执行任务</a>
                         </td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="8" class="empty-device-cell">
+                        <td colspan="9" class="empty-device-cell">
                             暂无设备，请点击「添加设备」按钮添加
                         </td>
                     </tr>
@@ -503,6 +539,36 @@
                             <!-- 文件数据动态渲染 -->
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- 新增：应用管理模态框 -->
+    <div id="appManagerModal" class="modal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h3 class="modal-title">📱 应用管理</h3>
+                <button class="close-modal" id="closeAppManagerModal">&times;</button>
+            </div>
+            <div id="appManagerModalBody">
+                <!-- 设备信息 -->
+                <div style="margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 4px;">
+                    <strong>当前设备：</strong><span id="currentAppDeviceName"></span>
+                    <input type="hidden" id="currentAppDeviceId">
+                </div>
+
+                <!-- 搜索栏 -->
+                <div style="margin-bottom: 15px;">
+                    <input type="text" id="searchAppInput" class="form-control search-app-input" placeholder="搜索应用名称或包名...">
+                </div>
+
+                <!-- 加载中提示 -->
+                <div id="appManagerLoading">加载中...获取应用列表可能需要几秒钟</div>
+
+                <!-- 应用列表 -->
+                <div id="appListContainer" style="display: none;">
+                    <div id="appList"></div>
                 </div>
             </div>
         </div>
@@ -1112,6 +1178,248 @@ deleteFileBtn.addEventListener("click", function() {
     .catch(error => {
         alert(`请求失败：${error.message}`);
     });
+});
+
+// 新增：应用管理模态框逻辑
+const appManagerModal = document.getElementById("appManagerModal");
+const closeAppManagerModalBtn = document.getElementById("closeAppManagerModal");
+const currentAppDeviceName = document.getElementById("currentAppDeviceName");
+const currentAppDeviceId = document.getElementById("currentAppDeviceId");
+const searchAppInput = document.getElementById("searchAppInput");
+const appManagerLoading = document.getElementById("appManagerLoading");
+const appListContainer = document.getElementById("appListContainer");
+const appList = document.getElementById("appList");
+
+let allApps = [];
+
+// 加载应用列表的函数
+function loadAppList() {
+    const deviceId = currentAppDeviceId.value;
+    if (!deviceId) return;
+
+    appManagerLoading.style.display = "block";
+    appListContainer.style.display = "none";
+    searchAppInput.value = "";
+    allApps = [];
+
+    const formData = new FormData();
+    formData.append("device_id", deviceId);
+    formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+    fetch("{% url 'adb_manager:list_apps' %}", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        appManagerLoading.style.display = "none";
+        appListContainer.style.display = "block";
+
+        if (data.code === 200) {
+            allApps = data.data.apps;
+            renderAppList(allApps);
+        } else {
+            appList.innerHTML = `<div class="alert alert-danger">${data.msg}</div>`;
+        }
+    })
+    .catch(error => {
+        appManagerLoading.style.display = "none";
+        appListContainer.style.display = "block";
+        appList.innerHTML = `<div class="alert alert-danger">请求失败：${error.message}</div>`;
+    });
+}
+
+// 渲染应用列表
+function renderAppList(apps) {
+    if (apps.length === 0) {
+        appList.innerHTML = `
+            <div style="padding: 20px; text-align: center; color: #666;">
+                暂无符合条件的应用
+            </div>
+        `;
+        return;
+    }
+
+    appList.innerHTML = "";
+    apps.forEach(app => {
+        const item = document.createElement("div");
+        item.className = "app-item";
+        item.innerHTML = `
+            <div class="app-info">
+                <div class="app-name">${app.app_name}</div>
+                <div class="app-package">${app.package_name}</div>
+                ${app.launcher_activity ? `<div class="app-activity">${app.launcher_activity}</div>` : ''}
+            </div>
+            <div class="app-actions">
+                <button class="btn btn-success action-btn launch-app-btn"
+                        data-package="${app.package_name}"
+                        data-activity="${app.launcher_activity || ''}"
+                        style="padding: 4px 8px; font-size: 12px;">启动</button>
+                <button class="btn btn-warning action-btn stop-app-btn"
+                        data-package="${app.package_name}"
+                        style="padding: 4px 8px; font-size: 12px;">停止</button>
+                <button class="btn btn-danger action-btn clear-app-data-btn"
+                        data-package="${app.package_name}"
+                        data-app-name="${app.app_name}"
+                        style="padding: 4px 8px; font-size: 12px;">清除数据</button>
+            </div>
+        `;
+        appList.appendChild(item);
+    });
+
+    // 绑定启动按钮事件
+    document.querySelectorAll(".launch-app-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            const packageName = this.getAttribute("data-package");
+            const activityName = this.getAttribute("data-activity");
+            launchApp(packageName, activityName);
+        });
+    });
+
+    // 绑定停止按钮事件
+    document.querySelectorAll(".stop-app-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            const packageName = this.getAttribute("data-package");
+            if (confirm("确定要强制停止该应用吗？")) {
+                stopApp(packageName);
+            }
+        });
+    });
+
+    // 绑定清除数据按钮事件
+    document.querySelectorAll(".clear-app-data-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            const packageName = this.getAttribute("data-package");
+            const appName = this.getAttribute("data-app-name");
+            if (confirm(`确定要清除【${appName}】的所有数据吗？此操作不可恢复！`)) {
+                clearAppData(packageName);
+            }
+        });
+    });
+}
+
+// 启动应用
+function launchApp(packageName, activityName) {
+    const deviceId = currentAppDeviceId.value;
+    const formData = new FormData();
+    formData.append("device_id", deviceId);
+    formData.append("package_name", packageName);
+    if (activityName) {
+        formData.append("activity_name", activityName);
+    }
+    formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+    fetch("{% url 'adb_manager:launch_app' %}", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.code === 200) {
+            alert("启动成功");
+        } else {
+            alert(data.msg);
+        }
+    })
+    .catch(error => {
+        alert(`请求失败：${error.message}`);
+    });
+}
+
+// 停止应用
+function stopApp(packageName) {
+    const deviceId = currentAppDeviceId.value;
+    const formData = new FormData();
+    formData.append("device_id", deviceId);
+    formData.append("package_name", packageName);
+    formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+    fetch("{% url 'adb_manager:stop_app' %}", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.code === 200) {
+            alert("停止成功");
+        } else {
+            alert(data.msg);
+        }
+    })
+    .catch(error => {
+        alert(`请求失败：${error.message}`);
+    });
+}
+
+// 清除应用数据
+function clearAppData(packageName) {
+    const deviceId = currentAppDeviceId.value;
+    const formData = new FormData();
+    formData.append("device_id", deviceId);
+    formData.append("package_name", packageName);
+    formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+
+    fetch("{% url 'adb_manager:clear_app_data' %}", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.code === 200) {
+            alert("清除成功");
+        } else {
+            alert(data.msg);
+        }
+    })
+    .catch(error => {
+        alert(`请求失败：${error.message}`);
+    });
+}
+
+// 绑定应用管理按钮事件
+document.querySelectorAll(".app-manager-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+        const deviceId = this.getAttribute("data-device-id");
+        const deviceStatus = this.getAttribute("data-device-status");
+        const deviceName = this.closest("tr").querySelector("td:first-child").textContent;
+
+        if (deviceStatus !== "online") {
+            alert("设备不在线，无法进行应用管理");
+            return;
+        }
+
+        currentAppDeviceId.value = deviceId;
+        currentAppDeviceName.textContent = deviceName;
+        appManagerModal.style.display = "flex";
+        loadAppList();
+    });
+});
+
+// 关闭应用管理模态框
+closeAppManagerModalBtn.addEventListener("click", function() {
+    appManagerModal.style.display = "none";
+});
+
+// 点击模态框外部关闭
+window.addEventListener("click", function(event) {
+    if (event.target === appManagerModal) {
+        appManagerModal.style.display = "none";
+    }
+});
+
+// 搜索应用
+searchAppInput.addEventListener("input", function() {
+    const keyword = this.value.trim().toLowerCase();
+    if (!keyword) {
+        renderAppList(allApps);
+        return;
+    }
+
+    const filteredApps = allApps.filter(app =>
+        app.app_name.toLowerCase().includes(keyword) ||
+        app.package_name.toLowerCase().includes(keyword)
+    );
+    renderAppList(filteredApps);
 });
 </script>
 {% endblock %}
