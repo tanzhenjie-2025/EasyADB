@@ -35,6 +35,9 @@
     .close-modal { position: absolute; top: 20px; right: 35px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; }
     .close-modal:hover { color: #ccc; }
     .modal-caption { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 14px; }
+
+    /* 新增：操作按钮区域样式 */
+    .action-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
 </style>
 {% endblock %}
 
@@ -81,6 +84,13 @@
             <span id="duration-display">{{ log.exec_duration_str|default:"-" }}</span>
         </div>
     </div>
+
+    <!-- 新增：中止任务按钮区域 -->
+    {% if log.exec_status == 'running' %}
+    <div class="action-row">
+        <button id="stop-task-btn" class="btn btn-danger" onclick="stopTask()">🛑 中止任务</button>
+    </div>
+    {% endif %}
 
     <div class="info-item">
         <label>执行命令</label>
@@ -219,6 +229,31 @@
         })
         .catch(err => alert(`清理失败：${err.message}`))
         .finally(() => { btn.disabled = false; btn.textContent = '🗑️ 清理所有图片'; });
+    }
+
+    // 新增：中止任务函数
+    function stopTask() {
+        if (!confirm('确定要中止该任务吗？此操作将停止脚本执行。')) return;
+        const btn = document.getElementById('stop-task-btn');
+        btn.disabled = true;
+        btn.textContent = '正在中止...';
+
+        fetch(`{% url 'script_center:stop_task' 0 %}`.replace('0', logId))
+            .then(response => {
+                if (response.ok) {
+                    alert('中止信号已发送，任务将在数秒内停止。');
+                    location.reload();
+                } else {
+                    alert('中止请求失败，请稍后重试。');
+                    btn.disabled = false;
+                    btn.textContent = '🛑 中止任务';
+                }
+            })
+            .catch(err => {
+                alert(`网络错误：${err.message}`);
+                btn.disabled = false;
+                btn.textContent = '🛑 中止任务';
+            });
     }
 
     function startPolling() {
