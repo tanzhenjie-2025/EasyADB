@@ -558,9 +558,10 @@
                     <input type="hidden" id="currentAppDeviceId">
                 </div>
 
-                <!-- 搜索栏 -->
-                <div style="margin-bottom: 15px;">
-                    <input type="text" id="searchAppInput" class="form-control search-app-input" placeholder="搜索应用名称或包名...">
+                                <!-- 搜索栏 -->
+                <div style="margin-bottom: 15px; display: flex; gap: 10px; align-items: center;">
+                    <input type="text" id="searchAppInput" class="form-control search-app-input" placeholder="搜索应用名称或包名..." style="flex: 1;">
+                    <button id="refreshAppsBtn" class="btn btn-primary">🔄 刷新列表</button>
                 </div>
 
                 <!-- 加载中提示 -->
@@ -1193,7 +1194,8 @@ const appList = document.getElementById("appList");
 let allApps = [];
 
 // 加载应用列表的函数
-function loadAppList() {
+// 加载应用列表的函数 (新增 force 参数)
+function loadAppList(force = false) {
     const deviceId = currentAppDeviceId.value;
     if (!deviceId) return;
 
@@ -1204,6 +1206,13 @@ function loadAppList() {
 
     const formData = new FormData();
     formData.append("device_id", deviceId);
+    // 【新增】如果是强制刷新，添加参数
+    if (force) {
+        formData.append("force_refresh", "true");
+        appManagerLoading.textContent = "正在从设备刷新应用列表...";
+    } else {
+        appManagerLoading.textContent = "加载中...获取应用列表可能需要几秒钟";
+    }
     formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
 
     fetch("{% url 'adb_manager:list_apps' %}", {
@@ -1420,6 +1429,14 @@ searchAppInput.addEventListener("input", function() {
         app.package_name.toLowerCase().includes(keyword)
     );
     renderAppList(filteredApps);
+});
+
+// 【完善】刷新应用列表按钮（真正的强制刷新）
+document.getElementById("refreshAppsBtn").addEventListener("click", function() {
+    appListContainer.style.display = "none";
+    appManagerLoading.style.display = "block";
+    // 传入 true 表示强制刷新
+    loadAppList(true);
 });
 </script>
 {% endblock %}

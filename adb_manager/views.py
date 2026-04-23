@@ -1325,11 +1325,14 @@ class ADBDeviceDeleteFileView(View):
 
 # ===================== 新增：应用管理视图 =====================
 class ADBDeviceListAppsView(View):
-    """获取设备已安装应用列表"""
+    """获取设备已安装应用列表（带Redis缓存）"""
 
     def post(self, request):
         try:
             device_id = request.POST.get("device_id")
+            # 【新增】获取强制刷新参数
+            force_refresh = request.POST.get("force_refresh", "").lower() == "true"
+
             if not device_id or not device_id.isdigit():
                 return JsonResponse({"code": 400, "msg": "参数错误：device_id必须为数字", "data": {}})
 
@@ -1342,6 +1345,34 @@ class ADBDeviceListAppsView(View):
             status = r.get(f"adb:device:{connect_id}") or "offline"
             if status != "online":
                 return JsonResponse({"code": 400, "msg": "设备不在线", "data": {}})
+
+            # ===================== 缓存逻辑 =====================
+            CACHE_KEY_PREFIX = "adb:device:apps:"
+            CACHE_EXPIRE = 300  # 5分钟
+            cache_key = f"{CACHE_KEY_PREFIX}{connect_id}"
+
+            # 1. 尝试从 Redis 获取缓存 (如果不是强制刷新)
+            if not force_refresh:
+                cached_data = r.get(cache_key)
+                if cached_data:
+                    try:
+                        import json
+                        app_list = json.loads(cached_data)
+                        logger.info(f"命中应用列表缓存：{connect_id}，共 {len(app_list)} 个应用")
+                        return JsonResponse({
+                            "code": 200,
+                            "msg": "获取成功（缓存）",
+                            "data": {
+                                "apps": app_list,
+                                "total": len(app_list),
+                                "cached": True
+                            }
+                        })
+                    except Exception as e:
+                        logger.warning(f"解析缓存数据失败，将重新获取：{str(e)}")
+            else:
+                logger.info(f"强制刷新应用列表：{connect_id}")
+            # ===================== 缓存逻辑结束 =====================
 
             adb_path = get_adb_path()
 
@@ -1384,7 +1415,7 @@ class ADBDeviceListAppsView(View):
                             if alt_match:
                                 app_name = alt_match.group(1)
 
-                    # 3. 获取启动Activity (关键修复：这里只取纯Activity类名)
+                    # 3. 获取启动Activity
                     cmd_launcher = [adb_path, "-s", connect_id, "shell", "cmd", "package", "resolve-activity",
                                     "--brief", package_name]
                     result_launcher = execute_adb_command(cmd_launcher, shell=False, timeout=5)
@@ -1394,11 +1425,8 @@ class ADBDeviceListAppsView(View):
                         lines = result_launcher.stdout.strip().splitlines()
                         if len(lines) > 1:
                             full_component = lines[1].strip()
-                            # 【关键修复】：如果返回结果包含 "/"，只取后面的部分
                             if "/" in full_component:
-                                # 格式可能是 "package/Activity" 或 "package/.Activity"
                                 activity_part = full_component.split("/", 1)[1]
-                                # 如果是 ".Activity" 开头，保留点；如果是完整类名，直接用
                                 launcher_activity = activity_part
                             else:
                                 launcher_activity = full_component
@@ -1410,7 +1438,6 @@ class ADBDeviceListAppsView(View):
                     })
                 except Exception as e:
                     logger.warning(f"获取应用 {package_name} 信息失败：{str(e)}")
-                    # 即使获取详情失败，也至少返回包名
                     app_list.append({
                         "package_name": package_name,
                         "app_name": package_name,
@@ -1420,12 +1447,23 @@ class ADBDeviceListAppsView(View):
             # 按应用名排序
             app_list.sort(key=lambda x: x["app_name"].lower())
 
+            # ===================== 写入缓存 =====================
+            try:
+                import json
+                r.setex(cache_key, CACHE_EXPIRE, json.dumps(app_list))
+                # 【修复】这里的 connect_key 改为 connect_id
+                logger.info(f"已更新应用列表缓存：{connect_id}，过期时间：{CACHE_EXPIRE}秒")
+            except Exception as e:
+                logger.error(f"写入 Redis 缓存失败：{str(e)}")
+            # ===================== 写入缓存结束 =====================
+
             return JsonResponse({
                 "code": 200,
                 "msg": "获取成功",
                 "data": {
                     "apps": app_list,
-                    "total": len(app_list)
+                    "total": len(app_list),
+                    "cached": False
                 }
             })
         except Exception as e:
